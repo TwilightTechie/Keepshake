@@ -8,6 +8,7 @@
  * Frame: [seq:u32 LE][flags:u8][pcm bytes]   flags bit0 = utterance end
  */
 
+#include <hal/nrf_pdm.h>
 #include <zephyr/audio/dmic.h>
 #include <zephyr/bluetooth/bluetooth.h>
 #include <zephyr/bluetooth/conn.h>
@@ -25,9 +26,11 @@ LOG_MODULE_REGISTER(keepsake, LOG_LEVEL_INF);
 #define BLOCK_BYTES      (BLOCK_SAMPLES * sizeof(int16_t))
 #define BLOCK_COUNT      10
 
-/* The nrfx PDM driver has no analog gain hook; MEMS levels at 0 dB are too
- * low for both VAD and STT, so boost digitally (saturating x4). */
-#define DIGITAL_GAIN_SHIFT 2
+/* Hardware PDM gain, set directly on the peripheral after dmic_configure
+ * (Zephyr's dmic driver doesn't expose it). 40 = 0 dB, 64 = +12 dB — the
+ * value Omi ships on this same board. Digital shift kept as headroom knob. */
+#define PDM_HW_GAIN        64
+#define DIGITAL_GAIN_SHIFT 0
 
 /* VAD: mean |amplitude| threshold (post-gain), ~1.5 s hangover, 500 ms
  * pre-roll (FW-2a). Calibrate against the periodic "mic energy" log line. */
@@ -207,6 +210,7 @@ int main(void)
 		LOG_ERR("dmic_configure: %d", err);
 		return err;
 	}
+	nrf_pdm_gain_set(NRF_PDM0, PDM_HW_GAIN, PDM_HW_GAIN);
 
 	err = bt_enable(NULL);
 	if (err) {
