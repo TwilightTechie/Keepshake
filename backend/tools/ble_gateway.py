@@ -48,6 +48,22 @@ FRAME_MS = 20
 FRAME_SAMPLES = SAMPLE_RATE * FRAME_MS // 1000
 FRAME_BYTES = FRAME_SAMPLES * 2
 
+VERBOSE = False
+_meter_active = False
+
+
+def log(msg: str) -> None:
+    """Timestamped line that never gets eaten by the in-place meter."""
+    global _meter_active
+    prefix = "\n" if _meter_active else ""
+    _meter_active = False
+    print(f"{prefix}[{datetime.now().strftime('%H:%M:%S')}] {msg}", flush=True)
+
+
+def vlog(msg: str) -> None:
+    if VERBOSE:
+        log(msg)
+
 
 class Segmenter:
     """Energy VAD with an adaptive noise floor, pre-roll, and hangover.
@@ -160,24 +176,86 @@ class Gateway:
         self.ingest_seq = 0
         self.queue: asyncio.Queue[bytes] = asyncio.Queue()
         self._last_meter = 0.0
+        # stats
+        self.packets = 0
+        self.audio_bytes = 0
+        self.last_packet_at = 0.0
+        self.subscribed_at = 0.0
+        self.utterances = 0
+        self.acked = 0
+        self.was_speech = False
+        self.speech_started_at = 0.0
 
     def on_notify(self, _char, data: bytearray) -> None:
+        global _meter_active
+        now = time.monotonic()
         if len(data) < 5:
+            vlog(f"runt packet ({len(data)}B) ignored")
             return
-        seq, _flags = struct.unpack_from("<IB", data)
-        if self.expected_seq is not None and seq != self.expected_seq:
-            self.dropped += max(0, seq - self.expected_seq)
-        self.expected_seq = seq + 1
+        seq, flags = struct.unpack_from("<IB", data)
+        payload = bytes(data[5:])
 
-        for pcm in self.seg.feed(bytes(data[5:])):
+        if self.packets == 0:
+            log(f"first audio packet received (seq {seq}, {len(payload)}B payload) "
+                "— stream is live")
+        if self.expected_seq is not None and seq != self.expected_seq:
+            missed = max(0, seq - self.expected_seq)
+            self.dropped += missed
+            if missed:
+                log(f"! gap: expected seq {self.expected_seq}, got {seq} "
+                    f"({missed} lost, {self.dropped} total)")
+        self.expected_seq = seq + 1
+        self.packets += 1
+        self.audio_bytes += len(payload)
+        self.last_packet_at = now
+        vlog(f"pkt seq={seq} flags={flags} {len(payload)}B")
+
+        utterances = self.seg.feed(payload)
+
+        # Speech onset/end are the events that matter when nothing shows up.
+        if self.seg.in_speech and not self.was_speech:
+            self.speech_started_at = now
+            log(f"speech START  (energy {self.seg.energy:.0f} > thr "
+                f"{self.seg.threshold:.0f}, floor {self.seg.floor or 0:.0f})")
+        elif not self.seg.in_speech and self.was_speech and not utterances:
+            log(f"speech end — too short, discarded (< {self.seg.min_bytes/2/SAMPLE_RATE:.1f}s)")
+        self.was_speech = self.seg.in_speech
+
+        for pcm in utterances:
             secs = len(pcm) / 2 / SAMPLE_RATE
-            print(f"\nutterance complete: {secs:.1f}s ({len(pcm)} bytes)")
+            self.utterances += 1
+            log(f"utterance #{self.utterances} complete: {secs:.1f}s "
+                f"({len(pcm)} bytes) → queued for upload")
             self.queue.put_nowait(pcm)
 
-        now = time.monotonic()
         if self.show_meter and now - self._last_meter > 0.5:
             self._last_meter = now
-            print(f"\r{self.seg.meter()}  drop {self.dropped}", end="", flush=True)
+            _meter_active = True
+            kbps = self.audio_bytes * 8 / 1000 / max(now - self.subscribed_at, 1)
+            print(f"\r{self.seg.meter()}  {kbps:5.0f}kbps drop {self.dropped}",
+                  end="", flush=True)
+
+    async def monitor(self) -> None:
+        """Heartbeat: proves the gateway is alive and shouts if audio stops."""
+        warned = False
+        while True:
+            await asyncio.sleep(5)
+            now = time.monotonic()
+            if not self.subscribed_at:
+                continue
+            gap = now - self.last_packet_at if self.last_packet_at else 999
+            if gap > 3:
+                if not warned:
+                    log(f"⚠ no audio from pendant for {gap:.0f}s — is it powered "
+                        "and still connected?")
+                    warned = True
+            else:
+                warned = False
+                secs = now - self.subscribed_at
+                log(f"stats: {self.packets} pkts, {self.audio_bytes/1024:.0f} KiB, "
+                    f"{self.audio_bytes*8/1000/max(secs,1):.0f} kbps, "
+                    f"{self.dropped} dropped, {self.utterances} utterances, "
+                    f"{self.acked} acked")
 
     async def uplink(self) -> None:
         url = f"{self.ws_url}?token={self.token}"
@@ -188,56 +266,72 @@ class Gateway:
             }))
             hello = json.loads(await ws.recv())
             assert hello.get("type") == "hello_ack", hello
-            print(f"uplink connected: {self.ws_url}")
+            log(f"uplink connected: {self.ws_url} (device_id={self.device_id})")
             while True:
                 pcm = await self.queue.get()
                 self.ingest_seq += 1
+                wav = pcm_to_wav(pcm)
+                t0 = time.monotonic()
+                log(f"uploading utterance seq={self.ingest_seq} "
+                    f"({len(wav)/1024:.0f} KiB WAV, {len(pcm)/2/SAMPLE_RATE:.1f}s)…")
                 await ws.send(json.dumps({
                     "type": "frame",
                     "seq": self.ingest_seq,
                     "captured_at": datetime.now(UTC).isoformat(),
                     "codec": "wav",
                     "utterance_end": True,
-                    "audio_b64": base64.b64encode(pcm_to_wav(pcm)).decode(),
+                    "audio_b64": base64.b64encode(wav).decode(),
                 }))
                 ack = json.loads(await ws.recv())
-                print(f"durable ack seq {ack.get('seq')} — pipeline will "
-                      "transcribe + extract shortly")
+                self.acked += 1
+                log(f"✓ durable ack seq {ack.get('seq')} in "
+                    f"{(time.monotonic()-t0)*1000:.0f}ms — STT + extraction running "
+                    "(transcript in ~15s)")
 
     async def run(self) -> None:
         uplink_task = asyncio.create_task(self.uplink_forever())
+        monitor_task = asyncio.create_task(self.monitor())
         try:
             while True:
-                print(f"scanning for '{DEVICE_NAME}'…")
+                log(f"scanning for '{DEVICE_NAME}'…")
                 device = await BleakScanner.find_device_by_name(DEVICE_NAME, timeout=30)
                 if device is None:
-                    print("not found — pendant off or out of range; rescanning…")
+                    log("not found — pendant off or out of range; rescanning…")
                     continue
-                print(f"found {device.address}, connecting…")
+                log(f"found {device.address} — connecting…")
                 try:
                     disconnected = asyncio.Event()
                     async with BleakClient(
                         device,
                         disconnected_callback=lambda _c, ev=disconnected: ev.set(),
                     ) as client:
+                        mtu = getattr(client, "mtu_size", None)
+                        log(f"connected (MTU {mtu}) — subscribing to audio…")
                         await client.start_notify(AUDIO_CHAR, self.on_notify)
                         self.expected_seq = None  # pendant may have rebooted
-                        print("subscribed to audio stream — speak near the pendant "
-                              "(Ctrl+C to stop)")
+                        self.subscribed_at = time.monotonic()
+                        self.last_packet_at = 0.0
+                        log("subscribed — speak near the pendant. Meter below: "
+                            "bar rises with sound, SPEECH when above threshold. "
+                            "(Ctrl+C to stop)")
                         await disconnected.wait()
-                    print("pendant disconnected — rescanning…")
+                    log(f"pendant disconnected after {self.packets} packets "
+                        f"/ {self.utterances} utterances — rescanning…")
+                    self.subscribed_at = 0.0
                 except Exception as exc:  # noqa: BLE001 - keep the bench loop alive
-                    print(f"BLE error: {exc} — rescanning in 3s…")
+                    log(f"BLE error: {exc} — rescanning in 3s…")
+                    self.subscribed_at = 0.0
                     await asyncio.sleep(3)
         finally:
             uplink_task.cancel()
+            monitor_task.cancel()
 
     async def uplink_forever(self) -> None:
         while True:
             try:
                 await self.uplink()
             except Exception as exc:  # noqa: BLE001
-                print(f"uplink error: {exc} — reconnecting in 3s…")
+                log(f"uplink error: {exc} — reconnecting in 3s…")
                 await asyncio.sleep(3)
 
 
@@ -261,7 +355,12 @@ def main() -> None:
     p.add_argument("--preroll", type=float, default=0.5,
                    help="seconds kept before speech onset (default 0.5)")
     p.add_argument("--quiet", action="store_true", help="hide the live meter")
+    p.add_argument("-v", "--verbose", action="store_true",
+                   help="log every BLE packet (very chatty)")
     args = p.parse_args()
+
+    global VERBOSE
+    VERBOSE = args.verbose
 
     seg = Segmenter(
         ratio=args.vad_ratio,
