@@ -5,8 +5,17 @@ VAD-gated PDM capture streamed over BLE with sequence numbers, received by
 `backend/tools/ble_gateway.py`, which forwards utterances into the backend's
 ingest WebSocket. See [../docs/requirements/firmware.md](../docs/requirements/firmware.md).
 
-P0 simplifications (all tracked to P1): PCM16 instead of Opus (FW-2), no flash
-journal (FW-4), no pairing/SMP (FW-8), no DFU (FW-6), no hard-mute button yet (FW-7).
+P0 simplifications (all tracked to P1): PCM16 @8 kHz instead of Opus (FW-2), no
+flash journal (FW-4), no pairing/SMP (FW-8), no DFU (FW-6), no hard-mute button
+yet (FW-7).
+
+**Where segmentation lives.** The pendant streams continuously while a client is
+subscribed and makes no speech/silence decisions; the gateway segments. This is
+deliberate: on-device VAD gating produced total silence whenever the threshold
+misjudged the room, with no way to see why, and each tuning attempt cost a
+reflash + double-tap. Tuning now means editing a Python flag. On-device VAD
+returns in P1 for battery (FW-2a) once the journal (D6) makes a misjudgement
+recoverable rather than lossy.
 
 ## Setup (one time)
 

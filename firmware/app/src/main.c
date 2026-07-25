@@ -1,11 +1,18 @@
 /* Keepsake P0 bench firmware — XIAO nRF52840 Sense.
  *
- * PDM mic @16 kHz mono -> energy VAD with pre-roll -> BLE GATT notifications.
- * PCM16 on the bench (Opus is P1, FW-2); every notification carries a
- * monotonic sequence number so the gateway/backend inherit the zero-loss
- * contract's framing (FW-3). Flash journal (FW-4) is P1.
+ * PDM mic @16 kHz mono -> 8 kHz decimation -> continuous BLE GATT notifications
+ * while a client is subscribed. PCM16 on the bench (Opus is P1, FW-2); every
+ * notification carries a monotonic sequence number so the gateway/backend
+ * inherit the zero-loss contract's framing (FW-3). Flash journal (FW-4) is P1.
  *
- * Frame: [seq:u32 LE][flags:u8][pcm bytes]   flags bit0 = utterance end
+ * Segmentation lives in the GATEWAY, not here (bench lesson): on-device VAD
+ * gating meant one misjudged threshold produced total silence with no way to
+ * see why, and every tuning attempt cost a reflash. The pendant is a dumb
+ * reliable pipe; utterance decisions happen where they are observable and
+ * tunable. On-device VAD returns in P1 for battery (FW-2a), once the journal
+ * (D6) guarantees nothing is lost when it misjudges.
+ *
+ * Frame: [seq:u32 LE][flags:u8][pcm bytes]   flags reserved (0)
  */
 
 #include <hal/nrf_gpio.h>
@@ -37,16 +44,8 @@ LOG_MODULE_REGISTER(keepsake, LOG_LEVEL_INF);
  * the PDM bus reads pure noise floor (Omi does the same on this board). */
 #define MIC_PWR_PIN NRF_GPIO_PIN_MAP(1, 10)
 
-/* VAD: DC-removed mean deviation vs an adaptive noise floor — a fixed
- * threshold can't survive different rooms (bench lesson: ambient read
- * 500-4000 with a 150 threshold, so utterances never closed). Voiced when
- * energy > max(VAD_MIN, floor * VAD_RATIO); floor is an EMA of unvoiced
- * blocks. ~1.5 s hangover, 500 ms pre-roll (FW-2a). */
-#define VAD_MIN          120
-#define VAD_RATIO        3
-#define VAD_HANGOVER     15  /* blocks */
-#define PREROLL_BLOCKS   5   /* 500 ms */
-#define ENERGY_LOG_EVERY 30  /* blocks: one calibration log line per 3 s */
+/* Energy is logged for calibration only — nothing gates on it here. */
+#define ENERGY_LOG_EVERY 30  /* blocks: one log line per 3 s */
 
 /* Ship 8 kHz over BLE (pair-averaged 2:1 decimation): PCM16@16k saturates
  * the link (~40% drops on the bench). Opus in P1 removes this entirely. */
@@ -90,6 +89,8 @@ static const struct bt_data sd[] = {
 	BT_DATA_BYTES(BT_DATA_UUID128_ALL, KEEPSAKE_SVC_UUID),
 };
 
+static struct bt_conn *current_conn;
+
 static void send_chunk(const uint8_t *data, size_t len, bool utter_end)
 {
 	uint8_t buf[5 + CHUNK_BYTES];
@@ -124,10 +125,22 @@ static void send_block(const int16_t *samples, bool utter_end)
 
 	const uint8_t *bytes = (const uint8_t *)out;
 	size_t remaining = OUT_BYTES;
+	/* Size to the negotiated MTU, not a hardcoded guess: a notification
+	 * larger than (MTU - 3) is rejected outright, and phones negotiate
+	 * smaller MTUs than macOS. 3 = ATT notify header, 5 = our own header. */
+	size_t payload = CHUNK_BYTES;
+
+	if (current_conn) {
+		uint16_t mtu = bt_gatt_get_mtu(current_conn);
+
+		if (mtu > 3 + 5) {
+			payload = MIN((size_t)(mtu - 3 - 5), (size_t)CHUNK_BYTES);
+		}
+	}
 
 	while (remaining > 0) {
-		size_t n = MIN(remaining, (size_t)CHUNK_BYTES);
-		bool last = (remaining <= CHUNK_BYTES);
+		size_t n = MIN(remaining, payload);
+		bool last = (remaining <= payload);
 
 		send_chunk(bytes, n, utter_end && last);
 		bytes += n;
@@ -162,30 +175,6 @@ static void apply_gain(int16_t *samples)
 	}
 }
 
-/* 500 ms pre-roll ring so utterance starts are never clipped (FW-2a) */
-static int16_t preroll[PREROLL_BLOCKS][BLOCK_SAMPLES];
-static int preroll_head, preroll_fill;
-
-static void preroll_push(const int16_t *samples)
-{
-	memcpy(preroll[preroll_head], samples, BLOCK_BYTES);
-	preroll_head = (preroll_head + 1) % PREROLL_BLOCKS;
-	if (preroll_fill < PREROLL_BLOCKS) {
-		preroll_fill++;
-	}
-}
-
-static void preroll_flush(void)
-{
-	int idx = (preroll_head - preroll_fill + PREROLL_BLOCKS) % PREROLL_BLOCKS;
-
-	for (int i = 0; i < preroll_fill; i++) {
-		send_block(preroll[idx], false);
-		idx = (idx + 1) % PREROLL_BLOCKS;
-	}
-	preroll_fill = 0;
-}
-
 /* Capture → sender handoff. 8 blocks of headroom decouples BLE stalls from
  * the PDM driver, which starves (and wedges) if reads fall behind. */
 K_MSGQ_DEFINE(audio_q, BLOCK_BYTES, 8, 4);
@@ -194,54 +183,21 @@ static uint32_t dropped_blocks;
 static void sender_fn(void *a, void *b, void *c)
 {
 	static int16_t block[BLOCK_SAMPLES];
-	int hangover = 0;
-	bool in_utterance = false;
 	uint32_t dbg_count = 0;
-
-	uint32_t noise_floor = 0;
 
 	while (true) {
 		k_msgq_get(&audio_q, block, K_FOREVER);
 
-		uint32_t energy = block_energy(block);
-		uint32_t threshold = MAX(VAD_MIN, noise_floor * VAD_RATIO);
-		bool voiced = energy > threshold;
-
-		if (!voiced) {
-			noise_floor = (noise_floor == 0)
-					      ? energy
-					      : (noise_floor * 15 + energy) / 16;
-		}
-
 		if (++dbg_count % ENERGY_LOG_EVERY == 0) {
-			LOG_INF("mic energy %u (floor %u, thr %u, notify %d, dropped %u)",
-				energy, noise_floor, threshold, notify_enabled,
-				dropped_blocks);
+			LOG_INF("mic energy %u (notify %d, seq %u, dropped %u)",
+				block_energy(block), notify_enabled, seq, dropped_blocks);
 		}
 
-		if (!notify_enabled) {
-			preroll_push(block);
-			in_utterance = false;
-			hangover = 0;
-		} else if (voiced) {
-			if (!in_utterance) {
-				preroll_flush();
-				in_utterance = true;
-				LOG_INF("utterance start (seq %u)", seq);
-			}
-			hangover = VAD_HANGOVER;
+		/* Stream unconditionally while a client is subscribed; silence
+		 * costs radio but never costs us an utterance. Nothing is sent
+		 * when unsubscribed, so idle battery is unaffected. */
+		if (notify_enabled) {
 			send_block(block, false);
-		} else if (in_utterance) {
-			hangover--;
-			if (hangover > 0) {
-				send_block(block, false);
-			} else {
-				send_block(block, true); /* utterance end */
-				in_utterance = false;
-				LOG_INF("utterance end (seq %u)", seq);
-			}
-		} else {
-			preroll_push(block);
 		}
 	}
 }
@@ -252,6 +208,7 @@ static void connected_cb(struct bt_conn *conn, uint8_t err)
 {
 	LOG_INF("connected (err %u)", err);
 	if (err == 0) {
+		current_conn = bt_conn_ref(conn);
 		/* 15 ms interval, no latency: audio needs the airtime */
 		bt_conn_le_param_update(conn, BT_LE_CONN_PARAM(12, 12, 0, 400));
 	}
@@ -261,6 +218,10 @@ static void disconnected_cb(struct bt_conn *conn, uint8_t reason)
 {
 	LOG_INF("disconnected (reason %u)", reason);
 	notify_enabled = false;
+	if (current_conn) {
+		bt_conn_unref(current_conn);
+		current_conn = NULL;
+	}
 }
 
 BT_CONN_CB_DEFINE(conn_cbs) = {
