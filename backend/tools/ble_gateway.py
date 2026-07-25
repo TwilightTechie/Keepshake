@@ -34,7 +34,7 @@ except ImportError:
 
 DEVICE_NAME = "Keepsake-P0"
 AUDIO_CHAR = "6b656570-7361-6b65-0001-000000000002"
-SAMPLE_RATE = 16000
+SAMPLE_RATE = 8000  # firmware decimates 2:1 on-air until Opus lands (P1)
 
 
 def pcm_to_wav(pcm: bytes) -> bytes:

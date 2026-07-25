@@ -37,12 +37,22 @@ LOG_MODULE_REGISTER(keepsake, LOG_LEVEL_INF);
  * the PDM bus reads pure noise floor (Omi does the same on this board). */
 #define MIC_PWR_PIN NRF_GPIO_PIN_MAP(1, 10)
 
-/* VAD: mean |amplitude| threshold (post-gain), ~1.5 s hangover, 500 ms
- * pre-roll (FW-2a). Calibrate against the periodic "mic energy" log line. */
-#define VAD_THRESHOLD    150
+/* VAD: DC-removed mean deviation vs an adaptive noise floor — a fixed
+ * threshold can't survive different rooms (bench lesson: ambient read
+ * 500-4000 with a 150 threshold, so utterances never closed). Voiced when
+ * energy > max(VAD_MIN, floor * VAD_RATIO); floor is an EMA of unvoiced
+ * blocks. ~1.5 s hangover, 500 ms pre-roll (FW-2a). */
+#define VAD_MIN          120
+#define VAD_RATIO        3
 #define VAD_HANGOVER     15  /* blocks */
 #define PREROLL_BLOCKS   5   /* 500 ms */
 #define ENERGY_LOG_EVERY 30  /* blocks: one calibration log line per 3 s */
+
+/* Ship 8 kHz over BLE (pair-averaged 2:1 decimation): PCM16@16k saturates
+ * the link (~40% drops on the bench). Opus in P1 removes this entirely. */
+#define DECIMATE         2
+#define OUT_SAMPLES      (BLOCK_SAMPLES / DECIMATE)
+#define OUT_BYTES        (OUT_SAMPLES * sizeof(int16_t))
 
 #define CHUNK_BYTES      232 /* + 5B header fits a 247-byte MTU notification */
 
@@ -106,8 +116,14 @@ static void send_chunk(const uint8_t *data, size_t len, bool utter_end)
 
 static void send_block(const int16_t *samples, bool utter_end)
 {
-	const uint8_t *bytes = (const uint8_t *)samples;
-	size_t remaining = BLOCK_BYTES;
+	static int16_t out[OUT_SAMPLES];
+
+	for (size_t i = 0; i < OUT_SAMPLES; i++) {
+		out[i] = (int16_t)(((int32_t)samples[2 * i] + samples[2 * i + 1]) / 2);
+	}
+
+	const uint8_t *bytes = (const uint8_t *)out;
+	size_t remaining = OUT_BYTES;
 
 	while (remaining > 0) {
 		size_t n = MIN(remaining, (size_t)CHUNK_BYTES);
@@ -121,10 +137,18 @@ static void send_block(const int16_t *samples, bool utter_end)
 
 static uint32_t block_energy(const int16_t *samples)
 {
+	int64_t sum = 0;
 	uint64_t acc = 0;
 
 	for (size_t i = 0; i < BLOCK_SAMPLES; i++) {
-		acc += (samples[i] < 0) ? -samples[i] : samples[i];
+		sum += samples[i];
+	}
+	int32_t mean = (int32_t)(sum / BLOCK_SAMPLES);
+
+	for (size_t i = 0; i < BLOCK_SAMPLES; i++) {
+		int32_t d = samples[i] - mean;
+
+		acc += (d < 0) ? -d : d;
 	}
 	return (uint32_t)(acc / BLOCK_SAMPLES);
 }
@@ -174,15 +198,25 @@ static void sender_fn(void *a, void *b, void *c)
 	bool in_utterance = false;
 	uint32_t dbg_count = 0;
 
+	uint32_t noise_floor = 0;
+
 	while (true) {
 		k_msgq_get(&audio_q, block, K_FOREVER);
 
 		uint32_t energy = block_energy(block);
-		bool voiced = energy > VAD_THRESHOLD;
+		uint32_t threshold = MAX(VAD_MIN, noise_floor * VAD_RATIO);
+		bool voiced = energy > threshold;
+
+		if (!voiced) {
+			noise_floor = (noise_floor == 0)
+					      ? energy
+					      : (noise_floor * 15 + energy) / 16;
+		}
 
 		if (++dbg_count % ENERGY_LOG_EVERY == 0) {
-			LOG_INF("mic energy %u (thr %d, notify %d, dropped %u)",
-				energy, VAD_THRESHOLD, notify_enabled, dropped_blocks);
+			LOG_INF("mic energy %u (floor %u, thr %u, notify %d, dropped %u)",
+				energy, noise_floor, threshold, notify_enabled,
+				dropped_blocks);
 		}
 
 		if (!notify_enabled) {
@@ -217,6 +251,10 @@ K_THREAD_DEFINE(sender_tid, 4096, sender_fn, NULL, NULL, NULL, 7, 0, 0);
 static void connected_cb(struct bt_conn *conn, uint8_t err)
 {
 	LOG_INF("connected (err %u)", err);
+	if (err == 0) {
+		/* 15 ms interval, no latency: audio needs the airtime */
+		bt_conn_le_param_update(conn, BT_LE_CONN_PARAM(12, 12, 0, 400));
+	}
 }
 
 static void disconnected_cb(struct bt_conn *conn, uint8_t reason)
