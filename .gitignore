@@ -1,0 +1,11 @@
+# Local tool state
+.claude/
+.DS_Store
+
+# Third-party reference material, not for distribution
+docs/new_req/
+
+# Build outputs (firmware/app/backend, populated as those trees land)
+build/
+*.uf2
+*.hex
