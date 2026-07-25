@@ -138,6 +138,11 @@ class SarvamLlm:
                 json={
                     "model": s.sarvam_chat_model,
                     "temperature": 0.2,
+                    "max_tokens": 4096,
+                    # sarvam-105b reasons by default; on long inputs the budget
+                    # goes to reasoning and content comes back null. Disable it
+                    # (same knob AadeshAI uses via ChatOpenAI extra_body).
+                    "reasoning_effort": None,
                     "response_format": {"type": "json_object"},
                     "messages": [
                         {"role": "system", "content": system},
@@ -146,7 +151,10 @@ class SarvamLlm:
                 },
             )
         resp.raise_for_status()
-        content = resp.json()["choices"][0]["message"]["content"]
+        message = resp.json()["choices"][0]["message"]
+        content = message.get("content") or message.get("reasoning_content")
+        if not content:
+            raise ValueError(f"empty LLM reply: {str(message)[:200]!r}")
         return _parse_json_reply(content)
 
 

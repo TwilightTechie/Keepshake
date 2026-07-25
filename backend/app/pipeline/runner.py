@@ -76,13 +76,37 @@ async def process_pending_audio(session: AsyncSession) -> int:
 async def run_pipeline_once(session: AsyncSession) -> dict:
     transcribed = await process_pending_audio(session)
     touched = await assign_conversations(session)
+    # Also retry conversations whose turns are assigned but not yet extracted
+    # (a prior failed/aborted extraction would otherwise never be retried).
+    stale = (
+        (
+            await session.execute(
+                select(TranscriptTurn.conversation_id)
+                .where(
+                    TranscriptTurn.extracted.is_(False),
+                    TranscriptTurn.conversation_id.is_not(None),
+                )
+                .distinct()
+            )
+        )
+        .scalars()
+        .all()
+    )
+    for cid in stale:
+        if cid not in touched:
+            touched.append(cid)
     llm = get_llm_provider()
     totals = {"utterances": transcribed, "conversations": len(touched), "wal": 0, "review": 0}
     for convo_id in touched:
-        counts = await extract_conversation(session, llm, convo_id)
-        await summarize_conversation(session, llm, convo_id)
-        totals["wal"] += counts["wal"]
-        totals["review"] += counts["review"]
+        # One bad conversation must not poison the loop; its turns stay
+        # unextracted and are retried on later cycles.
+        try:
+            counts = await extract_conversation(session, llm, convo_id)
+            await summarize_conversation(session, llm, convo_id)
+            totals["wal"] += counts["wal"]
+            totals["review"] += counts["review"]
+        except Exception:
+            log.exception("extraction failed for conversation %s", convo_id)
     await session.commit()
     return totals
 

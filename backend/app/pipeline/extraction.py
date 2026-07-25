@@ -70,7 +70,11 @@ async def extract_conversation(
     if not turns:
         return {"wal": 0, "review": 0}
 
-    reply = await llm.complete_json(EXTRACTION_SYSTEM, _transcript_text(turns))
+    # The LLM needs the current date to resolve "tomorrow"/"by Tuesday" into
+    # real due dates (bench bug: it guessed a 2024 date without this).
+    today = datetime.now().strftime("%A, %Y-%m-%d")
+    user_msg = f"Today is {today}.\n\nTRANSCRIPT:\n{_transcript_text(turns)}"
+    reply = await llm.complete_json(EXTRACTION_SYSTEM, user_msg)
     entries = reply.get("entries", []) if isinstance(reply, dict) else []
     entries = _dedup_candidates(entries)
     gate = get_settings().confidence_gate
