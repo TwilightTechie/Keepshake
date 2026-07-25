@@ -154,6 +154,42 @@ class Segmenter:
                 f"thr {self.threshold:7.0f}")
 
 
+def condition(pcm: bytes, target_rms: float = 3000.0,
+              max_gain: float = 12.0) -> bytes:
+    """Clean up MEMS-mic audio before upload: remove DC/rumble, then normalise
+    level. The pendant mic carries a large DC bias and its level swings with
+    how far away you are; STT models expect neither. A laptop mic gets this for
+    free from the OS audio stack — the pendant has no such layer, so we do it
+    here (off-device, so it costs the pendant nothing)."""
+    samples = array("h", pcm)
+    if not samples:
+        return pcm
+
+    # One-pole high-pass ~90 Hz: kills DC offset and low-frequency rumble
+    # while leaving the speech band untouched.
+    r = 0.93
+    out = array("h", bytes(len(samples) * 2))
+    prev_x = prev_y = 0.0
+    for i, x in enumerate(samples):
+        y = x - prev_x + r * prev_y
+        prev_x, prev_y = float(x), y
+        out[i] = int(max(-32768, min(32767, y)))
+
+    # RMS normalisation with a gain cap, so a quiet speaker is lifted but a
+    # near-silent buffer is not amplified into pure noise.
+    sq = 0
+    for s in out:
+        sq += s * s
+    rms = (sq / len(out)) ** 0.5
+    if rms < 1:
+        return out.tobytes()
+    gain = min(max(target_rms / rms, 0.5), max_gain)
+    if abs(gain - 1.0) > 0.05:
+        for i, s in enumerate(out):
+            out[i] = int(max(-32768, min(32767, s * gain)))
+    return out.tobytes()
+
+
 def pcm_to_wav(pcm: bytes) -> bytes:
     buf = io.BytesIO()
     with wave.open(buf, "wb") as w:
@@ -166,12 +202,14 @@ def pcm_to_wav(pcm: bytes) -> bytes:
 
 class Gateway:
     def __init__(self, ws_url: str, token: str, device_id: str,
-                 seg: Segmenter, show_meter: bool) -> None:
+                 seg: Segmenter, show_meter: bool,
+                 condition_audio: bool = True) -> None:
         self.ws_url = ws_url
         self.token = token
         self.device_id = device_id
         self.seg = seg
         self.show_meter = show_meter
+        self.condition_audio = condition_audio
         self.expected_seq: int | None = None
         self.dropped = 0
         self.ingest_seq = 0
@@ -271,10 +309,13 @@ class Gateway:
             while True:
                 pcm = await self.queue.get()
                 self.ingest_seq += 1
+                if self.condition_audio:
+                    pcm = condition(pcm)
                 wav = pcm_to_wav(pcm)
                 t0 = time.monotonic()
                 log(f"uploading utterance seq={self.ingest_seq} "
-                    f"({len(wav)/1024:.0f} KiB WAV, {len(pcm)/2/SAMPLE_RATE:.1f}s)…")
+                    f"({len(wav)/1024:.0f} KiB WAV, {len(pcm)/2/SAMPLE_RATE:.1f}s"
+                    f"{'' if self.condition_audio else ', raw'})…")
                 await ws.send(json.dumps({
                     "type": "frame",
                     "seq": self.ingest_seq,
@@ -358,8 +399,10 @@ def main() -> None:
                    help="speech when energy exceeds noise floor x this (default 2.5)")
     p.add_argument("--vad-floor-min", type=float, default=60,
                    help="absolute floor so a dead-silent room still needs real sound")
-    p.add_argument("--hangover", type=float, default=1.2,
-                   help="seconds of silence that close an utterance (default 1.2)")
+    p.add_argument("--hangover", type=float, default=0.7,
+                   help="seconds of silence that close an utterance (default 0.7)")
+    p.add_argument("--no-conditioning", action="store_true",
+                   help="upload raw mic audio (skip high-pass + normalisation)")
     p.add_argument("--min-utterance", type=float, default=0.6,
                    help="discard anything shorter (default 0.6 s)")
     p.add_argument("--max-utterance", type=float, default=25.0,
@@ -382,7 +425,9 @@ def main() -> None:
         max_utt_s=args.max_utterance,
         preroll_s=args.preroll,
     )
-    gw = Gateway(args.url, args.token, args.device, seg, show_meter=not args.quiet)
+    gw = Gateway(args.url, args.token, args.device, seg,
+                 show_meter=not args.quiet,
+                 condition_audio=not args.no_conditioning)
     try:
         asyncio.run(gw.run())
     except KeyboardInterrupt:

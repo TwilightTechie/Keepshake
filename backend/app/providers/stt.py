@@ -12,6 +12,7 @@ from typing import Protocol
 
 import httpx
 
+from app.audio import ensure_stt_rate
 from app.config import get_settings
 
 
@@ -54,13 +55,19 @@ class SarvamStt:
         s = get_settings()
         if not s.sarvam_api_key:
             raise RuntimeError("KEEPSAKE_SARVAM_API_KEY is not set")
+        audio = ensure_stt_rate(audio, codec)  # 8 kHz costs real accuracy, see app/audio.py
         filename = "utterance.wav" if codec in ("wav", "pcm16") else "utterance.opus"
         mime = "audio/wav" if codec in ("wav", "pcm16") else "audio/opus"
         async with httpx.AsyncClient(timeout=120) as client:
             resp = await client.post(
                 s.sarvam_stt_url,
                 headers={"Api-Subscription-Key": s.sarvam_api_key},
-                data={"model": s.sarvam_stt_model},
+                # 'unknown' = auto-detect, which is what keeps code-mixed
+                # Hindi/English working; pinning a language would break it.
+                data={
+                    "model": s.sarvam_stt_model,
+                    "language_code": s.sarvam_language_code,
+                },
                 files={"file": (filename, audio, mime)},
             )
         resp.raise_for_status()

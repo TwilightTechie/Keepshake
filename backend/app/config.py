@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     sarvam_api_key: str | None = None
     sarvam_stt_url: str = "https://api.sarvam.ai/speech-to-text"
     sarvam_stt_model: str = "saaras:v3"
+    # 'unknown' = let Saaras auto-detect; required for code-mixed Hindi/English
+    sarvam_language_code: str = "unknown"
     sarvam_chat_url: str = "https://api.sarvam.ai/v1/chat/completions"
     sarvam_chat_model: str = "sarvam-105b"
 
