@@ -32,6 +32,7 @@ from datetime import UTC, datetime
 
 try:
     from bleak import BleakClient, BleakScanner
+    from bleak.exc import BleakError
 except ImportError:
     sys.exit("pip install bleak   (.venv/bin/pip install bleak)")
 try:
@@ -293,8 +294,19 @@ class Gateway:
         monitor_task = asyncio.create_task(self.monitor())
         try:
             while True:
-                log(f"scanning for '{DEVICE_NAME}'…")
-                device = await BleakScanner.find_device_by_name(DEVICE_NAME, timeout=30)
+                try:
+                    log(f"scanning for '{DEVICE_NAME}'…")
+                    device = await BleakScanner.find_device_by_name(DEVICE_NAME, timeout=30)
+                except BleakError as exc:
+                    # Bluetooth off / permission denied: say so plainly and keep
+                    # retrying, rather than dying with a stack trace.
+                    hint = ""
+                    if "turned off" in str(exc).lower() or "powered" in str(exc).lower():
+                        hint = "  → turn Bluetooth ON (Control Center or System Settings)"
+                    log(f"cannot scan: {exc}{hint}")
+                    log("retrying in 5s…")
+                    await asyncio.sleep(5)
+                    continue
                 if device is None:
                     log("not found — pendant off or out of range; rescanning…")
                     continue
