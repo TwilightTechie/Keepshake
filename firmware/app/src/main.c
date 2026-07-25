@@ -8,6 +8,7 @@
  * Frame: [seq:u32 LE][flags:u8][pcm bytes]   flags bit0 = utterance end
  */
 
+#include <hal/nrf_gpio.h>
 #include <hal/nrf_pdm.h>
 #include <zephyr/audio/dmic.h>
 #include <zephyr/bluetooth/bluetooth.h>
@@ -31,6 +32,10 @@ LOG_MODULE_REGISTER(keepsake, LOG_LEVEL_INF);
  * value Omi ships on this same board. Digital shift kept as headroom knob. */
 #define PDM_HW_GAIN        64
 #define DIGITAL_GAIN_SHIFT 0
+
+/* The XIAO Sense mic's power rail hangs off P1.10 — it must be driven high or
+ * the PDM bus reads pure noise floor (Omi does the same on this board). */
+#define MIC_PWR_PIN NRF_GPIO_PIN_MAP(1, 10)
 
 /* VAD: mean |amplitude| threshold (post-gain), ~1.5 s hangover, 500 ms
  * pre-roll (FW-2a). Calibrate against the periodic "mic energy" log line. */
@@ -182,6 +187,12 @@ int main(void)
 		LOG_ERR("PDM mic not ready");
 		return -ENODEV;
 	}
+
+	/* Mic power on. This is the future hard-mute point: PR-1's "mic power
+	 * rail down" maps to clearing this pin. */
+	nrf_gpio_cfg_output(MIC_PWR_PIN);
+	nrf_gpio_pin_set(MIC_PWR_PIN);
+	k_sleep(K_MSEC(50)); /* mic settle */
 
 	struct pcm_stream_cfg stream = {
 		.pcm_rate = SAMPLE_RATE_HZ,
