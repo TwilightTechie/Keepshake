@@ -1,0 +1,19 @@
+# West manifest (FW-1): upstream Zephyr, pinned, narrow module set for the
+# P0 bench firmware (PDM capture + BLE streaming on XIAO nRF52840 Sense).
+# Grows as features land (mbedtls/psa when SMP pairing arrives, etc.).
+manifest:
+  remotes:
+    - name: zephyrproject
+      url-base: https://github.com/zephyrproject-rtos
+  projects:
+    - name: zephyr
+      remote: zephyrproject
+      revision: v4.1.0
+      clone-depth: 1
+      import:
+        name-allowlist:
+          - cmsis
+          - cmsis_6
+          - hal_nordic
+  self:
+    path: manifest

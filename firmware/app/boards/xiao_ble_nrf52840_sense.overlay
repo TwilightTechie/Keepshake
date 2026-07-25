@@ -1,0 +1,5 @@
+/* The board DTS wires pdm0's pins but leaves the node disabled; the pendant
+ * needs the mic on. Enabling it here pulls in the nrfx PDM dmic driver. */
+&pdm0 {
+	status = "okay";
+};
