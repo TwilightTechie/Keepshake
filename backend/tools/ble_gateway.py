@@ -101,16 +101,41 @@ class Gateway:
                       "transcribe + extract shortly")
 
     async def run(self) -> None:
-        print(f"scanning for '{DEVICE_NAME}'…")
-        device = await BleakScanner.find_device_by_name(DEVICE_NAME, timeout=30)
-        if device is None:
-            sys.exit(f"pendant '{DEVICE_NAME}' not found — is it powered and advertising?")
-        print(f"found {device.address}, connecting…")
-        async with BleakClient(device) as client:
-            await client.start_notify(AUDIO_CHAR, self.on_notify)
-            print("subscribed to audio stream — speak near the pendant "
-                  "(Ctrl+C to stop)")
-            await self.uplink()
+        uplink_task = asyncio.create_task(self.uplink_forever())
+        try:
+            while True:
+                print(f"scanning for '{DEVICE_NAME}'…")
+                device = await BleakScanner.find_device_by_name(DEVICE_NAME, timeout=30)
+                if device is None:
+                    print("not found — pendant off or out of range; rescanning…")
+                    continue
+                print(f"found {device.address}, connecting…")
+                try:
+                    disconnected = asyncio.Event()
+                    async with BleakClient(
+                        device,
+                        disconnected_callback=lambda _c, ev=disconnected: ev.set(),
+                    ) as client:
+                        await client.start_notify(AUDIO_CHAR, self.on_notify)
+                        self.expected_seq = None  # pendant may have rebooted
+                        self.buffer.clear()
+                        print("subscribed to audio stream — speak near the pendant "
+                              "(Ctrl+C to stop)")
+                        await disconnected.wait()
+                    print("pendant disconnected — rescanning…")
+                except Exception as exc:  # noqa: BLE001 - keep the bench loop alive
+                    print(f"BLE error: {exc} — rescanning in 3s…")
+                    await asyncio.sleep(3)
+        finally:
+            uplink_task.cancel()
+
+    async def uplink_forever(self) -> None:
+        while True:
+            try:
+                await self.uplink()
+            except Exception as exc:  # noqa: BLE001
+                print(f"uplink error: {exc} — reconnecting in 3s…")
+                await asyncio.sleep(3)
 
 
 def main() -> None:
