@@ -162,6 +162,58 @@ static void preroll_flush(void)
 	preroll_fill = 0;
 }
 
+/* Capture → sender handoff. 8 blocks of headroom decouples BLE stalls from
+ * the PDM driver, which starves (and wedges) if reads fall behind. */
+K_MSGQ_DEFINE(audio_q, BLOCK_BYTES, 8, 4);
+static uint32_t dropped_blocks;
+
+static void sender_fn(void *a, void *b, void *c)
+{
+	static int16_t block[BLOCK_SAMPLES];
+	int hangover = 0;
+	bool in_utterance = false;
+	uint32_t dbg_count = 0;
+
+	while (true) {
+		k_msgq_get(&audio_q, block, K_FOREVER);
+
+		uint32_t energy = block_energy(block);
+		bool voiced = energy > VAD_THRESHOLD;
+
+		if (++dbg_count % ENERGY_LOG_EVERY == 0) {
+			LOG_INF("mic energy %u (thr %d, notify %d, dropped %u)",
+				energy, VAD_THRESHOLD, notify_enabled, dropped_blocks);
+		}
+
+		if (!notify_enabled) {
+			preroll_push(block);
+			in_utterance = false;
+			hangover = 0;
+		} else if (voiced) {
+			if (!in_utterance) {
+				preroll_flush();
+				in_utterance = true;
+				LOG_INF("utterance start (seq %u)", seq);
+			}
+			hangover = VAD_HANGOVER;
+			send_block(block, false);
+		} else if (in_utterance) {
+			hangover--;
+			if (hangover > 0) {
+				send_block(block, false);
+			} else {
+				send_block(block, true); /* utterance end */
+				in_utterance = false;
+				LOG_INF("utterance end (seq %u)", seq);
+			}
+		} else {
+			preroll_push(block);
+		}
+	}
+}
+
+K_THREAD_DEFINE(sender_tid, 4096, sender_fn, NULL, NULL, NULL, 7, 0, 0);
+
 static void connected_cb(struct bt_conn *conn, uint8_t err)
 {
 	LOG_INF("connected (err %u)", err);
@@ -242,8 +294,11 @@ int main(void)
 		return err;
 	}
 
-	int hangover = 0;
-	bool in_utterance = false;
+	/* Capture loop: service the PDM driver at line rate, never block on BLE.
+	 * Blocks are copied into audio_q for the sender thread; if the queue is
+	 * full the block is dropped (bench policy — the P1 journal replaces
+	 * drops with delta sync, FW-4). */
+	int consec_fail = 0;
 
 	while (true) {
 		void *buffer;
@@ -252,47 +307,21 @@ int main(void)
 		err = dmic_read(dmic_dev, 0, &buffer, &size, 1000);
 		if (err) {
 			LOG_WRN("dmic_read: %d", err);
+			if (++consec_fail >= 5) {
+				LOG_WRN("restarting PDM after %d failures", consec_fail);
+				dmic_trigger(dmic_dev, DMIC_TRIGGER_STOP);
+				k_sleep(K_MSEC(20));
+				dmic_trigger(dmic_dev, DMIC_TRIGGER_START);
+				consec_fail = 0;
+			}
 			continue;
 		}
+		consec_fail = 0;
 
-		int16_t *samples = buffer;
-		static uint32_t dbg_count;
-
-		apply_gain(samples);
-
-		uint32_t energy = block_energy(samples);
-		bool voiced = energy > VAD_THRESHOLD;
-
-		if (++dbg_count % ENERGY_LOG_EVERY == 0) {
-			LOG_INF("mic energy %u (vad threshold %d, notify %d)",
-				energy, VAD_THRESHOLD, notify_enabled);
+		apply_gain(buffer);
+		if (k_msgq_put(&audio_q, buffer, K_NO_WAIT) != 0) {
+			dropped_blocks++;
 		}
-
-		if (!notify_enabled) {
-			preroll_push(samples);
-			in_utterance = false;
-			hangover = 0;
-		} else if (voiced) {
-			if (!in_utterance) {
-				preroll_flush();
-				in_utterance = true;
-				LOG_INF("utterance start (seq %u)", seq);
-			}
-			hangover = VAD_HANGOVER;
-			send_block(samples, false);
-		} else if (in_utterance) {
-			hangover--;
-			if (hangover > 0) {
-				send_block(samples, false);
-			} else {
-				send_block(samples, true); /* utterance end */
-				in_utterance = false;
-				LOG_INF("utterance end (seq %u)", seq);
-			}
-		} else {
-			preroll_push(samples);
-		}
-
 		k_mem_slab_free(&mem_slab, buffer);
 	}
 	return 0;
