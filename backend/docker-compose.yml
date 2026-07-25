@@ -1,0 +1,33 @@
+services:
+  api:
+    build: .
+    ports:
+      # host 8100 → container 8000 (8000 on this machine is taken by AadeshAI's backend)
+      - "${KEEPSAKE_API_PORT:-8100}:8000"
+    environment:
+      KEEPSAKE_DATABASE_URL: postgresql+asyncpg://keepsake:keepsake@db:5432/keepsake
+      KEEPSAKE_API_TOKEN: ${KEEPSAKE_API_TOKEN:-dev-token-change-me}
+      # Providers default to mock (runs with no keys). Export these to go live:
+      KEEPSAKE_STT_PROVIDER: ${KEEPSAKE_STT_PROVIDER:-mock}
+      KEEPSAKE_LLM_PROVIDER: ${KEEPSAKE_LLM_PROVIDER:-mock}
+      KEEPSAKE_SARVAM_API_KEY: ${KEEPSAKE_SARVAM_API_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: keepsake
+      POSTGRES_PASSWORD: keepsake
+      POSTGRES_DB: keepsake
+    volumes:
+      - keepsake-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keepsake"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  keepsake-pgdata:
