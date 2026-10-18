@@ -211,10 +211,12 @@ final class InsightsViewModel: ObservableObject {
 
 struct InsightsView: View {
     @StateObject private var viewModel: InsightsViewModel
+    @StateObject private var decisionsViewModel: DecisionsViewModel
     @Environment(\.scenePhase) private var phase
 
     init(settings: Settings) {
         _viewModel = StateObject(wrappedValue: InsightsViewModel(settings: settings))
+        _decisionsViewModel = StateObject(wrappedValue: DecisionsViewModel(settings: settings))
     }
 
     var body: some View {
@@ -222,6 +224,9 @@ struct InsightsView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     greetingHeader
+
+                    // "The Verdict" - Decisions Taken Today Block
+                    TodayDecisionsBlockView(viewModel: decisionsViewModel)
 
                     if viewModel.isGenerating {
                         generatingBanner
@@ -243,7 +248,7 @@ struct InsightsView: View {
                 .padding(.top, 12)
                 .padding(.bottom, 24)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(AppColors.background)
             .navigationTitle("Insights")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -258,9 +263,13 @@ struct InsightsView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 8) {
                         Button {
-                            Task { await viewModel.fetchInsights() }
+                            Task {
+                                async let ins: () = viewModel.fetchInsights()
+                                async let dec: () = decisionsViewModel.fetchDecisions()
+                                _ = await (ins, dec)
+                            }
                         } label: {
-                            if viewModel.isLoading && !viewModel.isGenerating {
+                            if (viewModel.isLoading || decisionsViewModel.isLoading) && !viewModel.isGenerating {
                                 ProgressView()
                                     .controlSize(.small)
                             } else {
@@ -292,14 +301,22 @@ struct InsightsView: View {
                 }
             }
             .refreshable {
-                await viewModel.fetchInsights()
+                async let ins: () = viewModel.fetchInsights()
+                async let dec: () = decisionsViewModel.fetchDecisions()
+                _ = await (ins, dec)
             }
             .onAppear {
-                Task { await viewModel.fetchInsights() }
+                Task {
+                    await viewModel.fetchInsights()
+                    await decisionsViewModel.fetchDecisions()
+                }
             }
             .onChange(of: phase) { newPhase in
                 if newPhase == .active {
-                    Task { await viewModel.fetchInsights() }
+                    Task {
+                        await viewModel.fetchInsights()
+                        await decisionsViewModel.fetchDecisions()
+                    }
                 }
             }
         }

@@ -299,9 +299,9 @@ To avoid parsing through dozens of separate summary records on the mobile phone,
 - [x] Add full-screen transcript modal sheet.
 
 ### Phase 3: "The Verdict" (Decisions Ledger) Block
-- [ ] Create `DecisionsView.swift` and `DecisionCard.swift` with emerald checkmark styling.
-- [ ] Add interactive acknowledgement toggle and local persistence.
-- [ ] Integrate decisions block into the primary "Today" screen.
+- [x] Create `DecisionsView.swift` and `DecisionCard.swift` with emerald checkmark styling.
+- [x] Add interactive acknowledgement toggle and local persistence.
+- [x] Integrate decisions block into the primary "Today" screen.
 
 ### Phase 4: Product-Oriented "Today" Home Dashboard
 - [ ] Refactor root navigation into a clean modern `TabView`:

@@ -129,6 +129,7 @@ public enum AppColors {
     // Brand & Semantic Accents
     public static let brandIndigo = Color(red: 0.39, green: 0.36, blue: 0.95)
     public static let verdictEmerald = Color(red: 0.06, green: 0.73, blue: 0.51)
+    public static let actionBlue = Color(red: 0.23, green: 0.51, blue: 0.96)
     public static let warningAmber = Color(red: 0.96, green: 0.62, blue: 0.04)
     public static let errorRose = Color(red: 0.94, green: 0.27, blue: 0.38)
     public static let accentCyan = Color(red: 0.02, green: 0.71, blue: 0.83)
@@ -148,6 +149,14 @@ public enum AppColors {
             trait.userInterfaceStyle == .dark
                 ? UIColor(red: 0.39, green: 0.36, blue: 0.95, alpha: 0.18)
                 : UIColor(red: 0.39, green: 0.36, blue: 0.95, alpha: 0.10)
+        })
+    }
+
+    public static var bluePillBackground: Color {
+        Color(uiColor: UIColor { trait in
+            trait.userInterfaceStyle == .dark
+                ? UIColor(red: 0.23, green: 0.51, blue: 0.96, alpha: 0.18)
+                : UIColor(red: 0.23, green: 0.51, blue: 0.96, alpha: 0.10)
         })
     }
 }
