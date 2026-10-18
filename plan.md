@@ -293,10 +293,10 @@ To avoid parsing through dozens of separate summary records on the mobile phone,
 - [x] Deploy updated server to droplet and verify endpoint with curl.
 
 ### Phase 2: Real-Time Live Speech Engine
-- [ ] Create `LiveSpeechService.swift` using `URLSessionWebSocketTask`.
-- [ ] Build `WaveformVisualizerView.swift` for animated audio level visualization.
-- [ ] Implement `LiveSpeechCard.swift` with real-time text streaming and auto-scroll.
-- [ ] Add full-screen transcript modal sheet.
+- [x] Create `LiveSpeechService.swift` using `URLSessionWebSocketTask`.
+- [x] Build `WaveformVisualizerView.swift` for animated audio level visualization.
+- [x] Implement `LiveSpeechCard.swift` with real-time text streaming and auto-scroll.
+- [x] Add full-screen transcript modal sheet.
 
 ### Phase 3: "The Verdict" (Decisions Ledger) Block
 - [ ] Create `DecisionsView.swift` and `DecisionCard.swift` with emerald checkmark styling.

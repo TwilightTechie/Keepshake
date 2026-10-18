@@ -8,9 +8,12 @@ final class Gateway {
     let receiver: PendantReceiver?
     let uploader: Uploader?
     let logger = DiagnosticLogger()
+    let liveSpeech: LiveSpeechService
     let startupError: String?
 
     private init() {
+        let liveSpeech = LiveSpeechService(settings: settings)
+        self.liveSpeech = liveSpeech
         do {
             let base = try FileManager.default.url(for: .applicationSupportDirectory,
                 in: .userDomainMask, appropriateFor: nil, create: true)
@@ -56,7 +59,7 @@ struct RawGatewayApp: App {
                             Label("Insights", systemImage: "sparkles")
                         }
 
-                    GatewayView(settings: gateway.settings, receiver: receiver, uploader: uploader, logger: gateway.logger)
+                    GatewayView(settings: gateway.settings, receiver: receiver, uploader: uploader, logger: gateway.logger, liveSpeech: gateway.liveSpeech)
                         .tabItem {
                             Label("Device", systemImage: "wave.3.right.circle")
                         }
@@ -81,6 +84,7 @@ struct GatewayView: View {
     @ObservedObject var receiver: PendantReceiver
     @ObservedObject var uploader: Uploader
     @ObservedObject var logger: DiagnosticLogger
+    @ObservedObject var liveSpeech: LiveSpeechService
     @EnvironmentObject private var themeManager: ThemeManager
     @Environment(\.scenePhase) private var phase
     @State private var showLogs = false
@@ -96,6 +100,7 @@ struct GatewayView: View {
                 VStack(spacing: 16) {
                     deviceStatusCard
                     captureControlCard
+                    LiveSpeechCard(service: liveSpeech, isRecording: receiver.running)
                     serverCard
                     liveStreamCard
                     packetStatsCard
