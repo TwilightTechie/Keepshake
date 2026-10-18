@@ -304,18 +304,18 @@ To avoid parsing through dozens of separate summary records on the mobile phone,
 - [x] Integrate decisions block into the primary "Today" screen.
 
 ### Phase 4: Product-Oriented "Today" Home Dashboard
-- [ ] Refactor root navigation into a clean modern `TabView`:
+- [x] Refactor root navigation into a clean modern `TabView`:
   - Tab 1: **Today** (`TodayView` with Live Speech, Decisions, Day Briefing, Actions).
   - Tab 2: **Timeline** (`TimelineView` grouped by conversation session).
   - Tab 3: **Device** (`GatewayView` containing 100% of preserved engineering features).
-- [ ] Add dynamic time-based greeting for Anup.
-- [ ] Implement pull-to-refresh across all tabs.
+- [x] Add dynamic time-based greeting for Anup.
+- [x] Implement pull-to-refresh across all tabs.
 
 ### Phase 5: Polish, Haptics & Verification
-- [ ] Add haptic feedback for user interactions (`UIImpactFeedbackGenerator`).
-- [ ] Test end-to-end on iOS Simulator and physical iPhone.
-- [ ] Validate zero regression on BLE packet capture, local chunk storage, and live streaming.
-- [ ] Run full test suites (`swift test`, `validate.sh`, `pytest`).
+- [x] Add haptic feedback for user interactions (`UIImpactFeedbackGenerator`).
+- [x] Test end-to-end on iOS Simulator and physical iPhone.
+- [x] Validate zero regression on BLE packet capture, local chunk storage, and live streaming.
+- [x] Run full test suites (`swift test`, `validate.sh`, `pytest`).
 
 ---
 

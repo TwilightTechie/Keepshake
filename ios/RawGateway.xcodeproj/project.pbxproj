@@ -16,6 +16,8 @@
 		3AF1B9D2A7C84E1F90D99999 /* RawGateway/App/LiveSpeechCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D9999A /* RawGateway/App/LiveSpeechCard.swift */; };
 		3AF1B9D2A7C84E1F90D9999B /* RawGateway/App/DecisionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D9999C /* RawGateway/App/DecisionCard.swift */; };
 		3AF1B9D2A7C84E1F90D9999D /* RawGateway/App/DecisionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D9999E /* RawGateway/App/DecisionsView.swift */; };
+		3AF1B9D2A7C84E1F90D999A1 /* RawGateway/App/TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D999A2 /* RawGateway/App/TodayView.swift */; };
+		3AF1B9D2A7C84E1F90D999A3 /* RawGateway/App/TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D999A4 /* RawGateway/App/TimelineView.swift */; };
 		3AF1B9D2A7C84E1F90D12345 /* RawGateway/App/DiagnosticLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D12346 /* RawGateway/App/DiagnosticLogger.swift */; };
 		5CCEF7A65FF8A439AADFB507 /* RawGateway/App/PendantReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97EB5DEDD769C1334E6E8F59 /* RawGateway/App/PendantReceiver.swift */; };
 		5CD2935A856128D091CE3193 /* RawGateway/Core/ChunkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD76CBAC6BF4D290C69151EE /* RawGateway/Core/ChunkStore.swift */; };
@@ -32,6 +34,8 @@
 		3AF1B9D2A7C84E1F90D9999A /* RawGateway/App/LiveSpeechCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/LiveSpeechCard.swift; sourceTree = "<group>"; };
 		3AF1B9D2A7C84E1F90D9999C /* RawGateway/App/DecisionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/DecisionCard.swift; sourceTree = "<group>"; };
 		3AF1B9D2A7C84E1F90D9999E /* RawGateway/App/DecisionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/DecisionsView.swift; sourceTree = "<group>"; };
+		3AF1B9D2A7C84E1F90D999A2 /* RawGateway/App/TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/TodayView.swift; sourceTree = "<group>"; };
+		3AF1B9D2A7C84E1F90D999A4 /* RawGateway/App/TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/TimelineView.swift; sourceTree = "<group>"; };
 		3AF1B9D2A7C84E1F90D12346 /* RawGateway/App/DiagnosticLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/DiagnosticLogger.swift; sourceTree = "<group>"; };
 		4CBDDE2CB2CA1EC41CB7ED2D /* RawGateway/App/RawGatewayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/RawGatewayApp.swift; sourceTree = "<group>"; };
 		770F77B7091F37EB9018BD6B /* RawGateway/App/Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/Settings.swift; sourceTree = "<group>"; };
@@ -71,6 +75,8 @@
 				3AF1B9D2A7C84E1F90D9999A /* RawGateway/App/LiveSpeechCard.swift */,
 				3AF1B9D2A7C84E1F90D9999C /* RawGateway/App/DecisionCard.swift */,
 				3AF1B9D2A7C84E1F90D9999E /* RawGateway/App/DecisionsView.swift */,
+				3AF1B9D2A7C84E1F90D999A2 /* RawGateway/App/TodayView.swift */,
+				3AF1B9D2A7C84E1F90D999A4 /* RawGateway/App/TimelineView.swift */,
 				3AF1B9D2A7C84E1F90D12346 /* RawGateway/App/DiagnosticLogger.swift */,
 				97EB5DEDD769C1334E6E8F59 /* RawGateway/App/PendantReceiver.swift */,
 				4CBDDE2CB2CA1EC41CB7ED2D /* RawGateway/App/RawGatewayApp.swift */,
@@ -150,6 +156,8 @@
 				3AF1B9D2A7C84E1F90D99999 /* RawGateway/App/LiveSpeechCard.swift in Sources */,
 				3AF1B9D2A7C84E1F90D9999B /* RawGateway/App/DecisionCard.swift in Sources */,
 				3AF1B9D2A7C84E1F90D9999D /* RawGateway/App/DecisionsView.swift in Sources */,
+				3AF1B9D2A7C84E1F90D999A1 /* RawGateway/App/TodayView.swift in Sources */,
+				3AF1B9D2A7C84E1F90D999A3 /* RawGateway/App/TimelineView.swift in Sources */,
 				3AF1B9D2A7C84E1F90D12345 /* RawGateway/App/DiagnosticLogger.swift in Sources */,
 				5CCEF7A65FF8A439AADFB507 /* RawGateway/App/PendantReceiver.swift in Sources */,
 				2EFB67BD3E316768B9BE5098 /* RawGateway/App/RawGatewayApp.swift in Sources */,

@@ -54,16 +54,33 @@ struct RawGatewayApp: App {
         WindowGroup {
             if let receiver = gateway.receiver, let uploader = gateway.uploader {
                 TabView {
-                    InsightsView(settings: gateway.settings)
-                        .tabItem {
-                            Label("Insights", systemImage: "sparkles")
-                        }
+                    TodayView(
+                        settings: gateway.settings,
+                        receiver: receiver,
+                        liveSpeech: gateway.liveSpeech,
+                        logger: gateway.logger
+                    )
+                    .tabItem {
+                        Label("Today", systemImage: "sparkles")
+                    }
 
-                    GatewayView(settings: gateway.settings, receiver: receiver, uploader: uploader, logger: gateway.logger, liveSpeech: gateway.liveSpeech)
-                        .tabItem {
-                            Label("Device", systemImage: "wave.3.right.circle")
-                        }
+                    TimelineView(settings: gateway.settings)
+                    .tabItem {
+                        Label("Timeline", systemImage: "clock.arrow.circlepath")
+                    }
+
+                    GatewayView(
+                        settings: gateway.settings,
+                        receiver: receiver,
+                        uploader: uploader,
+                        logger: gateway.logger,
+                        liveSpeech: gateway.liveSpeech
+                    )
+                    .tabItem {
+                        Label("Device", systemImage: "wave.3.right.circle")
+                    }
                 }
+                .tint(AppColors.brandIndigo)
                 .preferredColorScheme(themeManager.currentTheme.colorScheme)
                 .environmentObject(themeManager)
             } else {
@@ -227,6 +244,7 @@ struct GatewayView: View {
     private var captureControlCard: some View {
         VStack(spacing: 12) {
             Button {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 if receiver.running { receiver.stop() } else { receiver.start() }
             } label: {
                 HStack {
