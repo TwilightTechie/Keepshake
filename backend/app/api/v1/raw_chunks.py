@@ -39,6 +39,7 @@ class Header(BaseModel):
     packet_format: Literal["keepsake-p0"]
     checkpoint_seconds: int = Field(ge=5, le=300)
     stream_info_b64: str | None = Field(default=None, max_length=64)
+    delivery_mode: Literal["checkpoint"] | None = None
 
 
 class Packet(BaseModel):

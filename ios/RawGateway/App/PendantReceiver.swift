@@ -35,7 +35,7 @@ final class PendantReceiver: NSObject, ObservableObject, CBCentralManagerDelegat
     private let liveSession = URLSession(configuration: .default)
 
     private func flushLiveStream() {
-        guard settings.dreamAIStreaming, !liveStreamBuffer.isEmpty else { return }
+        guard settings.deliveryMode == .live, !liveStreamBuffer.isEmpty else { return }
         guard let url = settings.webhookURL else {
             logger.warning("Live stream: invalid webhook URL", category: "stream")
             return
@@ -92,7 +92,7 @@ final class PendantReceiver: NSObject, ObservableObject, CBCentralManagerDelegat
                     peripheral.readValue(for: characteristic)
                 }
                 // Flush live stream if 2+ seconds since last flush
-                if self.settings.dreamAIStreaming && !self.liveStreamBuffer.isEmpty &&
+                if self.settings.deliveryMode == .live && !self.liveStreamBuffer.isEmpty &&
                    now - self.lastLiveStreamFlush >= 2.0 {
                     self.flushLiveStream()
                 }
@@ -108,7 +108,28 @@ final class PendantReceiver: NSObject, ObservableObject, CBCentralManagerDelegat
         connect()
     }
 
+    func changeDeliveryMode(to mode: DeliveryMode) {
+        guard mode != settings.deliveryMode else { return }
+        do {
+            // BLE callbacks and this UI action run on the main queue, so the old
+            // file closes before the next packet opens a file in the new mode.
+            try store.checkpointNow()
+            if settings.deliveryMode == .live {
+                flushLiveStream()
+                if !liveStreamBuffer.isEmpty {
+                    logger.warning("Unsent live audio remains in the closed checkpoint", category: "stream")
+                    liveStreamBuffer.removeAll()
+                }
+            }
+            settings.deliveryMode = mode
+            if mode == .checkpoint { settings.uploadsEnabled = true }
+            checkpointed?()
+            logger.info("Delivery mode changed to \(mode.rawValue)", category: "app")
+        } catch { fail(error) }
+    }
+
     func stop() {
+        if settings.deliveryMode == .live { flushLiveStream() }
         running = false
         UserDefaults.standard.set(false, forKey: "captureWanted")
         lastNotificationUptime = nil
@@ -306,9 +327,10 @@ final class PendantReceiver: NSObject, ObservableObject, CBCentralManagerDelegat
         do {
             try store.append(data, deviceID: peripheral.identifier.uuidString,
                              sessionID: sessionID, sampleRate: descriptor.sampleRate,
-                             checkpoint: settings.checkpoint, streamInfo: descriptor.raw)
+                             checkpoint: settings.checkpoint, streamInfo: descriptor.raw,
+                             deliveryMode: settings.deliveryMode == .checkpoint ? "checkpoint" : nil)
             liveStats.observe(data)
-            if settings.dreamAIStreaming && data.count > 5 {
+            if settings.deliveryMode == .live && data.count > 5 {
                 liveStreamBuffer.append(data.subdata(in: 5..<data.count))
                 let now = ProcessInfo.processInfo.systemUptime
                 if liveStreamBuffer.count >= 64000 || (now - lastLiveStreamFlush >= 2.0 && !liveStreamBuffer.isEmpty) {

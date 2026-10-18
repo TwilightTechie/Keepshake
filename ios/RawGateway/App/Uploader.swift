@@ -6,6 +6,8 @@ final class Uploader: NSObject, ObservableObject, URLSessionDataDelegate, URLSes
     static let sessionID = "KeepsakeRawGateway.uploads.v1"
     @Published var status = "Set an HTTPS upload URL and token"
     @Published var pendingCount = 0
+    @Published var checkpointPendingCount = 0
+    @Published var archivePendingCount = 0
     @Published var lastUploaded = UserDefaults.standard.string(forKey: "lastUploaded") ?? "Never"
     @Published var busy = false
     var completionHandler: (() -> Void)?
@@ -54,20 +56,53 @@ final class Uploader: NSObject, ObservableObject, URLSessionDataDelegate, URLSes
         } catch { status = error.localizedDescription }
     }
 
+    func pruneArchiveFiles() {
+        do {
+            let count = try store.prune(archiveOnly: true)
+            status = "Pruned \(count) archive files"
+            pump()
+        } catch {
+            status = "Prune failed: \(error.localizedDescription)"
+        }
+    }
+
+    func pruneAllFiles() {
+        do {
+            let count = try store.prune(archiveOnly: false)
+            status = "Pruned all \(count) pending files"
+            pump()
+        } catch {
+            status = "Prune failed: \(error.localizedDescription)"
+        }
+    }
+
     func pump() {
         do {
             let files = try store.pending()
             pendingCount = files.count
+            let checkpointFiles = try files.filter { try ChunkStore.deliveryMode($0) == "checkpoint" }
+            let archiveFiles = try files.filter { try ChunkStore.deliveryMode($0) != "checkpoint" }
+            checkpointPendingCount = checkpointFiles.count
+            archivePendingCount = archiveFiles.count
             guard initialized && !busy else { return }
-            guard settings.uploadsEnabled else { status = "Uploads paused — files retained locally"; return }
+            guard settings.uploadsEnabled else { status = "Uploads paused - files retained locally"; return }
             guard !files.isEmpty else { status = "Queue empty"; return }
-            guard let url = settings.uploadURL, !settings.token.isEmpty else {
-                status = "Queued locally — configure HTTPS URL and token"; return
+            // Keep the order within each delivery path. Older archive-only files
+            // must not block the new transcription queue when no archive is configured.
+            guard let file = checkpointFiles.first ?? archiveFiles.first else { return }
+            guard retry(file).nextAttempt <= Date() else { return }
+            let isCheckpoint = try ChunkStore.deliveryMode(file) == "checkpoint"
+            let url = isCheckpoint ? settings.checkpointURL : settings.uploadURL
+            let token = isCheckpoint ? settings.webhookToken : settings.token
+            guard let url, !token.isEmpty else {
+                status = isCheckpoint
+                    ? "Checkpoint queued - configure Dream AI HTTPS URL and token"
+                    : "Archive queued - configure HTTPS URL and token"
+                return
             }
-            guard let file = files.first(where: { retry($0).nextAttempt <= Date() }) else { return }
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
-            request.setValue("Bearer \(settings.token)", forHTTPHeaderField: "Authorization")
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             request.setValue("application/x-ndjson", forHTTPHeaderField: "Content-Type")
             request.setValue(try ChunkStore.checksum(file), forHTTPHeaderField: "X-Content-SHA256")
             request.setValue(file.deletingPathExtension().lastPathComponent, forHTTPHeaderField: "Idempotency-Key")

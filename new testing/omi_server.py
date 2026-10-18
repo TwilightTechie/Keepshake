@@ -13,13 +13,18 @@ Hosts:
 
 import argparse
 import asyncio
+import base64
+import binascii
 import datetime
+import fcntl
+import hashlib
 import io
 import json
 import math
 import os
 import struct
 import time
+import uuid
 import wave
 from pathlib import Path
 from typing import Optional, List, Dict, Any
@@ -61,6 +66,9 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 TRANSCRIPTS_LOG = os.path.join(OUTPUT_DIR, "live_transcripts.jsonl")
 MEMORIES_LOG = os.path.join(OUTPUT_DIR, "memories.jsonl")
 SUMMARIES_LOG = os.path.join(OUTPUT_DIR, "summaries.jsonl")
+CHECKPOINT_DIR = os.path.join(OUTPUT_DIR, "checkpoints")
+os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+MAX_CHECKPOINT_BYTES = 32 * 1024 * 1024
 
 
 def get_effective_sarvam_lang() -> str:
@@ -362,6 +370,8 @@ async def broadcast_ws(event_type: str, data: Any):
 def log_transcript_entry(entry: Dict[str, Any]):
     with open(TRANSCRIPTS_LOG, "a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+        f.flush()
+        os.fsync(f.fileno())
     try:
         loop = asyncio.get_event_loop()
         if loop.is_running():
@@ -689,6 +699,7 @@ async def background_storage_cleanup_worker():
 @app.on_event("startup")
 async def startup_event():
     asyncio.create_task(smart_transcription_worker())
+    asyncio.create_task(checkpoint_worker())
     asyncio.create_task(background_summary_worker())
     asyncio.create_task(background_storage_cleanup_worker())
 
@@ -768,6 +779,233 @@ def check_webhook_auth(request: Request, token: Optional[str] = None):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorized: invalid or missing webhook token"
         )
+
+
+def _decode_checkpoint(raw: bytes) -> tuple[dict, list[bytes]]:
+    if not raw.endswith(b"\n"):
+        raise ValueError("Checkpoint has an incomplete final record")
+    lines = raw.splitlines()
+    if len(lines) < 2:
+        raise ValueError("Checkpoint has no packets")
+    header = json.loads(lines[0])
+    if not isinstance(header, dict) or not isinstance(header.get("chunk_id"), str) or not isinstance(header.get("session_id"), str):
+        raise ValueError("Invalid checkpoint header")
+    if header.get("version") != 1 or header.get("delivery_mode") != "checkpoint":
+        raise ValueError("Unsupported checkpoint format or delivery mode")
+    uuid.UUID(header["chunk_id"])
+    uuid.UUID(header["session_id"])
+    if header.get("sample_rate_hz") != 16000 or header.get("channels") != 1 or header.get("bits_per_sample") != 16 or header.get("encoding") != "pcm_s16le" or header.get("packet_format") != "keepsake-p0":
+        raise ValueError("Unsupported audio format")
+    info = base64.b64decode(header["stream_info_b64"], validate=True)
+    if len(info) != 20 or info[:4] != b"KSR1" or int.from_bytes(info[4:8], "little") != 16000 or info[8:16] != bytes([100, 0, 1, 16, 5, 1, 0, 0]):
+        raise ValueError("Firmware descriptor does not match")
+    packets = []
+    for line in lines[1:]:
+        record = json.loads(line)
+        if not isinstance(record, dict) or not isinstance(record.get("packet_b64"), str):
+            raise ValueError("Invalid packet record")
+        packet = base64.b64decode(record["packet_b64"], validate=True)
+        packets.append(packet)
+    return header, packets
+
+
+@app.post("/omi/webhook/checkpoint")
+async def receive_checkpoint(request: Request):
+    check_webhook_auth(request)
+    if request.headers.get("content-type", "").split(";")[0] != "application/x-ndjson":
+        raise HTTPException(status_code=415, detail="Expected application/x-ndjson")
+    body = bytearray()
+    async for part in request.stream():
+        if len(body) + len(part) > MAX_CHECKPOINT_BYTES:
+            raise HTTPException(status_code=413, detail="Checkpoint too large")
+        body.extend(part)
+    raw = bytes(body)
+    digest = hashlib.sha256(raw).hexdigest()
+    if request.headers.get("x-content-sha256") != digest:
+        raise HTTPException(status_code=400, detail="Checksum mismatch")
+    try:
+        header, _ = _decode_checkpoint(raw)
+    except (ValueError, KeyError, TypeError, json.JSONDecodeError, binascii.Error) as exc:
+        raise HTTPException(status_code=422, detail="Invalid checkpoint") from exc
+    chunk_id = header["chunk_id"]
+    if request.headers.get("idempotency-key") != chunk_id:
+        raise HTTPException(status_code=400, detail="Checkpoint ID mismatch")
+    path = os.path.join(CHECKPOINT_DIR, f"{chunk_id}.jsonl")
+    if os.path.exists(path):
+        with open(path, "rb") as saved:
+            if hashlib.sha256(saved.read()).hexdigest() != digest:
+                raise HTTPException(status_code=409, detail="Checkpoint ID already stores different bytes")
+    else:
+        temporary = os.path.join(CHECKPOINT_DIR, f".{chunk_id}.{uuid.uuid4().hex}.tmp")
+        try:
+            with open(temporary, "wb") as saved:
+                saved.write(raw)
+                saved.flush()
+                os.fsync(saved.fileno())
+            try:
+                os.link(temporary, path)
+            except FileExistsError:
+                with open(path, "rb") as saved:
+                    if hashlib.sha256(saved.read()).hexdigest() != digest:
+                        raise HTTPException(status_code=409, detail="Checkpoint ID already stores different bytes")
+            directory_fd = os.open(CHECKPOINT_DIR, os.O_RDONLY)
+            try:
+                os.fsync(directory_fd)
+            finally:
+                os.close(directory_fd)
+        finally:
+            if os.path.exists(temporary):
+                os.remove(temporary)
+    return {"chunk_id": chunk_id, "sha256": digest, "stored": True}
+
+
+async def _transcribe_checkpoint_segment(pcm: bytes) -> tuple[str, str]:
+    if not SARVAM_API_KEY:
+        raise RuntimeError("Sarvam API key is missing")
+    wav = io.BytesIO()
+    with wave.open(wav, "wb") as file:
+        file.setnchannels(1)
+        file.setsampwidth(2)
+        file.setframerate(16000)
+        file.writeframes(pcm)
+    async with httpx.AsyncClient(timeout=45) as client:
+        response = await client.post(
+            "https://api.sarvam.ai/speech-to-text",
+            headers={"Api-Subscription-Key": SARVAM_API_KEY},
+            data={"model": SARVAM_MODEL, "mode": SARVAM_MODE, "language_code": get_effective_sarvam_lang()},
+            files={"file": ("checkpoint.wav", wav.getvalue(), "audio/wav")},
+        )
+    response.raise_for_status()
+    result = response.json()
+    return result.get("transcript", "").strip(), result.get("language_code", "unknown")
+
+
+def _completed_segment_ids(chunk_id: str, progress_path: str) -> set[str]:
+    completed = set()
+    for path in (progress_path, TRANSCRIPTS_LOG):
+        if not os.path.exists(path):
+            continue
+        with open(path, "r", encoding="utf-8") as source:
+            for line in source:
+                try:
+                    entry = json.loads(line)
+                    segment_id = entry.get("segment_id")
+                    if segment_id and segment_id.startswith(chunk_id + ":"):
+                        completed.add(segment_id)
+                except (ValueError, TypeError):
+                    pass
+    return completed
+
+
+def _split_checkpoint_pcm(pcm: bytes, max_sec: float = 29.0) -> list[tuple[int, bytes]]:
+    """Segments checkpoint PCM into slices of at most max_sec (under Sarvam's 30.0s REST limit).
+    If total duration <= max_sec, returns [(0, pcm)] - the entire checkpoint as a single segment.
+    If longer, splits at natural pause/silence boundaries between 15s and max_sec.
+    """
+    max_bytes = int(max_sec * 32000)
+    max_bytes -= (max_bytes % 2)
+
+    if len(pcm) <= max_bytes:
+        return [(0, pcm)]
+
+    segments = []
+    offset = 0
+    idx = 0
+    total_len = len(pcm)
+
+    while offset < total_len:
+        remaining = total_len - offset
+        if remaining <= max_bytes:
+            segments.append((idx, pcm[offset:]))
+            break
+
+        min_bytes = int(15.0 * 32000)
+        search_start = offset + min(min_bytes, remaining - 3200)
+        search_end = offset + min(max_bytes, remaining)
+
+        best_split = offset + max_bytes
+        lowest_rms = float("inf")
+        window_size = 3200 * 3  # 300ms window
+
+        for pos in range(search_start, search_end - window_size, 3200):
+            window = pcm[pos:pos + window_size]
+            rms = tx_buffer._compute_rms(window)
+            if rms < lowest_rms:
+                lowest_rms = rms
+                best_split = pos + (window_size // 2)
+                best_split -= (best_split % 2)
+                if rms < tx_buffer.SPEECH_RMS_THRESHOLD * 0.5:
+                    break
+
+        segments.append((idx, pcm[offset:best_split]))
+        offset = best_split
+        idx += 1
+
+    return segments
+
+
+async def _process_checkpoint(path: str):
+    chunk_id = Path(path).stem
+    done_path = path + ".done"
+    if os.path.exists(done_path):
+        return
+    with open(path, "rb") as source:
+        header, packets = _decode_checkpoint(source.read())
+    progress_path = path + ".progress"
+    completed = _completed_segment_ids(chunk_id, progress_path)
+    # Preserve every packet in the archive. Only complete PCM payloads can feed STT.
+    pcm = b"".join(packet[5:] for packet in packets if len(packet) >= 5 and (len(packet) - 5) % 2 == 0)
+    segments = _split_checkpoint_pcm(pcm, max_sec=29.0)
+    for index, segment in segments:
+        segment_id = f"{chunk_id}:{index}"
+        if segment_id in completed:
+            continue
+        duration = len(segment) / 32000
+        if duration >= 1.0:
+            slices = (segment[i:i + 3200] for i in range(0, len(segment), 3200))
+            has_speech = any(tx_buffer._compute_rms(part) >= tx_buffer.SPEECH_RMS_THRESHOLD for part in slices)
+            if has_speech:
+                transcript, language = await _transcribe_checkpoint_segment(segment)
+                if transcript:
+                    entry = {
+                        "time": datetime.datetime.now().strftime("%H:%M:%S"),
+                        "timestamp": datetime.datetime.now().isoformat(),
+                        "speaker": "Pendant (Sarvam Saaras)",
+                        "text": transcript,
+                        "language": language,
+                        "source": "sarvam_checkpoint",
+                        "duration_sec": round(duration, 1),
+                        "chunk_id": chunk_id,
+                        "segment_id": segment_id,
+                    }
+                    log_transcript_entry(entry)
+        with open(progress_path, "a", encoding="utf-8") as progress:
+            progress.write(json.dumps({"segment_id": segment_id}) + "\n")
+            progress.flush()
+            os.fsync(progress.fileno())
+    with open(done_path, "w", encoding="utf-8") as done:
+        done.write(datetime.datetime.now().isoformat() + "\n")
+        done.flush()
+        os.fsync(done.fileno())
+
+
+async def checkpoint_worker():
+    while True:
+        for path in sorted(Path(CHECKPOINT_DIR).glob("*.jsonl"), key=lambda item: item.stat().st_mtime):
+            if os.path.exists(str(path) + ".done"):
+                continue
+            try:
+                with open(str(path) + ".lock", "a") as lock:
+                    try:
+                        fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    except BlockingIOError:
+                        continue
+                    await _process_checkpoint(str(path))
+            except Exception as exc:
+                print(f"[CHECKPOINT ERROR] {path.name}: {exc}")
+                await asyncio.sleep(5)
+                break
+        await asyncio.sleep(2)
 
 
 @app.post("/webhook/audio")
@@ -1540,10 +1778,16 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     }
 
     function createTranscriptCard(item) {
-      const isSarvam = item.source === 'sarvam';
-      const badgeClass = isSarvam ? 'bg-indigo-900/60 text-indigo-300 border-indigo-700/60' : 'bg-purple-900/60 text-purple-300 border-purple-700/60';
-      const badgeText = isSarvam ? 'Sarvam Saaras' : 'Omi App';
+      const isCheckpoint = item.source === 'sarvam_checkpoint';
+      const isSarvam = item.source === 'sarvam' || isCheckpoint;
+      const badgeClass = isCheckpoint
+        ? 'bg-emerald-900/60 text-emerald-300 border-emerald-700/60'
+        : isSarvam
+          ? 'bg-indigo-900/60 text-indigo-300 border-indigo-700/60'
+          : 'bg-purple-900/60 text-purple-300 border-purple-700/60';
+      const badgeText = isCheckpoint ? '30s Checkpoint' : (isSarvam ? 'Sarvam Saaras' : 'Omi App');
       const langBadge = item.language ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-gray-800 text-gray-400 border border-gray-700">${item.language}</span>` : '';
+      const durBadge = item.duration_sec ? `<span class="text-[10px] text-gray-400 font-mono">${item.duration_sec}s · </span>` : '';
       const speaker = item.speaker || 'Speaker';
       const text = item.text || item.transcript || '';
 
@@ -1556,7 +1800,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <span class="px-2 py-0.5 rounded text-[10px] font-medium border ${badgeClass}">${badgeText}</span>
             ${langBadge}
           </div>
-          <span class="text-[10px] text-gray-500">${item.time || ''}</span>
+          <span class="text-[10px] text-gray-500">${durBadge}${item.time || ''}</span>
         </div>
         <p class="text-xs sm:text-sm text-gray-100 leading-relaxed">${text}</p>
       `;

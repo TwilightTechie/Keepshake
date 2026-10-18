@@ -84,6 +84,7 @@ struct GatewayView: View {
     @State private var showToken = false
     @State private var showCopiedAlert = false
     @State private var copiedAlertMessage = ""
+    @State private var showPruneAlert = false
 
     var body: some View {
         NavigationStack {
@@ -325,23 +326,35 @@ struct GatewayView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
-    // MARK: - Live Streaming Card
+    // MARK: - Delivery Mode Card
+
+    private var deliveryModeSelection: Binding<DeliveryMode> {
+        Binding(get: { settings.deliveryMode }, set: { receiver.changeDeliveryMode(to: $0) })
+    }
 
     private var liveStreamCard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Label("Live AI Transcription", systemImage: "antenna.radiowaves.left.and.right")
-                    .font(.headline)
-                Spacer()
-                Toggle("", isOn: $settings.dreamAIStreaming)
-                    .labelsHidden()
+            Label("Delivery Mode", systemImage: "arrow.up.right.circle")
+                .font(.headline)
+            Picker("Delivery Mode", selection: deliveryModeSelection) {
+                Text("Live").tag(DeliveryMode.live)
+                Text("30s Checkpoints").tag(DeliveryMode.checkpoint)
+                Text("Archive Only").tag(DeliveryMode.archiveOnly)
             }
-            if settings.dreamAIStreaming {
-                Text("Streams native 16 kHz audio blocks to Dream AI in real-time. Transcripts appear live on https://aadeshai.xyz/dream-ai/")
+            .pickerStyle(.segmented)
+            if settings.deliveryMode == .live {
+                Text("Sends audio to Dream AI about every 2 seconds. Raw checkpoint files can also be archived when automatic uploads are enabled.")
+                    .font(.caption).foregroundStyle(.secondary)
+            } else if settings.deliveryMode == .checkpoint {
+                Text("Saves each 30-second raw checkpoint, then uploads it once for Dream AI transcription. Unconfirmed files remain on the phone and retry automatically.")
                     .font(.caption).foregroundStyle(.secondary)
             } else {
-                Text("Live streaming is currently disabled. Audio packets are only queued locally for offline storage.")
+                Text("Saves raw checkpoint files without live transcription. Automatic uploads can archive them on your configured server.")
                     .font(.caption).foregroundStyle(.secondary)
+            }
+            if receiver.running {
+                Text("Changing mode closes the current file. The next packet starts a new checkpoint.")
+                    .font(.caption2).foregroundStyle(.secondary)
             }
         }
         .padding()
@@ -391,19 +404,19 @@ struct GatewayView: View {
     private var uploadQueueCard: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Label("Upload Queue & Chunks", systemImage: "icloud.and.arrow.up")
+                Label("Saved Audio & Uploads", systemImage: "icloud.and.arrow.up")
                     .font(.headline)
                 Spacer()
-                Toggle("", isOn: $settings.uploadsEnabled)
-                    .labelsHidden()
-                    .onChange(of: settings.uploadsEnabled) { _ in uploader.pump() }
             }
+            Toggle("Automatic uploads", isOn: $settings.uploadsEnabled)
+                .font(.subheadline)
+                .onChange(of: settings.uploadsEnabled) { _ in uploader.pump() }
 
             HStack(spacing: 20) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("\(uploader.pendingCount)")
                         .font(.title2).fontWeight(.bold).foregroundStyle(.primary)
-                    Text("Ready Chunks")
+                    Text("Pending Files")
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 Divider().frame(height: 36)
@@ -414,6 +427,17 @@ struct GatewayView: View {
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
+            }
+
+            Text("\(uploader.checkpointPendingCount) for transcription · \(uploader.archivePendingCount) archive only")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            if receiver.storageMB >= 750 {
+                Label("Storage is nearing the 1 GB capture limit. Upload the pending files to keep recording.",
+                      systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
             }
 
             Text(uploader.status)
@@ -454,7 +478,42 @@ struct GatewayView: View {
                 .buttonStyle(.bordered)
             }
 
-            Text("Audio is segmented into 30-second NDJSON chunk files. When uploads are enabled, files are dispatched to the server one by one with cryptographic checksum verification.")
+            if uploader.archivePendingCount > 0 || uploader.pendingCount > 0 {
+                Button(role: .destructive) {
+                    showPruneAlert = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "trash")
+                        Text(uploader.archivePendingCount > 0
+                             ? "Prune \(uploader.archivePendingCount) Archive Files (\(String(format: "%.1f", receiver.storageMB)) MB)"
+                             : "Prune All Queued Files (\(String(format: "%.1f", receiver.storageMB)) MB)")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                }
+                .buttonStyle(.borderless)
+                .confirmationDialog("Prune Local Storage?", isPresented: $showPruneAlert, titleVisibility: .visible) {
+                    if uploader.archivePendingCount > 0 {
+                        Button("Delete \(uploader.archivePendingCount) Archive Files (\(String(format: "%.1f", receiver.storageMB)) MB)", role: .destructive) {
+                            uploader.pruneArchiveFiles()
+                            receiver.storageMB = 0
+                        }
+                    }
+                    Button("Delete All \(uploader.pendingCount) Queued Files", role: .destructive) {
+                        uploader.pruneAllFiles()
+                        receiver.storageMB = 0
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("This frees disk space by deleting local audio files from your device. Live capture and active transcription will not be affected.")
+                }
+            }
+
+            Text(settings.deliveryMode == .checkpoint
+                 ? "Checkpoint uploads are required for transcription in this mode. Files remain queued until the server confirms durable storage."
+                 : settings.deliveryMode == .live
+                   ? "Live audio goes to Dream AI immediately. Automatic uploads archive raw checkpoint files separately when configured."
+                   : "Automatic uploads send raw files to the archive server without starting transcription.")
                 .font(.caption2).foregroundStyle(.tertiary)
         }
         .padding()

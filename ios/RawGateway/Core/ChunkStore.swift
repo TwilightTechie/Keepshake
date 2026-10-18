@@ -14,6 +14,7 @@ public struct ChunkHeader: Codable {
     public var packet_format = "keepsake-p0"
     public let checkpoint_seconds: Int
     public var stream_info_b64: String? = nil
+    public var delivery_mode: String? = nil
 }
 
 public struct PacketRecord: Codable {
@@ -91,15 +92,17 @@ public final class ChunkStore {
     }
 
     public func append(_ packet: Data, deviceID: String, sessionID: String,
-                       sampleRate: Int, checkpoint: Int, streamInfo: Data? = nil, now: Date = Date(),
+                       sampleRate: Int, checkpoint: Int, streamInfo: Data? = nil,
+                       deliveryMode: String? = nil, now: Date = Date(),
                        uptime: TimeInterval = ProcessInfo.processInfo.systemUptime) throws {
         if handle != nil && uptime - openedAt >= Double(interval) { try checkpointNow() }
         if handle == nil {
             let id = UUID().uuidString.lowercased()
             let url = directory.appendingPathComponent(id + ".open")
-            let header = ChunkHeader(chunk_id: id, session_id: sessionID, device_id: deviceID,
+            var header = ChunkHeader(chunk_id: id, session_id: sessionID, device_id: deviceID,
                                      started_at: Self.timestamp(now), sample_rate_hz: sampleRate,
                                      checkpoint_seconds: checkpoint, stream_info_b64: streamInfo?.base64EncodedString())
+            header.delivery_mode = deliveryMode
             try line(header).write(to: url, options: .atomic)
             handle = try FileHandle(forWritingTo: url)
             try handle?.seekToEnd()
@@ -183,6 +186,31 @@ public final class ChunkStore {
 
     public static func checksum(_ file: URL) throws -> String {
         SHA256.hash(data: try Data(contentsOf: file)).map { String(format: "%02x", $0) }.joined()
+    }
+
+    public static func deliveryMode(_ file: URL) throws -> String? {
+        let source = try FileHandle(forReadingFrom: file)
+        defer { try? source.close() }
+        guard let data = try source.read(upToCount: 2048), let end = data.firstIndex(of: 0x0a) else {
+            throw GatewayError.message("Checkpoint header is incomplete")
+        }
+        return try JSONDecoder().decode(ChunkHeader.self, from: data[..<end]).delivery_mode
+    }
+
+    public func prune(archiveOnly: Bool = false) throws -> Int {
+        let files = try pending()
+        var deleted = 0
+        for file in files {
+            if archiveOnly {
+                let mode = try? Self.deliveryMode(file)
+                if mode == "checkpoint" { continue }
+            }
+            try? FileManager.default.removeItem(at: file)
+            let retry = file.deletingPathExtension().appendingPathExtension("retry")
+            try? FileManager.default.removeItem(at: retry)
+            deleted += 1
+        }
+        return deleted
     }
 
     deinit { try? handle?.close() }

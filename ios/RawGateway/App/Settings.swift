@@ -2,11 +2,18 @@ import Foundation
 import Security
 import Combine
 
+enum DeliveryMode: String, CaseIterable, Identifiable {
+    case live
+    case checkpoint
+    case archiveOnly
+    var id: String { rawValue }
+}
+
 final class Settings: ObservableObject {
     @Published var endpoint: String { didSet { defaults.set(endpoint, forKey: "endpoint") } }
     @Published var checkpoint: Int { didSet { defaults.set(checkpoint, forKey: "checkpoint") } }
     @Published var wifiOnly: Bool { didSet { defaults.set(wifiOnly, forKey: "wifiOnly") } }
-    @Published var dreamAIStreaming: Bool { didSet { defaults.set(dreamAIStreaming, forKey: "dreamAIStreaming") } }
+    @Published var deliveryMode: DeliveryMode { didSet { defaults.set(deliveryMode.rawValue, forKey: "deliveryMode") } }
     @Published var dreamAIWebhook: String { didSet { defaults.set(dreamAIWebhook, forKey: "dreamAIWebhook") } }
     @Published var uploadsEnabled: Bool { didSet { defaults.set(uploadsEnabled, forKey: "uploadsEnabled") } }
     @Published var token: String
@@ -18,10 +25,12 @@ final class Settings: ObservableObject {
     private let webhookService = "KeepsakeRawGateway.webhook-token"
 
     init() {
-        if UserDefaults.standard.object(forKey: "dreamAIStreaming") == nil {
-            dreamAIStreaming = true
+        if let saved = UserDefaults.standard.string(forKey: "deliveryMode"), let mode = DeliveryMode(rawValue: saved) {
+            deliveryMode = mode
+        } else if UserDefaults.standard.object(forKey: "dreamAIStreaming") != nil && !UserDefaults.standard.bool(forKey: "dreamAIStreaming") {
+            deliveryMode = .archiveOnly
         } else {
-            dreamAIStreaming = UserDefaults.standard.bool(forKey: "dreamAIStreaming")
+            deliveryMode = .live
         }
         dreamAIWebhook = UserDefaults.standard.string(forKey: "dreamAIWebhook") ?? "https://aadeshai.xyz/omi/webhook/audio?sample_rate=16000&uid=iphone_user"
         uploadsEnabled = UserDefaults.standard.bool(forKey: "uploadsEnabled")
@@ -82,6 +91,17 @@ final class Settings: ObservableObject {
               url.scheme?.lowercased() == "https", url.host != nil,
               url.user == nil, url.password == nil, url.fragment == nil else { return nil }
         return url
+    }
+
+    var checkpointURL: URL? {
+        guard let webhook = URL(string: dreamAIWebhook.trimmingCharacters(in: .whitespacesAndNewlines)),
+              webhook.scheme?.lowercased() == "https", webhook.host != nil else { return nil }
+        var parts = URLComponents()
+        parts.scheme = webhook.scheme
+        parts.host = webhook.host
+        parts.port = webhook.port
+        parts.path = "/omi/webhook/checkpoint"
+        return parts.url
     }
 
     // MARK: - Keychain Helpers
