@@ -22,6 +22,7 @@ import io
 import json
 import math
 import os
+import re
 import struct
 import time
 import uuid
@@ -47,6 +48,7 @@ SARVAM_LANGUAGE = os.environ.get("SARVAM_LANGUAGE_CODE", "auto")
 
 OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3:8b")
+DECISION_ROUTER_URL = os.environ.get("DECISION_ROUTER_URL", "http://127.0.0.1:11435")
 SUMMARY_INTERVAL_MIN = int(os.environ.get("SUMMARY_INTERVAL_MIN", "5"))
 WEBHOOK_AUTH_TOKEN = os.environ.get("WEBHOOK_AUTH_TOKEN", "keepsake-secret-2026")
 
@@ -66,6 +68,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 TRANSCRIPTS_LOG = os.path.join(OUTPUT_DIR, "live_transcripts.jsonl")
 MEMORIES_LOG = os.path.join(OUTPUT_DIR, "memories.jsonl")
 SUMMARIES_LOG = os.path.join(OUTPUT_DIR, "summaries.jsonl")
+DECISIONS_LOG = os.path.join(OUTPUT_DIR, "decisions.jsonl")
 CHECKPOINT_DIR = os.path.join(OUTPUT_DIR, "checkpoints")
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 MAX_CHECKPOINT_BYTES = 32 * 1024 * 1024
@@ -391,6 +394,34 @@ def log_memory_entry(entry: Dict[str, Any]):
         pass
 
 
+def log_decision_entry(entry: Dict[str, Any]):
+    with open(DECISIONS_LOG, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    # Also log into memories log as a structured decision memory
+    log_memory_entry({"type": "decision", "data": entry, "time": entry.get("time")})
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            asyncio.create_task(broadcast_ws("decision", entry))
+    except Exception:
+        pass
+
+
+def get_decisions(limit: int = 50) -> List[Dict[str, Any]]:
+    entries = []
+    if os.path.exists(DECISIONS_LOG):
+        with open(DECISIONS_LOG, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    try:
+                        entries.append(json.loads(line))
+                    except Exception:
+                        pass
+    entries.reverse()
+    return entries[:limit]
+
+
 def log_summary_entry(entry: Dict[str, Any]):
     with open(SUMMARIES_LOG, "a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
@@ -696,11 +727,106 @@ async def background_storage_cleanup_worker():
         cleanup_old_audio_files(max_age_minutes=5, max_files=6)
 
 
+async def extract_decisions_from_transcripts(minutes: int = 5) -> List[Dict[str, Any]]:
+    """Extracts decisions using vLLM-SR Vela decision classifier running on Mac Mini."""
+    clean_res = get_clean_transcripts(minutes=minutes)
+    items = clean_res.get("items", [])
+    if not items:
+        return []
+
+    # Gather candidate sentences from recent transcripts
+    candidate_sentences = []
+    sentence_to_item = {}
+    for item in items:
+        text = (item.get("text") or item.get("transcript") or "").strip()
+        if not text:
+            continue
+        parts = [p.strip() for p in re.split(r'[.?!;]\s+', text) if len(p.strip()) > 8]
+        if not parts and len(text) > 8:
+            parts = [text]
+        for part in parts:
+            if part not in sentence_to_item:
+                candidate_sentences.append(part)
+                sentence_to_item[part] = item
+
+    if not candidate_sentences:
+        return []
+
+    # Load already recorded decision texts to prevent duplicate entries
+    existing_texts = set()
+    if os.path.exists(DECISIONS_LOG):
+        with open(DECISIONS_LOG, "r", encoding="utf-8") as f:
+            for line in f:
+                try:
+                    d = json.loads(line)
+                    txt = d.get("decision") or d.get("text") or ""
+                    existing_texts.add(txt.lower().strip())
+                except Exception:
+                    pass
+
+    # Filter out sentences that have already been recorded as decisions
+    unprocessed_sentences = [s for s in candidate_sentences if s.lower().strip() not in existing_texts]
+    if not unprocessed_sentences:
+        return []
+
+    new_decisions = []
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(
+                f"{DECISION_ROUTER_URL}/classify",
+                json={"texts": unprocessed_sentences[:30]}
+            )
+            if resp.status_code == 200:
+                results = resp.json().get("results", [])
+                for res in results:
+                    if res.get("decision_expressed"):
+                        stmt = res.get("text", "").strip()
+                        if stmt.lower() in existing_texts:
+                            continue
+                        existing_texts.add(stmt.lower())
+
+                        matched_item = sentence_to_item.get(stmt, {})
+                        now_dt = datetime.datetime.now()
+                        entry = {
+                            "id": f"dec_{int(time.time())}_{len(new_decisions)}",
+                            "timestamp": matched_item.get("timestamp") or now_dt.isoformat(),
+                            "time": matched_item.get("time") or now_dt.strftime("%H:%M:%S"),
+                            "date": now_dt.strftime("%Y-%m-%d"),
+                            "actor": "Anup",
+                            "decision": stmt,
+                            "quote": matched_item.get("text") or stmt,
+                            "confidence": res.get("confidence", 1.0),
+                            "decision_score": res.get("decision_score", 1.0),
+                            "speaker": matched_item.get("speaker") or "Anup",
+                            "model": "TwilightTechie/vela-commitment-classifier-307m (vLLM-SR on Mac Mini)"
+                        }
+                        log_decision_entry(entry)
+                        new_decisions.append(entry)
+                        print(f"[vLLM-SR] Decision detected: \"{entry['decision']}\" (conf: {entry['confidence']})")
+    except Exception as e:
+        print(f"[vLLM-SR ERROR] Failed to query {DECISION_ROUTER_URL}: {e}")
+
+    return new_decisions
+
+
+async def background_decision_worker():
+    """Periodically scans recent transcripts with vLLM-SR Vela classifier for decisions."""
+    await asyncio.sleep(15)
+    while True:
+        try:
+            await asyncio.sleep(45)
+            await extract_decisions_from_transcripts(minutes=3)
+        except Exception as e:
+            print(f"[vLLM-SR WORKER ERROR] {e}")
+            await asyncio.sleep(10)
+
+
 @app.on_event("startup")
 async def startup_event():
     asyncio.create_task(smart_transcription_worker())
     asyncio.create_task(checkpoint_worker())
     asyncio.create_task(background_summary_worker())
+    asyncio.create_task(background_decision_worker())
     asyncio.create_task(background_storage_cleanup_worker())
 
 
@@ -1182,6 +1308,81 @@ async def list_summaries(limit: int = 30):
     return get_summaries(limit=limit)
 
 
+@app.get("/dream-ai/api/decisions/today")
+@app.get("/omi/api/decisions/today")
+async def get_today_decisions(target_date: Optional[str] = Query(None)):
+    """
+    Returns structured decisions taken today from SUMMARIES_LOG.
+    Aggregates decisions across summaries for the specified date (default: today).
+    """
+    today_str = target_date or datetime.date.today().isoformat()
+    decisions_list = []
+    seen_texts = set()
+
+    if os.path.exists(SUMMARIES_LOG):
+        with open(SUMMARIES_LOG, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    item = json.loads(line)
+                except Exception:
+                    continue
+
+                item_date = item.get("date")
+                if not item_date:
+                    ts = item.get("timestamp", "")
+                    if len(ts) >= 10:
+                        item_date = ts[:10]
+
+                if item_date != today_str:
+                    continue
+
+                summary_id = item.get("id", f"sum_{uuid.uuid4().hex[:8]}")
+                time_str = item.get("time", "")
+                title = item.get("title", "Conversation Decision")
+                context = item.get("headline") or item.get("summary") or ""
+                raw_decisions = item.get("decisions") or []
+
+                for idx, dec in enumerate(raw_decisions):
+                    if isinstance(dec, str):
+                        dec_text = dec.strip()
+                    elif isinstance(dec, dict):
+                        dec_text = (dec.get("decision") or dec.get("text") or "").strip()
+                    else:
+                        continue
+
+                    if not dec_text or len(dec_text) < 4:
+                        continue
+
+                    # Deduplicate decisions that are essentially identical
+                    normalized = dec_text.lower()
+                    if normalized in seen_texts:
+                        continue
+                    seen_texts.add(normalized)
+
+                    dec_id = f"dec_{summary_id}_{idx}"
+                    category = "technical" if any(w in normalized for w in ["code", "server", "firmware", "bug", "api", "ble", "websocket", "database", "python", "swift"]) else "product"
+                    decisions_list.append({
+                        "id": dec_id,
+                        "time": time_str,
+                        "title": title,
+                        "decision": dec_text,
+                        "context_summary": context,
+                        "category": category,
+                        "status": "pending_action"
+                    })
+
+    # Return newest first
+    decisions_list.reverse()
+    return {
+        "date": today_str,
+        "total_decisions": len(decisions_list),
+        "decisions": decisions_list
+    }
+
+
 @app.post("/dream-ai/api/summarize")
 @app.post("/omi/api/summarize")
 async def trigger_summarization(minutes: int = Query(5, description="Minutes window, 0 for all conversation")):
@@ -1213,6 +1414,21 @@ async def websocket_stream(websocket: WebSocket):
     except Exception:
         if websocket in ws_clients:
             ws_clients.remove(websocket)
+
+
+@app.get("/dream-ai/api/decisions")
+async def get_decisions_api(limit: int = 50):
+    return get_decisions(limit=limit)
+
+
+@app.post("/dream-ai/api/decisions/extract")
+async def trigger_decision_extraction(minutes: int = Query(5, description="Minutes window to scan for decisions")):
+    new_decisions = await extract_decisions_from_transcripts(minutes=minutes)
+    return {
+        "status": "success",
+        "new_decisions_count": len(new_decisions),
+        "decisions": new_decisions
+    }
 
 
 @app.get("/dream-ai/api/memories")
@@ -1500,19 +1716,25 @@ DASHBOARD_HTML = """<!DOCTYPE html>
       <!-- Right Column: Sidebar (Memories + System Health) -->
       <div class="space-y-4 sm:space-y-6">
 
-        <!-- Conversation Memories Card -->
+        <!-- Decisions Taken Card (vLLM-SR Vela Model on Mac Mini) -->
         <div class="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-5">
           <div class="flex items-center justify-between pb-3 border-b border-gray-800">
             <h2 class="font-semibold text-xs sm:text-sm tracking-wide text-gray-200 flex items-center space-x-2">
-              <i class="fa-solid fa-brain text-purple-400"></i>
-              <span>Omi App Memories</span>
+              <i class="fa-solid fa-gavel text-emerald-400"></i>
+              <span>Decisions Taken Today</span>
             </h2>
-            <button onclick="fetchMemories()" class="text-xs text-indigo-400 hover:text-indigo-300">
-              <i class="fa-solid fa-rotate-right"></i>
-            </button>
+            <div class="flex items-center space-x-2">
+              <span id="decisionCountBadge" class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-800">0 calls</span>
+              <button onclick="extractDecisionsNow()" title="Scan for decisions now (vLLM-SR on Mac Mini)" class="text-xs text-emerald-400 hover:text-emerald-300 transition">
+                <i class="fa-solid fa-bolt" id="scanDecisionIcon"></i>
+              </button>
+              <button onclick="fetchDecisions()" title="Refresh decisions" class="text-xs text-gray-400 hover:text-gray-300">
+                <i class="fa-solid fa-rotate-right"></i>
+              </button>
+            </div>
           </div>
-          <div id="memoriesList" class="space-y-2 pt-3 max-h-56 overflow-y-auto custom-scroll">
-            <div class="text-xs text-gray-500 text-center py-6">No memories synced from Omi app yet.</div>
+          <div id="decisionsList" class="space-y-2 pt-3 max-h-64 overflow-y-auto custom-scroll">
+            <div class="text-xs text-gray-500 text-center py-6">No decisions recorded today yet.</div>
           </div>
         </div>
 
@@ -1866,6 +2088,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             }
           } else if (payload.type === 'summary') {
             fetchSummaries();
+          } else if (payload.type === 'decision' || payload.type === 'memory') {
+            fetchDecisions();
           }
         } catch (e) {
           console.error('[WS] Parse error:', e);
@@ -2051,20 +2275,55 @@ DASHBOARD_HTML = """<!DOCTYPE html>
       }
     }
 
-    async function fetchMemories() {
+    async function fetchDecisions() {
       try {
-        const res = await fetch('/dream-ai/api/memories');
+        const res = await fetch('/dream-ai/api/decisions');
         const list = await res.json();
-        const container = document.getElementById('memoriesList');
-        if (!list || list.length === 0) return;
+        const container = document.getElementById('decisionsList');
+        const badge = document.getElementById('decisionCountBadge');
+        if (!container) return;
 
-        container.innerHTML = list.map(m => `
-          <div class="p-2 rounded-lg bg-gray-900/80 border border-gray-800 text-xs">
-            <div class="text-[10px] text-gray-500 mb-0.5">${m.time}</div>
-            <pre class="text-[10px] text-gray-300 whitespace-pre-wrap">${JSON.stringify(m.data, null, 2)}</pre>
+        if (badge) {
+          badge.textContent = `${list.length} calls`;
+        }
+
+        if (!list || list.length === 0) {
+          container.innerHTML = '<div class="text-xs text-gray-500 text-center py-6">No decisions recorded today yet.</div>';
+          return;
+        }
+
+        container.innerHTML = list.map(d => `
+          <div class="p-2.5 rounded-lg bg-gray-900/90 border border-emerald-900/40 text-xs hover:border-emerald-700/60 transition-all space-y-1">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span class="text-[10px] font-medium text-emerald-300 font-mono">${d.time || ''}</span>
+                <span class="px-1.5 py-0.2 rounded text-[9px] bg-gray-800 text-gray-300 border border-gray-700">${d.actor || 'Anup'}</span>
+              </div>
+              <span class="text-[9px] text-gray-500 font-mono">${Math.round((d.confidence || 1.0) * 100)}% conf</span>
+            </div>
+            <p class="text-xs font-medium text-gray-100 leading-snug">${d.decision || d.text || ''}</p>
+            ${d.quote && d.quote !== d.decision ? `<p class="text-[10px] text-gray-400 italic border-l border-gray-700 pl-1.5 line-clamp-2">"${d.quote}"</p>` : ''}
           </div>
         `).join('');
       } catch (e) {}
+    }
+
+    async function extractDecisionsNow() {
+      const icon = document.getElementById('scanDecisionIcon');
+      if (icon) icon.className = 'fa-solid fa-circle-notch fa-spin text-emerald-400';
+      try {
+        const res = await fetch('/dream-ai/api/decisions/extract', { method: 'POST' });
+        const data = await res.json();
+        await fetchDecisions();
+        if (data.new_decisions_count > 0) {
+          console.log('[vLLM-SR] Extracted', data.new_decisions_count, 'new decisions');
+        }
+      } catch (err) {
+        console.error('Failed to trigger decision extraction:', err);
+      } finally {
+        if (icon) icon.className = 'fa-solid fa-bolt text-emerald-400';
+      }
     }
 
     // Initial Load & Intervals
@@ -2072,13 +2331,14 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     fetchLlmStatus();
     fetchTranscripts();
     fetchSummaries();
-    fetchMemories();
+    fetchDecisions();
     connectWebSocket();
 
     setInterval(fetchStats, 3000);
     setInterval(fetchLlmStatus, 6000);
     setInterval(fetchTranscripts, 3000);
     setInterval(fetchSummaries, 6000);
+    setInterval(fetchDecisions, 5000);
   </script>
 </body>
 </html>

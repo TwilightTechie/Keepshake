@@ -45,6 +45,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct RawGatewayApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject private var themeManager = ThemeManager.shared
     private let gateway = Gateway.shared
     var body: some Scene {
         WindowGroup {
@@ -60,6 +61,8 @@ struct RawGatewayApp: App {
                             Label("Device", systemImage: "wave.3.right.circle")
                         }
                 }
+                .preferredColorScheme(themeManager.currentTheme.colorScheme)
+                .environmentObject(themeManager)
             } else {
                 VStack(spacing: 20) {
                     Image(systemName: "externaldrive.badge.exclamationmark").font(.largeTitle)
@@ -78,6 +81,7 @@ struct GatewayView: View {
     @ObservedObject var receiver: PendantReceiver
     @ObservedObject var uploader: Uploader
     @ObservedObject var logger: DiagnosticLogger
+    @EnvironmentObject private var themeManager: ThemeManager
     @Environment(\.scenePhase) private var phase
     @State private var showLogs = false
     @State private var showCheckpoint = false
@@ -103,9 +107,24 @@ struct GatewayView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 24)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(AppColors.background)
             .navigationTitle("Keepsake AI")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Menu {
+                        Picker("Appearance", selection: $themeManager.currentTheme) {
+                            ForEach(AppTheme.allCases) { theme in
+                                Label(theme.title, systemImage: theme.icon).tag(theme)
+                            }
+                        }
+                    } label: {
+                        Image(systemName: themeManager.currentTheme.icon)
+                            .font(.subheadline)
+                            .foregroundStyle(AppColors.brandIndigo)
+                    }
+                }
+            }
             .sheet(isPresented: $showLogs) {
                 LogsView(logger: logger, receiver: receiver, uploader: uploader, settings: settings)
             }

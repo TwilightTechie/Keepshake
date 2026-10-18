@@ -10,6 +10,7 @@
 		AB1C00000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB1C00000000000000000002 /* Assets.xcassets */; };
 		2EFB67BD3E316768B9BE5098 /* RawGateway/App/RawGatewayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBDDE2CB2CA1EC41CB7ED2D /* RawGateway/App/RawGatewayApp.swift */; };
 		3AF1B9D2A7C84E1F90D99991 /* RawGateway/App/InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D99992 /* RawGateway/App/InsightsView.swift */; };
+		3AF1B9D2A7C84E1F90D99993 /* RawGateway/App/ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D99994 /* RawGateway/App/ThemeManager.swift */; };
 		3AF1B9D2A7C84E1F90D12345 /* RawGateway/App/DiagnosticLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D12346 /* RawGateway/App/DiagnosticLogger.swift */; };
 		5CCEF7A65FF8A439AADFB507 /* RawGateway/App/PendantReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97EB5DEDD769C1334E6E8F59 /* RawGateway/App/PendantReceiver.swift */; };
 		5CD2935A856128D091CE3193 /* RawGateway/Core/ChunkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD76CBAC6BF4D290C69151EE /* RawGateway/Core/ChunkStore.swift */; };
@@ -20,6 +21,7 @@
 /* Begin PBXFileReference section */
 		AB1C00000000000000000002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = RawGateway/Assets.xcassets; sourceTree = "<group>"; };
 		3AF1B9D2A7C84E1F90D99992 /* RawGateway/App/InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/InsightsView.swift; sourceTree = "<group>"; };
+		3AF1B9D2A7C84E1F90D99994 /* RawGateway/App/ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/ThemeManager.swift; sourceTree = "<group>"; };
 		3AF1B9D2A7C84E1F90D12346 /* RawGateway/App/DiagnosticLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/DiagnosticLogger.swift; sourceTree = "<group>"; };
 		4CBDDE2CB2CA1EC41CB7ED2D /* RawGateway/App/RawGatewayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/RawGatewayApp.swift; sourceTree = "<group>"; };
 		770F77B7091F37EB9018BD6B /* RawGateway/App/Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/Settings.swift; sourceTree = "<group>"; };
@@ -53,6 +55,7 @@
 			children = (
 				AB1C00000000000000000002 /* Assets.xcassets */,
 				3AF1B9D2A7C84E1F90D99992 /* RawGateway/App/InsightsView.swift */,
+				3AF1B9D2A7C84E1F90D99994 /* RawGateway/App/ThemeManager.swift */,
 				3AF1B9D2A7C84E1F90D12346 /* RawGateway/App/DiagnosticLogger.swift */,
 				97EB5DEDD769C1334E6E8F59 /* RawGateway/App/PendantReceiver.swift */,
 				4CBDDE2CB2CA1EC41CB7ED2D /* RawGateway/App/RawGatewayApp.swift */,
@@ -126,6 +129,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3AF1B9D2A7C84E1F90D99991 /* RawGateway/App/InsightsView.swift in Sources */,
+				3AF1B9D2A7C84E1F90D99993 /* RawGateway/App/ThemeManager.swift in Sources */,
 				3AF1B9D2A7C84E1F90D12345 /* RawGateway/App/DiagnosticLogger.swift in Sources */,
 				5CCEF7A65FF8A439AADFB507 /* RawGateway/App/PendantReceiver.swift in Sources */,
 				2EFB67BD3E316768B9BE5098 /* RawGateway/App/RawGatewayApp.swift in Sources */,

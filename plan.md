@@ -287,10 +287,10 @@ To avoid parsing through dozens of separate summary records on the mobile phone,
 ## 6. Implementation Roadmap & Execution Checklist
 
 ### Phase 1: Foundation, Theming & Model Updates
-- [ ] Implement `ThemeManager` in Swift supporting System / Light / Dark modes.
-- [ ] Define semantic color tokens (`AppColors`) and typography styles (`AppTypography`).
-- [ ] Add `GET /omi/api/decisions/today` endpoint to `omi_server.py`.
-- [ ] Deploy updated server to droplet and verify endpoint with curl.
+- [x] Implement `ThemeManager` in Swift supporting System / Light / Dark modes.
+- [x] Define semantic color tokens (`AppColors`) and typography styles (`AppTypography`).
+- [x] Add `GET /omi/api/decisions/today` endpoint to `omi_server.py`.
+- [x] Deploy updated server to droplet and verify endpoint with curl.
 
 ### Phase 2: Real-Time Live Speech Engine
 - [ ] Create `LiveSpeechService.swift` using `URLSessionWebSocketTask`.
