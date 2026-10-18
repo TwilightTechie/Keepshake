@@ -1,51 +1,148 @@
-# Keepsake Firmware
+# Keepsake raw firmware
 
-Zephyr firmware for the pendant. P0 target: **XIAO nRF52840 Sense** bench prototype —
-VAD-gated PDM capture streamed over BLE with sequence numbers, received by
-`backend/tools/ble_gateway.py`, which forwards utterances into the backend's
-ingest WebSocket. See [../docs/requirements/firmware.md](../docs/requirements/firmware.md).
+Our own Zephyr firmware for **Seeed XIAO nRF52840 Sense**, paired with the native
+Swift app in `../ios`. No Omi firmware, codec, cloud integration, or runtime code is
+included. Review/update: October 17, 2026.
 
-P0 simplifications (all tracked to P1): PCM16 @8 kHz instead of Opus (FW-2), no
-flash journal (FW-4), no pairing/SMP (FW-8), no DFU (FW-6), no hard-mute button
-yet (FW-7).
+## Audio path
 
-**Where segmentation lives.** The pendant streams continuously while a client is
-subscribed and makes no speech/silence decisions; the gateway segments. This is
-deliberate: on-device VAD gating produced total silence whenever the threshold
-misjudged the room, with no way to see why, and each tuning attempt cost a
-reflash + double-tap. Tuning now means editing a Python flag. On-device VAD
-returns in P1 for battery (FW-2a) once the journal (D6) makes a misjudgement
-recoverable rather than lossy.
+Microphone → native **16 kHz mono PCM16**, in **100 ms / 3,200-byte blocks** →
+MTU-sized BLE notifications. Every notification retains the existing five-byte
+header: `[uint32 LE sequence][uint8 flags=0][PCM bytes]`.
 
-## Setup (one time)
+Removed from the previous firmware:
+- Pair-averaging/downsampling from 16 to 8 kHz.
+- The software gain/clamp loop (previously configured to shift by zero).
+- Extra +12 dB hardware gain; PDM gain is now fixed at **0 dB**.
+- Per-block energy/DC calculations and periodic energy logs.
+- Unused 32 KB heap reservation, UART/console/USB runtime in the normal build.
 
-```bash
-brew install cmake ninja dtc
-python3 -m venv .toolchain-venv && .toolchain-venv/bin/pip install west
-cd firmware
-../firmware/.toolchain-venv/bin/west init -l manifest .   # if not yet initialized
-.toolchain-venv/bin/west update                            # fetches zephyr + modules
-.toolchain-venv/bin/west sdk install -t arm-zephyr-eabi    # cross toolchain
-.toolchain-venv/bin/pip install -r zephyr/scripts/requirements-base.txt
-```
+No VAD, silence suppression, noise reduction, AGC, high-pass filter, resampling,
+or audio codec is applied. PDM-to-PCM conversion by the microphone peripheral is
+still required to obtain PCM samples; the resulting samples are copied unchanged.
+
+At MTU 247, each block becomes 14 notifications (13 × 232 audio bytes + 184 bytes),
+about **140 notifications/second**. Smaller MTUs produce more packets. Payloads
+are rounded down to an even number of bytes so a packet never splits a PCM16 sample.
+There is no padding or sample transformation. Native audio is **32 KB/second**,
+about 960 KB per 30 seconds before packet/JSON/Base64 overhead.
+
+## Power and recovery
+
+- Microphone PDM capture and its power rail are **off until a phone subscribes**.
+  On unsubscribe/disconnect, capture stops, queued old-session samples are cleared,
+  the PDM driver releases its clock, and the mic rail turns off. This is not an
+  offline recorder: there is no flash journal to capture while disconnected.
+- The unused IMU's boot-on regulator is disabled and its power rail held low.
+- Preserve the board's existing DC/DC regulator configuration; do not force
+  regulator modes intended for other hardware.
+- Fast advertising (100–150 ms) for 30 seconds after boot/disconnect, then slower
+  connectable advertising (1–1.2 seconds), indefinitely. The service UUID is in
+  the primary advertisement for background scans. Idle is never System OFF,
+  because that would require a physical wake event.
+- Advertising resumes when connection resources are recycled. A one-second
+  supervisor retries failed starts and resets only after 30 seconds of persistent
+  advertising failure. No normal periodic reset or reset-on-disconnect.
+- Three hardware watchdog channels independently cover the capture loop, sender,
+  and system work queue. Failure to feed any channel resets the SoC after 12 seconds.
+  Watchdog remains active during normal CPU idle sleep.
+- Microphone reads have 500 ms timeouts. Three failures trigger a stop/drain/restart;
+  three unsuccessful recovery rounds reset the device. Ten seconds of healthy
+  capture clears the recovery streak. The STOP path allows asynchronous DMA release.
+- If capture is progressing but notifications have made no progress for five
+  seconds, disconnect to let the phone reconnect. The app separately reconnects
+  after an eight-second observed notification stall while it is executing.
+- Connection references are protected against disconnect races. Generation tags
+  prevent queued audio from an old connection/subscription leaking into a new one.
+- Packet sequences are reserved **before** enqueueing a capture block, so software
+  queue drops now create visible sequence gaps. Readable diagnostic counters report
+  dropped queue blocks, unsent notification packets, mic recoveries, and reset cause.
+- Automatic PHY and data-length negotiation are enabled. Request 15 ms connections;
+  the phone controls the final parameters. Increase ACL TX buffers from the old
+  default of 3 to 16, with sufficient event buffers and matching upper-layer buffers.
+  Retries are bounded; a slower radio can still drop audio. Never silently downsample
+  to conceal insufficient throughput.
+
+These are implemented recovery/power measures, **not measured battery-life claims**.
+No offline storage, DFU, pairing, or hard-mute button has been added in this milestone.
+Onboard flash deep sleep is not claimed: no new flash driver or vendor-specific
+power commands have been introduced just to optimize an unused device.
+
+## App and protocol alignment
+
+See [BLE protocol](../docs/ble-raw-protocol.md).
+
+The service and audio UUIDs are unchanged. Two new read characteristics report
+stream format and diagnostics. The updated Swift app reads and validates the format
+**before enabling audio notifications**, labels saved chunks from the device's rate,
+and archives the exact descriptor in chunk metadata. There is no manual sample-rate
+picker. It refuses old firmware without the descriptor rather than guessing 8 kHz.
+
+Deploy the updated backend raw-chunk schema together with the updated app; it accepts
+and verifies the optional descriptor. Previously recorded 8 kHz chunks still upload
+with their original metadata. The old Python gateway/test scripts that hardcode
+8 kHz are **not compatible with this 16 kHz firmware**; use the updated Swift app or
+the hardware verification script below. They were not silently repurposed.
 
 ## Build
 
-```bash
-cd firmware
-.toolchain-venv/bin/west build -b xiao_ble/nrf52840/sense app
+Existing Zephyr workspace: upstream **v4.1.0**, Nordic SDK toolchain installed locally.
+From `firmware/`:
+
+```sh
+.toolchain-venv/bin/west build -d build-raw -b xiao_ble/nrf52840/sense app
 ```
 
-## Flash (XIAO has UF2 bootloader — no debugger needed)
+Artifact: `build-raw/zephyr/zephyr.uf2`.
+Optional USB serial diagnostics (more power/RAM; not the normal image):
 
-1. Double-tap the tiny reset button next to USB-C → a `XIAO-SENSE` USB drive appears.
-2. `cp build/zephyr/zephyr.uf2 /Volumes/XIAO-SENSE/` — board reboots into the firmware.
-
-## Bench loop
-
-```bash
-# Terminal 1: backend (docker compose up in backend/, Sarvam providers on)
-# Terminal 2: BLE gateway on the Mac
-cd backend && .venv/bin/python tools/ble_gateway.py
-# Speak near the pendant → utterances land in the app's Memory tab.
+```sh
+.toolchain-venv/bin/west build -d build-debug -b xiao_ble/nrf52840/sense app -- -DEXTRA_CONF_FILE=debug.conf
 ```
+
+Fresh workspace bootstrap remains in `setup_and_build.sh` (requires Homebrew
+cmake/ninja/dtc and a downloaded Zephyr SDK). Do not run setup just to rebuild.
+
+## Flash and physical validation
+
+1. Connect the board by USB. Double-tap its reset button **once to enter the UF2
+   bootloader for flashing**; wait for the `XIAO-SENSE` drive.
+2. Copy `build-raw/zephyr/zephyr.uf2` onto that drive. It reboots automatically.
+3. Use the updated Swift app to connect. The normal build does not expose a USB
+   serial console. The bootloader still exposes its own USB drive on double-tap.
+
+The firmware cannot change the bootloader's button requirement for entering flash
+mode. After a successful flash, normal boot/reconnect/recovery is intended to work
+without button presses. This still needs hardware acceptance, including cold power-on.
+
+From the repository root, with other BLE gateways closed:
+
+```sh
+backend/.venv/bin/python firmware/tests/verify_ble.py --cycles 5 --seconds 30 --output /tmp/keepsake-raw-acceptance
+```
+
+This records **all notification bytes**, validates the descriptor, measures received
+PCM duration versus wall time, checks gaps, and disconnects/reconnects five times
+without reset. No cloud upload or audio processing is performed. Audio logs remain
+in the chosen output directory. A short transport pass does not prove audio quality.
+
+Then verify: ten-minute locked-iPhone capture; out-of-range recovery; Bluetooth
+off/on; unsubscribe/resubscribe; cold USB/battery boot; and true current draw both
+idle and capturing. Test watchdog stalls with a debugger/fault-injection image before
+claiming automatic recovery from every possible fault. Confirm 0 dB speech levels by
+listening to server-side reconstructed PCM. Previous firmware had 16 kHz congestion;
+the new transport settings must be measured on this phone before everyday use.
+
+## Research references
+
+Reviewed Omi's official source at commit `6a9c57556d8160921c9e35ac5c5677a3429f45b7`:
+
+- [Devkit startup](https://github.com/BasedHardware/omi/blob/6a9c57556d8160921c9e35ac5c5677a3429f45b7/omi/firmware/devkit/src/main.c): watchdog initialization, unused-flash suspension, regulator setup.
+- [Devkit transport](https://github.com/BasedHardware/omi/blob/6a9c57556d8160921c9e35ac5c5677a3429f45b7/omi/firmware/devkit/src/transport.c): bounded notification retries, connection generations.
+- [Devkit configuration](https://github.com/BasedHardware/omi/blob/6a9c57556d8160921c9e35ac5c5677a3429f45b7/omi/firmware/devkit/prj_xiao_ble_sense_devkitv1.conf): automatic PHY/data-length negotiation.
+- [Consumer microphone power control](https://github.com/BasedHardware/omi/blob/6a9c57556d8160921c9e35ac5c5677a3429f45b7/omi/firmware/omi/src/lib/evt/mic.c): explicit mic power lifecycle. Consumer-specific AAD/pins are not transferable to our board.
+- [Zephyr v4.1 Bluetooth definitions](https://github.com/zephyrproject-rtos/zephyr/blob/v4.1.0/include/zephyr/bluetooth/bluetooth.h): advertising stops after connection; restart after connection-object recycling.
+
+These informed the design; this implementation uses our own protocol and code.
+We deliberately did not adopt codecs, speech gating, extra sensors, SD-card startup
+dependencies, or unrelated consumer-board power/register assumptions.

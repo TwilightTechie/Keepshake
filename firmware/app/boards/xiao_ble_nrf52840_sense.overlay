@@ -1,5 +1,7 @@
-/* The board DTS wires pdm0's pins but leaves the node disabled; the pendant
- * needs the mic on. Enabling it here pulls in the nrfx PDM dmic driver. */
-&pdm0 {
-	status = "okay";
-};
+&pdm0 { status = "okay"; };
+&wdt0 { status = "okay"; };
+/* Unused IMU must not be powered by the board's boot-on fixed regulator. */
+&{/lsm6ds3tr-c-en} { status = "disabled"; };
+&i2c0 { status = "disabled"; };
+&adc { status = "disabled"; };
+/* The board already configures reg1 for DC/DC. No raw register override needed. */

@@ -11,6 +11,7 @@ from app.models import (
     AudioSegment,
     Conversation,
     DayRecap,
+    RawChunk,
     ReviewCandidate,
     Task,
     TranscriptTurn,
@@ -59,7 +60,7 @@ async def export_all(session: AsyncSession = Depends(get_session)) -> dict:
 async def delete_all(session: AsyncSession = Depends(get_session)) -> dict:
     counts = {}
     for model in (WalEntry, ReviewCandidate, Task, TranscriptTurn, Conversation,
-                  DayRecap, AudioSegment):
+                  DayRecap, AudioSegment, RawChunk):
         result = await session.execute(delete(model))
         counts[model.__tablename__] = result.rowcount
     await session.commit()

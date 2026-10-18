@@ -1,0 +1,24 @@
+aadeshai.xyz {
+	# Backstop for audit S3: the API refuses bodies over 16 MiB itself with a JSON message, so the
+	# proxy limit sits above it and only stops bodies the API would never accept.
+	request_body {
+		max_size 20MiB
+	}
+
+	redir /presentation-vllm-sr /presentation-vllm-sr/ 308
+
+	handle_path /presentation-vllm-sr/* {
+		root * /srv/www/presentation-vllm-sr
+		file_server
+	}
+
+	@omi_dream path /omi* /dream-ai* /webhook*
+	reverse_proxy @omi_dream 127.0.0.1:8080
+
+	@api path /api/*
+	# A Phase 1 check of a 1,00,000-row register answers with about 50 MB of JSON (about 5 MB
+	# compressed). Only API replies: Next.js compresses its own pages, and the presentation is static.
+	encode @api zstd gzip
+	reverse_proxy @api 127.0.0.1:8000
+	reverse_proxy 127.0.0.1:3000
+}

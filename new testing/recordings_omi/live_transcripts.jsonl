@@ -1,0 +1,552 @@
+{"time": "21:12:12", "uid": "test_user", "payload": {"speaker": "User", "text": "Testing Omi custom server webhook!"}}
+{"time": "21:24:39", "timestamp": "2026-10-15T21:24:39.657563", "speaker": "User", "text": "Hello Dream AI! Testing live speech transcript from pendant.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:29:07", "timestamp": "2026-10-15T21:29:07.597215", "speaker": "SPEAKER_0", "text": "Post an audio the server is finding the request for to service this.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:29:13", "timestamp": "2026-10-15T21:29:13.446347", "speaker": "SPEAKER_0", "text": "This sales convert takes within this transcript on your console.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:29:25", "timestamp": "2026-10-15T21:29:25.254579", "speaker": "SPEAKER_0", "text": "But this is something wrong.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:29:31", "timestamp": "2026-10-15T21:29:31.011231", "speaker": "SPEAKER_0", "text": "Something I feel is really wrong.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:29:49", "timestamp": "2026-10-15T21:29:49.784305", "speaker": "SPEAKER_0", "text": "Sale conversation took post analogies of my request.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:30:01", "timestamp": "2026-10-15T21:30:01.914223", "speaker": "SPEAKER_0", "text": "Uh so my name is Anoop and I'm the best person in the world and I love solving problem at scale but when something does not work at the scale I always get scale.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:30:13", "timestamp": "2026-10-15T21:30:13.252210", "speaker": "SPEAKER_0", "text": "scared so that's one of the biggest problems that I have", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:30:26", "timestamp": "2026-10-15T21:30:26.369242", "speaker": "SPEAKER_0", "text": "Name is Anoop.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:30:54", "timestamp": "2026-10-15T21:30:54.100676", "speaker": "SPEAKER_0", "text": "My name is Anoop and I'm the best person in the world.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:31:37", "timestamp": "2026-10-15T21:31:37.262441", "speaker": "SPEAKER_0", "text": "The only problem that I see now is letting see.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:31:37", "timestamp": "2026-10-15T21:31:37.262441", "speaker": "SPEAKER_0", "text": "I don't know from where at", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:31:43", "timestamp": "2026-10-15T21:31:43.901032", "speaker": "SPEAKER_0", "text": "It's coming.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:31:54", "timestamp": "2026-10-15T21:31:54.880999", "speaker": "SPEAKER_0", "text": "Accuracy when I directly tested this script.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:32:07", "timestamp": "2026-10-15T21:32:07.263411", "speaker": "SPEAKER_0", "text": "was higher and now it seems a little lower", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:32:13", "timestamp": "2026-10-15T21:32:13.398209", "speaker": "SPEAKER_0", "text": "Don't know.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:32:19", "timestamp": "2026-10-15T21:32:19.652846", "speaker": "SPEAKER_0", "text": "Because of which layer this is happening.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:32:25", "timestamp": "2026-10-15T21:32:25.896501", "speaker": "SPEAKER_0", "text": "happening.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:32:31", "timestamp": "2026-10-15T21:32:31.708439", "speaker": "SPEAKER_0", "text": "Is this because of farmer that we have it's not delegate?", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:33:07", "timestamp": "2026-10-15T21:33:07.591884", "speaker": "SPEAKER_0", "text": "Omni app buffering will audio locally for this combined with HTTP post over here.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:33:07", "timestamp": "2026-10-15T21:33:07.591884", "speaker": "SPEAKER_0", "text": "So where the discom is from buffering delay.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:33:07", "timestamp": "2026-10-15T21:33:07.591884", "speaker": "SPEAKER_0", "text": "Push pressure bum.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:33:20", "timestamp": "2026-10-15T21:33:20.861442", "speaker": "SPEAKER_0", "text": "Um segredience to do processing", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:34:06", "timestamp": "2026-10-15T21:34:06.288770", "speaker": "SPEAKER_0", "text": "Okay, this is good for now I think.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:39:21", "timestamp": "2026-10-15T21:39:21.038724", "speaker": "Pendant (Sarvam Saaras)", "text": "So today.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:39:22", "timestamp": "2026-10-15T21:39:22.043749", "speaker": "Pendant (Sarvam Saaras)", "text": "Is.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:39:23", "timestamp": "2026-10-15T21:39:23.012026", "speaker": "Pendant (Sarvam Saaras)", "text": "Of it.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:39:24", "timestamp": "2026-10-15T21:39:24.505253", "speaker": "Pendant (Sarvam Saaras)", "text": "Very important day.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:39:28", "timestamp": "2026-10-15T21:39:28.049300", "speaker": "Pendant (Sarvam Saaras)", "text": "That we have.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:39:28", "timestamp": "2026-10-15T21:39:28.201114", "speaker": "SPEAKER_0", "text": "So today is a very important day that we have.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:39:29", "timestamp": "2026-10-15T21:39:29.001727", "speaker": "Pendant (Sarvam Saaras)", "text": "So today is a very important day that we have.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_212739_8000hz.wav"}
+{"time": "21:39:34", "timestamp": "2026-10-15T21:39:34.050125", "speaker": "SPEAKER_0", "text": "And we need to decide what we can do.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:39:34", "timestamp": "2026-10-15T21:39:34.143705", "speaker": "Pendant (Sarvam Saaras)", "text": "And we need.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:39:35", "timestamp": "2026-10-15T21:39:35.642690", "speaker": "Pendant (Sarvam Saaras)", "text": "To decide.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:39:36", "timestamp": "2026-10-15T21:39:36.536801", "speaker": "Pendant (Sarvam Saaras)", "text": "What we can do.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:39:41", "timestamp": "2026-10-15T21:39:41.358136", "speaker": "Pendant (Sarvam Saaras)", "text": "So today is a very important day that we have and we need to decide what we can do.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_212739_8000hz.wav"}
+{"time": "21:40:00", "timestamp": "2026-10-15T21:40:00.086356", "speaker": "Pendant (Sarvam Saaras)", "text": "So once upon a time.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:40:00", "timestamp": "2026-10-15T21:40:00.403499", "speaker": "SPEAKER_0", "text": "So once upon a time there was a very interesting guy, Jisneek Chichuparkam Kyatajis Kanam Tha Raja.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:01", "timestamp": "2026-10-15T21:40:01.024121", "speaker": "Pendant (Sarvam Saaras)", "text": "And there was a.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:40:02", "timestamp": "2026-10-15T21:40:02.370580", "speaker": "Pendant (Sarvam Saaras)", "text": "Very interesting that.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:40:04", "timestamp": "2026-10-15T21:40:04.842551", "speaker": "Pendant (Sarvam Saaras)", "text": "Yes.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:40:05", "timestamp": "2026-10-15T21:40:05.895403", "speaker": "Pendant (Sarvam Saaras)", "text": "इसने एक चीज के ऊपर।", "language": "hi-IN", "source": "sarvam"}
+{"time": "21:40:06", "timestamp": "2026-10-15T21:40:06.221395", "speaker": "SPEAKER_0", "text": "To Raja Kyakartata, basically.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:06", "timestamp": "2026-10-15T21:40:06.876199", "speaker": "Pendant (Sarvam Saaras)", "text": "काम किया था जिसके।", "language": "hi-IN", "source": "sarvam"}
+{"time": "21:40:09", "timestamp": "2026-10-15T21:40:09.014840", "speaker": "Pendant (Sarvam Saaras)", "text": "Name tha Raja.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:40:12", "timestamp": "2026-10-15T21:40:12.348023", "speaker": "Pendant (Sarvam Saaras)", "text": "राजा क्या करता था?", "language": "hi-IN", "source": "sarvam"}
+{"time": "21:40:13", "timestamp": "2026-10-15T21:40:13.297650", "speaker": "Pendant (Sarvam Saaras)", "text": "Basic.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:40:14", "timestamp": "2026-10-15T21:40:14.305009", "speaker": "Pendant (Sarvam Saaras)", "text": "For him.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:40:17", "timestamp": "2026-10-15T21:40:17.030204", "speaker": "Pendant (Sarvam Saaras)", "text": "Apne wahan pe.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:40:18", "timestamp": "2026-10-15T21:40:18.065218", "speaker": "Pendant (Sarvam Saaras)", "text": "जितने भी लोग हैं।", "language": "hi-IN", "source": "sarvam"}
+{"time": "21:40:19", "timestamp": "2026-10-15T21:40:19.016686", "speaker": "Pendant (Sarvam Saaras)", "text": "सबको मारता था।", "language": "hi-IN", "source": "sarvam"}
+{"time": "21:40:27", "timestamp": "2026-10-15T21:40:27.150665", "speaker": "SPEAKER_00", "text": "وہ", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:27", "timestamp": "2026-10-15T21:40:27.150665", "speaker": "SPEAKER_00", "text": "اپنے", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:27", "timestamp": "2026-10-15T21:40:27.150665", "speaker": "SPEAKER_00", "text": "وہاں", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:27", "timestamp": "2026-10-15T21:40:27.150665", "speaker": "SPEAKER_00", "text": "پہ", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:27", "timestamp": "2026-10-15T21:40:27.150665", "speaker": "SPEAKER_00", "text": "جتنے", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:27", "timestamp": "2026-10-15T21:40:27.150665", "speaker": "SPEAKER_00", "text": "بھی", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:28", "timestamp": "2026-10-15T21:40:28.918983", "speaker": "SPEAKER_00", "text": "لوگ", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:28", "timestamp": "2026-10-15T21:40:28.918983", "speaker": "SPEAKER_00", "text": "ہیں،", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:28", "timestamp": "2026-10-15T21:40:28.918983", "speaker": "SPEAKER_00", "text": "سب", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:28", "timestamp": "2026-10-15T21:40:28.918983", "speaker": "SPEAKER_00", "text": "کو", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:28", "timestamp": "2026-10-15T21:40:28.918983", "speaker": "SPEAKER_00", "text": "مارتا", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:40:54", "timestamp": "2026-10-15T21:40:54.694856", "speaker": "Pendant (Sarvam Saaras)", "text": "Hmm.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:40:57", "timestamp": "2026-10-15T21:40:57.514237", "speaker": "Pendant (Sarvam Saaras)", "text": "Same.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:40:59", "timestamp": "2026-10-15T21:40:59.026105", "speaker": "Pendant (Sarvam Saaras)", "text": "You are.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:00", "timestamp": "2026-10-15T21:41:00.775377", "speaker": "Pendant (Sarvam Saaras)", "text": "This one.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:02", "timestamp": "2026-10-15T21:41:02.747431", "speaker": "Pendant (Sarvam Saaras)", "text": "Speak.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:03", "timestamp": "2026-10-15T21:41:03.686141", "speaker": "Pendant (Sarvam Saaras)", "text": "Zero.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:04", "timestamp": "2026-10-15T21:41:04.989880", "speaker": "Pendant (Sarvam Saaras)", "text": "Little.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:07", "timestamp": "2026-10-15T21:41:07.966559", "speaker": "Pendant (Sarvam Saaras)", "text": "And.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:08", "timestamp": "2026-10-15T21:41:08.972440", "speaker": "Pendant (Sarvam Saaras)", "text": "Yeah.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:14", "timestamp": "2026-10-15T21:41:14.433288", "speaker": "Pendant (Sarvam Saaras)", "text": "And.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:15", "timestamp": "2026-10-15T21:41:15.408493", "speaker": "Pendant (Sarvam Saaras)", "text": "Sometimes.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:17", "timestamp": "2026-10-15T21:41:17.688776", "speaker": "SPEAKER_00", "text": "تھا۔", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:41:25", "timestamp": "2026-10-15T21:41:25.273578", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:25", "timestamp": "2026-10-15T21:41:25.971613", "speaker": "SPEAKER_0", "text": "Sir Room Saddus.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:41:28", "timestamp": "2026-10-15T21:41:28.678245", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:29", "timestamp": "2026-10-15T21:41:29.692791", "speaker": "Pendant (Sarvam Saaras)", "text": "Sorry.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:37", "timestamp": "2026-10-15T21:41:37.756653", "speaker": "Pendant (Sarvam Saaras)", "text": "Or be.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:40", "timestamp": "2026-10-15T21:41:40.078856", "speaker": "Pendant (Sarvam Saaras)", "text": "Still.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:41", "timestamp": "2026-10-15T21:41:41.047244", "speaker": "Pendant (Sarvam Saaras)", "text": "Doing.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:42", "timestamp": "2026-10-15T21:41:42.043493", "speaker": "Pendant (Sarvam Saaras)", "text": "Processing.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:45", "timestamp": "2026-10-15T21:41:45.088399", "speaker": "SPEAKER_0", "text": "Are we still doing processing from only?", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:41:45", "timestamp": "2026-10-15T21:41:45.088399", "speaker": "SPEAKER_0", "text": "Also, could you check?", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:41:46", "timestamp": "2026-10-15T21:41:46.147592", "speaker": "Pendant (Sarvam Saaras)", "text": "Come on.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:49", "timestamp": "2026-10-15T21:41:49.218941", "speaker": "Pendant (Sarvam Saaras)", "text": "Also could you.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:50", "timestamp": "2026-10-15T21:41:50.278923", "speaker": "Pendant (Sarvam Saaras)", "text": "Processing. Come on me. Also, could you check.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214141_16000hz.wav"}
+{"time": "21:41:50", "timestamp": "2026-10-15T21:41:50.555406", "speaker": "Pendant (Sarvam Saaras)", "text": "Check.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:50", "timestamp": "2026-10-15T21:41:50.985618", "speaker": "SPEAKER_0", "text": "What homie is sending to server?", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:41:57", "timestamp": "2026-10-15T21:41:57.778848", "speaker": "SPEAKER_0", "text": "Is it already in text or raw audio?", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:41:57", "timestamp": "2026-10-15T21:41:57.906883", "speaker": "Pendant (Sarvam Saaras)", "text": "What.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:41:59", "timestamp": "2026-10-15T21:41:59.163682", "speaker": "Pendant (Sarvam Saaras)", "text": "Only is.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:42:00", "timestamp": "2026-10-15T21:42:00.767929", "speaker": "Pendant (Sarvam Saaras)", "text": "Sending.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:42:02", "timestamp": "2026-10-15T21:42:02.583959", "speaker": "Pendant (Sarvam Saaras)", "text": "Processing from Omi. Also, could you check what Omi is sending?", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214141_16000hz.wav"}
+{"time": "21:42:04", "timestamp": "2026-10-15T21:42:04.060036", "speaker": "SPEAKER_0", "text": "If audio then in which part?", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:42:04", "timestamp": "2026-10-15T21:42:04.177969", "speaker": "Pendant (Sarvam Saaras)", "text": "2 7.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:42:06", "timestamp": "2026-10-15T21:42:06.464661", "speaker": "Pendant (Sarvam Saaras)", "text": "Is it.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:42:09", "timestamp": "2026-10-15T21:42:09.242809", "speaker": "Pendant (Sarvam Saaras)", "text": "Already.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:42:10", "timestamp": "2026-10-15T21:42:10.019635", "speaker": "SPEAKER_0", "text": "format.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:42:10", "timestamp": "2026-10-15T21:42:10.019635", "speaker": "SPEAKER_0", "text": "You need to do it.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:42:10", "timestamp": "2026-10-15T21:42:10.860305", "speaker": "Pendant (Sarvam Saaras)", "text": "And.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:42:14", "timestamp": "2026-10-15T21:42:14.182535", "speaker": "Pendant (Sarvam Saaras)", "text": "Oh no.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:42:14", "timestamp": "2026-10-15T21:42:14.954245", "speaker": "Pendant (Sarvam Saaras)", "text": "Processing from Omi. Also, could you check what Omi is sending to server? Is it already in text or raw?", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214141_16000hz.wav"}
+{"time": "21:42:15", "timestamp": "2026-10-15T21:42:15.094083", "speaker": "Pendant (Sarvam Saaras)", "text": "Oh, audio.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:42:17", "timestamp": "2026-10-15T21:42:17.078768", "speaker": "SPEAKER_0", "text": "Yeah.", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:42:29", "timestamp": "2026-10-15T21:42:29.666030", "speaker": "SPEAKER_0", "text": "That's", "source": "omi_app", "uid": "sgAeU2bsKmcTLuV0BxdABjoOcYK2"}
+{"time": "21:47:12", "timestamp": "2026-10-15T21:47:12.922591", "speaker": "Pendant (Sarvam Saaras)", "text": "Hey.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:13", "timestamp": "2026-10-15T21:47:13.857759", "speaker": "Pendant (Sarvam Saaras)", "text": "Hey, hello, how are you?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:14", "timestamp": "2026-10-15T21:47:14.912707", "speaker": "Pendant (Sarvam Saaras)", "text": "How are you?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:16", "timestamp": "2026-10-15T21:47:16.840850", "speaker": "Pendant (Sarvam Saaras)", "text": "Hey, are you doing all right?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:17", "timestamp": "2026-10-15T21:47:17.627523", "speaker": "Pendant (Sarvam Saaras)", "text": "Are you doing all right?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:19", "timestamp": "2026-10-15T21:47:19.602744", "speaker": "Pendant (Sarvam Saaras)", "text": "And.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:20", "timestamp": "2026-10-15T21:47:20.584789", "speaker": "Pendant (Sarvam Saaras)", "text": "Are you facing any problem?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:21", "timestamp": "2026-10-15T21:47:21.351683", "speaker": "Pendant (Sarvam Saaras)", "text": "Any problems.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:24", "timestamp": "2026-10-15T21:47:24.398543", "speaker": "Pendant (Sarvam Saaras)", "text": "I don't know.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:26", "timestamp": "2026-10-15T21:47:26.156064", "speaker": "Pendant (Sarvam Saaras)", "text": "The app is on me.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:27", "timestamp": "2026-10-15T21:47:27.092798", "speaker": "Pendant (Sarvam Saaras)", "text": "App is only signing in.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:28", "timestamp": "2026-10-15T21:47:28.049991", "speaker": "Pendant (Sarvam Saaras)", "text": "Signing in.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:30", "timestamp": "2026-10-15T21:47:30.716149", "speaker": "Pendant (Sarvam Saaras)", "text": "This one.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:35", "timestamp": "2026-10-15T21:47:35.408976", "speaker": "Pendant (Sarvam Saaras)", "text": "I'm not.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:36", "timestamp": "2026-10-15T21:47:36.548295", "speaker": "Pendant (Sarvam Saaras)", "text": "I'm not sure about it.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:37", "timestamp": "2026-10-15T21:47:37.668237", "speaker": "Pendant (Sarvam Saaras)", "text": "What about it?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:47", "timestamp": "2026-10-15T21:47:47.746566", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:48", "timestamp": "2026-10-15T21:47:48.207796", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214742_16000hz.wav"}
+{"time": "21:47:50", "timestamp": "2026-10-15T21:47:50.464587", "speaker": "Pendant (Sarvam Saaras)", "text": "My name is Anup.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:51", "timestamp": "2026-10-15T21:47:51.475284", "speaker": "Pendant (Sarvam Saaras)", "text": "My name is Anup and I love building.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:52", "timestamp": "2026-10-15T21:47:52.447370", "speaker": "Pendant (Sarvam Saaras)", "text": "I love building stuff.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:47:53", "timestamp": "2026-10-15T21:47:53.845323", "speaker": "Pendant (Sarvam Saaras)", "text": "Stuff.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:00", "timestamp": "2026-10-15T21:48:00.644115", "speaker": "Pendant (Sarvam Saaras)", "text": "So, my name is Anup and I love building stuff.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214742_16000hz.wav"}
+{"time": "21:48:06", "timestamp": "2026-10-15T21:48:06.961044", "speaker": "Pendant (Sarvam Saaras)", "text": "So, my name is Anup and I love building stuff.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214742_16000hz.wav"}
+{"time": "21:48:11", "timestamp": "2026-10-15T21:48:11.071603", "speaker": "Pendant (Sarvam Saaras)", "text": "So my.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:12", "timestamp": "2026-10-15T21:48:12.135293", "speaker": "Pendant (Sarvam Saaras)", "text": "So my name is Anup.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:13", "timestamp": "2026-10-15T21:48:13.163634", "speaker": "Pendant (Sarvam Saaras)", "text": "Anup and I'm love building.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:13", "timestamp": "2026-10-15T21:48:13.304055", "speaker": "Pendant (Sarvam Saaras)", "text": "So, my name is Anup and I love building stuff. So my name is Anup and I love building.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214742_16000hz.wav"}
+{"time": "21:48:13", "timestamp": "2026-10-15T21:48:13.826802", "speaker": "Pendant (Sarvam Saaras)", "text": "I love building.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:14", "timestamp": "2026-10-15T21:48:14.851283", "speaker": "Pendant (Sarvam Saaras)", "text": "Stuff.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:15", "timestamp": "2026-10-15T21:48:15.833666", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:22", "timestamp": "2026-10-15T21:48:22.617505", "speaker": "Pendant (Sarvam Saaras)", "text": "Hey, my name is.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:23", "timestamp": "2026-10-15T21:48:23.677534", "speaker": "Pendant (Sarvam Saaras)", "text": "Hey, my name is Anup and I love.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:24", "timestamp": "2026-10-15T21:48:24.583573", "speaker": "Pendant (Sarvam Saaras)", "text": "No, and I love building stuff.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:25", "timestamp": "2026-10-15T21:48:25.309494", "speaker": "Pendant (Sarvam Saaras)", "text": "And stuff.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:39", "timestamp": "2026-10-15T21:48:39.302409", "speaker": "Pendant (Sarvam Saaras)", "text": "A man oop.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:44", "timestamp": "2026-10-15T21:48:44.284695", "speaker": "Pendant (Sarvam Saaras)", "text": "A man oop.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214838_16000hz.wav"}
+{"time": "21:48:45", "timestamp": "2026-10-15T21:48:45.172478", "speaker": "Pendant (Sarvam Saaras)", "text": "And one of the", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:46", "timestamp": "2026-10-15T21:48:46.710814", "speaker": "Pendant (Sarvam Saaras)", "text": "And one of the biggest motivation.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:47", "timestamp": "2026-10-15T21:48:47.416070", "speaker": "Pendant (Sarvam Saaras)", "text": "Motivation.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:48", "timestamp": "2026-10-15T21:48:48.444878", "speaker": "Pendant (Sarvam Saaras)", "text": "For me to do.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:49", "timestamp": "2026-10-15T21:48:49.672397", "speaker": "Pendant (Sarvam Saaras)", "text": "To do any work is.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:50", "timestamp": "2026-10-15T21:48:50.462494", "speaker": "Pendant (Sarvam Saaras)", "text": "Word is, you know, whenever it's.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:50", "timestamp": "2026-10-15T21:48:50.620280", "speaker": "Pendant (Sarvam Saaras)", "text": "And one of the biggest motivation for me to do any work is, you know, whenever it's", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214838_16000hz.wav"}
+{"time": "21:48:51", "timestamp": "2026-10-15T21:48:51.360555", "speaker": "Pendant (Sarvam Saaras)", "text": "Whenever it's involved hardware.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:52", "timestamp": "2026-10-15T21:48:52.337602", "speaker": "Pendant (Sarvam Saaras)", "text": "Hardware.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:53", "timestamp": "2026-10-15T21:48:53.552325", "speaker": "Pendant (Sarvam Saaras)", "text": "And when.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:54", "timestamp": "2026-10-15T21:48:54.703566", "speaker": "Pendant (Sarvam Saaras)", "text": "And when you see what's up.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:55", "timestamp": "2026-10-15T21:48:55.693325", "speaker": "Pendant (Sarvam Saaras)", "text": "See what's happening. That's why you.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:56", "timestamp": "2026-10-15T21:48:56.418568", "speaker": "Pendant (Sarvam Saaras)", "text": "That's where you.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:56", "timestamp": "2026-10-15T21:48:56.994674", "speaker": "Pendant (Sarvam Saaras)", "text": "And one of the biggest motivation for me to do any work is, you know, whenever it's involved hardware. And when you see what's happening, that's why you", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214838_16000hz.wav"}
+{"time": "21:48:57", "timestamp": "2026-10-15T21:48:57.432070", "speaker": "Pendant (Sarvam Saaras)", "text": "Get the best.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:58", "timestamp": "2026-10-15T21:48:58.442678", "speaker": "Pendant (Sarvam Saaras)", "text": "The best.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:48:59", "timestamp": "2026-10-15T21:48:59.411424", "speaker": "Pendant (Sarvam Saaras)", "text": "You know.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:01", "timestamp": "2026-10-15T21:49:01.082282", "speaker": "Pendant (Sarvam Saaras)", "text": "Feeling.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:03", "timestamp": "2026-10-15T21:49:03.379552", "speaker": "Pendant (Sarvam Saaras)", "text": "And one of the biggest motivation for me to do any work is, you know, whenever it's involved hardware. And when you see what's happening, that's where you get the best, you know, feeling.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214838_16000hz.wav"}
+{"time": "21:49:09", "timestamp": "2026-10-15T21:49:09.805366", "speaker": "Pendant (Sarvam Saaras)", "text": "And one of the biggest motivation for me to do any work is, you know, whenever it's involved hardware. And when you see what's happening, that's where you get the best, you know, feeling.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214838_16000hz.wav"}
+{"time": "21:49:27", "timestamp": "2026-10-15T21:49:27.806875", "speaker": "Pendant (Sarvam Saaras)", "text": "So I have.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:28", "timestamp": "2026-10-15T21:49:28.779282", "speaker": "Pendant (Sarvam Saaras)", "text": "I have Ola money.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:29", "timestamp": "2026-10-15T21:49:29.499428", "speaker": "Pendant (Sarvam Saaras)", "text": "All our months.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:30", "timestamp": "2026-10-15T21:49:30.464978", "speaker": "Pendant (Sarvam Saaras)", "text": "Installed here.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:33", "timestamp": "2026-10-15T21:49:33.437527", "speaker": "Pendant (Sarvam Saaras)", "text": "Model in.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:34", "timestamp": "2026-10-15T21:49:34.418080", "speaker": "Pendant (Sarvam Saaras)", "text": "Model in chat.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:39", "timestamp": "2026-10-15T21:49:39.466788", "speaker": "Pendant (Sarvam Saaras)", "text": "Well.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:40", "timestamp": "2026-10-15T21:49:40.490601", "speaker": "Pendant (Sarvam Saaras)", "text": "Ulama ulama.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:41", "timestamp": "2026-10-15T21:49:41.390351", "speaker": "Pendant (Sarvam Saaras)", "text": "Ulama.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:42", "timestamp": "2026-10-15T21:49:42.155553", "speaker": "Pendant (Sarvam Saaras)", "text": "Oh.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:43", "timestamp": "2026-10-15T21:49:43.074029", "speaker": "Pendant (Sarvam Saaras)", "text": "Ma ulamah.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:44", "timestamp": "2026-10-15T21:49:44.129378", "speaker": "Pendant (Sarvam Saaras)", "text": "My olama.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:45", "timestamp": "2026-10-15T21:49:45.107612", "speaker": "Pendant (Sarvam Saaras)", "text": "Oh, my, oh.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:47", "timestamp": "2026-10-15T21:49:47.331290", "speaker": "Pendant (Sarvam Saaras)", "text": "அந்த அம்மா.", "language": "ta-IN", "source": "sarvam"}
+{"time": "21:49:50", "timestamp": "2026-10-15T21:49:50.245014", "speaker": "Pendant (Sarvam Saaras)", "text": "21 not 2.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:53", "timestamp": "2026-10-15T21:49:53.355726", "speaker": "Pendant (Sarvam Saaras)", "text": "Chumana chumana.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214948_16000hz.wav"}
+{"time": "21:49:53", "timestamp": "2026-10-15T21:49:53.728458", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:54", "timestamp": "2026-10-15T21:49:54.352552", "speaker": "Pendant (Sarvam Saaras)", "text": "Chomla chomla.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:55", "timestamp": "2026-10-15T21:49:55.165395", "speaker": "Pendant (Sarvam Saaras)", "text": "So long.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:57", "timestamp": "2026-10-15T21:49:57.178322", "speaker": "Pendant (Sarvam Saaras)", "text": "Amma jawa.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:58", "timestamp": "2026-10-15T21:49:58.127732", "speaker": "Pendant (Sarvam Saaras)", "text": "Jawa ho gayi.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:59", "timestamp": "2026-10-15T21:49:59.187017", "speaker": "Pendant (Sarvam Saaras)", "text": "Okay.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:49:59", "timestamp": "2026-10-15T21:49:59.672833", "speaker": "Pendant (Sarvam Saaras)", "text": "Chumla chumla. Chumla chumla. Amma jama ho gayi.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214948_16000hz.wav"}
+{"time": "21:50:02", "timestamp": "2026-10-15T21:50:02.944464", "speaker": "Pendant (Sarvam Saaras)", "text": "Open.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:50:03", "timestamp": "2026-10-15T21:50:03.912351", "speaker": "Pendant (Sarvam Saaras)", "text": "And all our mom.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:50:05", "timestamp": "2026-10-15T21:50:05.979261", "speaker": "Pendant (Sarvam Saaras)", "text": "Chumla chumla chumla chumla Amma java ho gayi Open Olamalam.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214948_16000hz.wav"}
+{"time": "21:50:12", "timestamp": "2026-10-15T21:50:12.301994", "speaker": "Pendant (Sarvam Saaras)", "text": "Chumla chumla chumla chumla Amma jawa ho gayi Open Ola Malama", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214948_16000hz.wav"}
+{"time": "21:50:18", "timestamp": "2026-10-15T21:50:18.712086", "speaker": "Pendant (Sarvam Saaras)", "text": "Chumla chumla chumla chumla. Amma jawa ho gayi. Open Ola Mala.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214948_16000hz.wav"}
+{"time": "21:50:25", "timestamp": "2026-10-15T21:50:25.112514", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:50:26", "timestamp": "2026-10-15T21:50:26.293522", "speaker": "Pendant (Sarvam Saaras)", "text": "So the next one.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:15", "timestamp": "2026-10-15T21:52:15.730032", "speaker": "Pendant (Sarvam Saaras)", "text": "Good things.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:16", "timestamp": "2026-10-15T21:52:16.725380", "speaker": "Pendant (Sarvam Saaras)", "text": "Good. Things seems to be good now.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:17", "timestamp": "2026-10-15T21:52:17.145209", "speaker": "Pendant (Sarvam Saaras)", "text": "Good. Things seems to be good now.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215202_16000hz.wav"}
+{"time": "21:52:17", "timestamp": "2026-10-15T21:52:17.421047", "speaker": "Pendant (Sarvam Saaras)", "text": "Superb.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:18", "timestamp": "2026-10-15T21:52:18.392380", "speaker": "Pendant (Sarvam Saaras)", "text": "Please.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:24", "timestamp": "2026-10-15T21:52:24.356966", "speaker": "Pendant (Sarvam Saaras)", "text": "Yeah.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:25", "timestamp": "2026-10-15T21:52:25.574805", "speaker": "Pendant (Sarvam Saaras)", "text": "Yeah, I think it's mostly the.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:26", "timestamp": "2026-10-15T21:52:26.483739", "speaker": "Pendant (Sarvam Saaras)", "text": "It's mostly the app.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:27", "timestamp": "2026-10-15T21:52:27.428996", "speaker": "Pendant (Sarvam Saaras)", "text": "App issue, no app issue.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:28", "timestamp": "2026-10-15T21:52:28.458362", "speaker": "Pendant (Sarvam Saaras)", "text": "You know, app is not able to.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:29", "timestamp": "2026-10-15T21:52:29.552821", "speaker": "Pendant (Sarvam Saaras)", "text": "Good, things seems to be good now at least. uh, yeah, I think it's mostly the app issue, you know, app is not able to.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215202_16000hz.wav"}
+{"time": "21:52:30", "timestamp": "2026-10-15T21:52:30.400024", "speaker": "Pendant (Sarvam Saaras)", "text": "Send the.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:31", "timestamp": "2026-10-15T21:52:31.400564", "speaker": "Pendant (Sarvam Saaras)", "text": "Send the data properly.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:32", "timestamp": "2026-10-15T21:52:32.343261", "speaker": "Pendant (Sarvam Saaras)", "text": "Properly, I guess.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:33", "timestamp": "2026-10-15T21:52:33.765073", "speaker": "Pendant (Sarvam Saaras)", "text": "That's the only problem that.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:34", "timestamp": "2026-10-15T21:52:34.648204", "speaker": "Pendant (Sarvam Saaras)", "text": "Problem that I see.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:35", "timestamp": "2026-10-15T21:52:35.645510", "speaker": "Pendant (Sarvam Saaras)", "text": "I see this. I think.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:35", "timestamp": "2026-10-15T21:52:35.967590", "speaker": "Pendant (Sarvam Saaras)", "text": "Good, things seems to be good now at least. uh, yeah, I think it's mostly the app issue, you know, app is not able to uh send the data properly, I guess. That's the only problem that I see, that's I think.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215202_16000hz.wav"}
+{"time": "21:52:36", "timestamp": "2026-10-15T21:52:36.696613", "speaker": "Pendant (Sarvam Saaras)", "text": "Yes, I think everything is doing good.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:37", "timestamp": "2026-10-15T21:52:37.568673", "speaker": "Pendant (Sarvam Saaras)", "text": "I think it's doing good.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:41", "timestamp": "2026-10-15T21:52:41.259382", "speaker": "Pendant (Sarvam Saaras)", "text": "Even app is also sending.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:42", "timestamp": "2026-10-15T21:52:42.280613", "speaker": "Pendant (Sarvam Saaras)", "text": "Is also sending, but I think it's.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:43", "timestamp": "2026-10-15T21:52:43.261669", "speaker": "Pendant (Sarvam Saaras)", "text": "I think it's. I think.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:44", "timestamp": "2026-10-15T21:52:44.178752", "speaker": "Pendant (Sarvam Saaras)", "text": "I feel it's most like the UI.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:45", "timestamp": "2026-10-15T21:52:45.123637", "speaker": "Pendant (Sarvam Saaras)", "text": "Most like the UI problem because.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:46", "timestamp": "2026-10-15T21:52:46.143596", "speaker": "Pendant (Sarvam Saaras)", "text": "Problem because.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:48", "timestamp": "2026-10-15T21:52:48.910555", "speaker": "Pendant (Sarvam Saaras)", "text": "See, even.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:49", "timestamp": "2026-10-15T21:52:49.955033", "speaker": "Pendant (Sarvam Saaras)", "text": "See whenever I'm speaking I'm.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:50", "timestamp": "2026-10-15T21:52:50.904389", "speaker": "Pendant (Sarvam Saaras)", "text": "Speaking, I am able to see.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:51", "timestamp": "2026-10-15T21:52:51.886122", "speaker": "Pendant (Sarvam Saaras)", "text": "To see.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:53", "timestamp": "2026-10-15T21:52:53.336443", "speaker": "Pendant (Sarvam Saaras)", "text": "Things happen.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:52:54", "timestamp": "2026-10-15T21:52:54.187411", "speaker": "Pendant (Sarvam Saaras)", "text": "Things happening.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:53:00", "timestamp": "2026-10-15T21:53:00.236853", "speaker": "Pendant (Sarvam Saaras)", "text": "Yeah and some.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:53:01", "timestamp": "2026-10-15T21:53:01.157362", "speaker": "Pendant (Sarvam Saaras)", "text": "And sometimes I'm getting this.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:53:02", "timestamp": "2026-10-15T21:53:02.097701", "speaker": "Pendant (Sarvam Saaras)", "text": "I'm getting this error.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:53:03", "timestamp": "2026-10-15T21:53:03.123229", "speaker": "Pendant (Sarvam Saaras)", "text": "Yeah, right.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:53:04", "timestamp": "2026-10-15T21:53:04.198326", "speaker": "Pendant (Sarvam Saaras)", "text": "So something is wrong.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:53:05", "timestamp": "2026-10-15T21:53:05.696934", "speaker": "Pendant (Sarvam Saaras)", "text": "Something is wrong.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:53:06", "timestamp": "2026-10-15T21:53:06.109312", "speaker": "Pendant (Sarvam Saaras)", "text": "Either at.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:53:07", "timestamp": "2026-10-15T21:53:07.130754", "speaker": "Pendant (Sarvam Saaras)", "text": "That.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:13", "timestamp": "2026-10-15T21:54:13.521106", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:14", "timestamp": "2026-10-15T21:54:14.521439", "speaker": "Pendant (Sarvam Saaras)", "text": "So as you know.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:15", "timestamp": "2026-10-15T21:54:15.220023", "speaker": "Pendant (Sarvam Saaras)", "text": "As you know.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:17", "timestamp": "2026-10-15T21:54:17.273189", "speaker": "Pendant (Sarvam Saaras)", "text": "So as in.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:18", "timestamp": "2026-10-15T21:54:18.200012", "speaker": "Pendant (Sarvam Saaras)", "text": "So as you know, there is one problem.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:19", "timestamp": "2026-10-15T21:54:19.186498", "speaker": "Pendant (Sarvam Saaras)", "text": "There is one project which is going on.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:20", "timestamp": "2026-10-15T21:54:20.753681", "speaker": "Pendant (Sarvam Saaras)", "text": "Which is going on.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:22", "timestamp": "2026-10-15T21:54:22.620071", "speaker": "Pendant (Sarvam Saaras)", "text": "In the.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:23", "timestamp": "2026-10-15T21:54:23.701921", "speaker": "Pendant (Sarvam Saaras)", "text": "Digital Ocean server.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:24", "timestamp": "2026-10-15T21:54:24.681298", "speaker": "Pendant (Sarvam Saaras)", "text": "Server.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:25", "timestamp": "2026-10-15T21:54:25.702321", "speaker": "Pendant (Sarvam Saaras)", "text": "Related to.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:26", "timestamp": "2026-10-15T21:54:26.711336", "speaker": "Pendant (Sarvam Saaras)", "text": "Related to seeing this thing.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:27", "timestamp": "2026-10-15T21:54:27.792187", "speaker": "Pendant (Sarvam Saaras)", "text": "In the Digital Ocean server related to seeing this thing.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215420_16000hz.wav"}
+{"time": "21:54:28", "timestamp": "2026-10-15T21:54:28.135280", "speaker": "Pendant (Sarvam Saaras)", "text": "This thing only.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:29", "timestamp": "2026-10-15T21:54:29.403044", "speaker": "Pendant (Sarvam Saaras)", "text": "So there if you check.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:30", "timestamp": "2026-10-15T21:54:30.386547", "speaker": "Pendant (Sarvam Saaras)", "text": "There, if you check the individual server.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:31", "timestamp": "2026-10-15T21:54:31.708257", "speaker": "Pendant (Sarvam Saaras)", "text": "The digital server for this.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:32", "timestamp": "2026-10-15T21:54:32.658207", "speaker": "Pendant (Sarvam Saaras)", "text": "For this Dream AI project.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:33", "timestamp": "2026-10-15T21:54:33.470986", "speaker": "Pendant (Sarvam Saaras)", "text": "AI project.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:34", "timestamp": "2026-10-15T21:54:34.182184", "speaker": "Pendant (Sarvam Saaras)", "text": "In the Digital Ocean server related to same this thing only. So there if you check the in the Digital Ocean server for this Dream AI project.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215420_16000hz.wav"}
+{"time": "21:54:36", "timestamp": "2026-10-15T21:54:36.713687", "speaker": "Pendant (Sarvam Saaras)", "text": "uh.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:37", "timestamp": "2026-10-15T21:54:37.524443", "speaker": "Pendant (Sarvam Saaras)", "text": "We are.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:38", "timestamp": "2026-10-15T21:54:38.919809", "speaker": "Pendant (Sarvam Saaras)", "text": "They're doing bunch of stuff.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:39", "timestamp": "2026-10-15T21:54:39.914730", "speaker": "Pendant (Sarvam Saaras)", "text": "Bunch of stuff we are having a.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:40", "timestamp": "2026-10-15T21:54:40.618864", "speaker": "Pendant (Sarvam Saaras)", "text": "In the Digital Ocean server related to same this thing only. So there if you check the in the Digital Ocean server for this Dream AI project, we are doing bunch of stuff, we are having a", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215420_16000hz.wav"}
+{"time": "21:54:40", "timestamp": "2026-10-15T21:54:40.950586", "speaker": "Pendant (Sarvam Saaras)", "text": "We are having a UI as well.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:41", "timestamp": "2026-10-15T21:54:41.982386", "speaker": "Pendant (Sarvam Saaras)", "text": "As well, we're showing the endpoints.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:43", "timestamp": "2026-10-15T21:54:43.440782", "speaker": "Pendant (Sarvam Saaras)", "text": "So the endpoints, right?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:44", "timestamp": "2026-10-15T21:54:44.389902", "speaker": "Pendant (Sarvam Saaras)", "text": "So what I want you to do.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:45", "timestamp": "2026-10-15T21:54:45.341960", "speaker": "Pendant (Sarvam Saaras)", "text": "Want you to do is you know so.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:46", "timestamp": "2026-10-15T21:54:46.087143", "speaker": "Pendant (Sarvam Saaras)", "text": "You know, so.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:47", "timestamp": "2026-10-15T21:54:47.076973", "speaker": "Pendant (Sarvam Saaras)", "text": "In the UAE.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:47", "timestamp": "2026-10-15T21:54:47.099921", "speaker": "Pendant (Sarvam Saaras)", "text": "In the DigitalOcean server related to same this thing only. So there if you check the in DigitalOcean server for this Dream AI project, we are doing bunch of stuff. We are having a UI as well where we are showing the endpoints, right? So what I want you to do is you know so.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215420_16000hz.wav"}
+{"time": "21:54:48", "timestamp": "2026-10-15T21:54:48.281339", "speaker": "Pendant (Sarvam Saaras)", "text": "In the UI only we will have.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:49", "timestamp": "2026-10-15T21:54:49.289292", "speaker": "Pendant (Sarvam Saaras)", "text": "We will have one summarize.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:50", "timestamp": "2026-10-15T21:54:50.286330", "speaker": "Pendant (Sarvam Saaras)", "text": "Summarize page.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:51", "timestamp": "2026-10-15T21:54:51.540876", "speaker": "Pendant (Sarvam Saaras)", "text": "I didn't know something like.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:52", "timestamp": "2026-10-15T21:54:52.526574", "speaker": "Pendant (Sarvam Saaras)", "text": "Something like.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:53", "timestamp": "2026-10-15T21:54:53.682474", "speaker": "Pendant (Sarvam Saaras)", "text": "In the Digital Ocean server related to same this thing only. So there if you check the Digital Ocean server for this Dream AI project, we are doing bunch of stuff. We are having a UI as well where we are showing the endpoints, right? So what I want you to do is, you know, so in the UI only we will have one summarize page or you know something like.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215420_16000hz.wav"}
+{"time": "21:54:54", "timestamp": "2026-10-15T21:54:54.170041", "speaker": "Pendant (Sarvam Saaras)", "text": "Key points.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:55", "timestamp": "2026-10-15T21:54:55.807832", "speaker": "Pendant (Sarvam Saaras)", "text": "Decision taken.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:56", "timestamp": "2026-10-15T21:54:56.805671", "speaker": "Pendant (Sarvam Saaras)", "text": "Decision taken is something.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:57", "timestamp": "2026-10-15T21:54:57.835691", "speaker": "Pendant (Sarvam Saaras)", "text": "Something like that.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:58", "timestamp": "2026-10-15T21:54:58.794740", "speaker": "Pendant (Sarvam Saaras)", "text": "That so.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:54:59", "timestamp": "2026-10-15T21:54:59.793247", "speaker": "Pendant (Sarvam Saaras)", "text": "So where as you.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:01", "timestamp": "2026-10-15T21:55:01.344455", "speaker": "Pendant (Sarvam Saaras)", "text": "As you can see already.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:02", "timestamp": "2026-10-15T21:55:02.372778", "speaker": "Pendant (Sarvam Saaras)", "text": "See already we are converting.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:04", "timestamp": "2026-10-15T21:55:04.272543", "speaker": "Pendant (Sarvam Saaras)", "text": "Text.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:06", "timestamp": "2026-10-15T21:55:06.139756", "speaker": "Pendant (Sarvam Saaras)", "text": "In the UI.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:06", "timestamp": "2026-10-15T21:55:06.675948", "speaker": "Pendant (Sarvam Saaras)", "text": "UI.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:07", "timestamp": "2026-10-15T21:55:07.626480", "speaker": "Pendant (Sarvam Saaras)", "text": "uh, in the into the server.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:08", "timestamp": "2026-10-15T21:55:08.379065", "speaker": "Pendant (Sarvam Saaras)", "text": "Into the server.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:09", "timestamp": "2026-10-15T21:55:09.361762", "speaker": "Pendant (Sarvam Saaras)", "text": "So this model.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:10", "timestamp": "2026-10-15T21:55:10.072622", "speaker": "Pendant (Sarvam Saaras)", "text": "Text in the UI, uh in the into the server basically. So this model.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215504_16000hz.wav"}
+{"time": "21:55:10", "timestamp": "2026-10-15T21:55:10.622716", "speaker": "Pendant (Sarvam Saaras)", "text": "Okay, so how are things? Is everything okay? How are things? Is everything okay? Hey, how are you?", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_214529_16000hz.wav"}
+{"time": "21:55:10", "timestamp": "2026-10-15T21:55:10.698477", "speaker": "Pendant (Sarvam Saaras)", "text": "So this model is hosted in my Mac.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:11", "timestamp": "2026-10-15T21:55:11.612202", "speaker": "Pendant (Sarvam Saaras)", "text": "Posted in my Mac Mini.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:13", "timestamp": "2026-10-15T21:55:13.394725", "speaker": "Pendant (Sarvam Saaras)", "text": "The Queen 3.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:14", "timestamp": "2026-10-15T21:55:14.338689", "speaker": "Pendant (Sarvam Saaras)", "text": "between 38 billion.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:15", "timestamp": "2026-10-15T21:55:15.295757", "speaker": "Pendant (Sarvam Saaras)", "text": "8 billion parameter.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:16", "timestamp": "2026-10-15T21:55:16.345865", "speaker": "Pendant (Sarvam Saaras)", "text": "But everything.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:16", "timestamp": "2026-10-15T21:55:16.438569", "speaker": "Pendant (Sarvam Saaras)", "text": "text in the UI, uh in the into the server basically. So this model is hosted in my Mac Mini, the Queen 38 billion parameter, but everything.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215504_16000hz.wav"}
+{"time": "21:55:17", "timestamp": "2026-10-15T21:55:17.487596", "speaker": "Pendant (Sarvam Saaras)", "text": "But everything is running on the server.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:18", "timestamp": "2026-10-15T21:55:18.473868", "speaker": "Pendant (Sarvam Saaras)", "text": "On the server. So server need to call.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:19", "timestamp": "2026-10-15T21:55:19.491963", "speaker": "Pendant (Sarvam Saaras)", "text": "Everyone need to call the.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:20", "timestamp": "2026-10-15T21:55:20.658723", "speaker": "Pendant (Sarvam Saaras)", "text": "The Mac for.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:21", "timestamp": "2026-10-15T21:55:21.126861", "speaker": "Pendant (Sarvam Saaras)", "text": "For.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:22", "timestamp": "2026-10-15T21:55:22.562471", "speaker": "Pendant (Sarvam Saaras)", "text": "During the LLM process.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:22", "timestamp": "2026-10-15T21:55:22.859332", "speaker": "Pendant (Sarvam Saaras)", "text": "text in the UI, uh in the into the server basically. So this model is hosted in my Mac Mini, the Queen 38 billion parameter, but everything is running on the server. So server need to call the Mac for doing the LLM process.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215504_16000hz.wav"}
+{"time": "21:55:23", "timestamp": "2026-10-15T21:55:23.759577", "speaker": "Pendant (Sarvam Saaras)", "text": "The LLM processing and the Mac.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:24", "timestamp": "2026-10-15T21:55:24.730865", "speaker": "Pendant (Sarvam Saaras)", "text": "And the Mac, whatever the returns.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:25", "timestamp": "2026-10-15T21:55:25.731657", "speaker": "Pendant (Sarvam Saaras)", "text": "The returns that.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:26", "timestamp": "2026-10-15T21:55:26.735528", "speaker": "Pendant (Sarvam Saaras)", "text": "Gets.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:27", "timestamp": "2026-10-15T21:55:27.753001", "speaker": "Pendant (Sarvam Saaras)", "text": "You need to get it back.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:28", "timestamp": "2026-10-15T21:55:28.795603", "speaker": "Pendant (Sarvam Saaras)", "text": "Need to get it back to the server, so that's.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:29", "timestamp": "2026-10-15T21:55:29.304373", "speaker": "Pendant (Sarvam Saaras)", "text": "text in the UI uh in the into the server basically. So this model is hosted in my Mac Mini, the Queen 3 8 billion parameter, but everything is running on the server. So server need to call the Mac for doing the LLM processing and the Mac whatever the returns it gets, it need to get it back to the server. So the", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215504_16000hz.wav"}
+{"time": "21:55:29", "timestamp": "2026-10-15T21:55:29.679096", "speaker": "Pendant (Sarvam Saaras)", "text": "Server, so the server can, you know.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:30", "timestamp": "2026-10-15T21:55:30.633434", "speaker": "Pendant (Sarvam Saaras)", "text": "Can you know showcase.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:32", "timestamp": "2026-10-15T21:55:32.140943", "speaker": "Pendant (Sarvam Saaras)", "text": "Showcase. Okay, like this is a summer.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:33", "timestamp": "2026-10-15T21:55:33.398367", "speaker": "Pendant (Sarvam Saaras)", "text": "This is a summary sort of thing.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:33", "timestamp": "2026-10-15T21:55:33.554887", "speaker": "Pendant (Sarvam Saaras)", "text": "text in the UI uh in the into the server basically. So this model is hosted in my Mac Mini, the Queen 3 8 billion parameter, but everything is running on the server. So server need to call the Mac for doing the LLM processing and the Mac whatever the returns it gets, it need to get it back to the server so the server can you know showcase okay like this is a.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215504_16000hz.wav"}
+{"time": "21:55:34", "timestamp": "2026-10-15T21:55:34.314031", "speaker": "Pendant (Sarvam Saaras)", "text": "Sort of thing and it.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:34", "timestamp": "2026-10-15T21:55:34.922118", "speaker": "Pendant (Sarvam Saaras)", "text": "And it can.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:35", "timestamp": "2026-10-15T21:55:35.979806", "speaker": "Pendant (Sarvam Saaras)", "text": "And be you know 5 minutes.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:37", "timestamp": "2026-10-15T21:55:37.236308", "speaker": "Pendant (Sarvam Saaras)", "text": "You know, a 5 minute summary or something.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:38", "timestamp": "2026-10-15T21:55:38.214900", "speaker": "Pendant (Sarvam Saaras)", "text": "Somebody or something, I am fine with it.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:39", "timestamp": "2026-10-15T21:55:39.191632", "speaker": "Pendant (Sarvam Saaras)", "text": "I'm fine with it.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:55:41", "timestamp": "2026-10-15T21:55:41.611408", "speaker": "Pendant (Sarvam Saaras)", "text": "sort of thing and it can be you know a 5 minute summary or something I am fine with it.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215532_16000hz.wav"}
+{"time": "21:55:47", "timestamp": "2026-10-15T21:55:47.913024", "speaker": "Pendant (Sarvam Saaras)", "text": "sort of thing and it can be you know a 5 minute summary or something I am fine with it.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215532_16000hz.wav"}
+{"time": "21:55:54", "timestamp": "2026-10-15T21:55:54.232859", "speaker": "Pendant (Sarvam Saaras)", "text": "sort of thing and it can be you know a 5 minute summary or something I am fine with it.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215532_16000hz.wav"}
+{"time": "21:55:59", "timestamp": "2026-10-15T21:55:59.848307", "speaker": "Pendant (Sarvam Saaras)", "text": "sort of thing and it can be you know a 5 minute summary or something I am fine with it.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215532_16000hz.wav"}
+{"time": "21:56:53", "timestamp": "2026-10-15T21:56:53.716998", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:56:54", "timestamp": "2026-10-15T21:56:54.744323", "speaker": "Pendant (Sarvam Saaras)", "text": "So I see that.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:56:55", "timestamp": "2026-10-15T21:56:55.704620", "speaker": "Pendant (Sarvam Saaras)", "text": "I see that.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:56:56", "timestamp": "2026-10-15T21:56:56.203710", "speaker": "Pendant (Sarvam Saaras)", "text": "So I see that.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215629_16000hz.wav"}
+{"time": "21:56:58", "timestamp": "2026-10-15T21:56:58.798756", "speaker": "Pendant (Sarvam Saaras)", "text": "So I see that.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215629_16000hz.wav"}
+{"time": "21:57:44", "timestamp": "2026-10-15T21:57:44.584354", "speaker": "Pendant (Sarvam Saaras)", "text": "What is.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:57:45", "timestamp": "2026-10-15T21:57:45.488438", "speaker": "Pendant (Sarvam Saaras)", "text": "What is your name?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:57:46", "timestamp": "2026-10-15T21:57:46.503069", "speaker": "Pendant (Sarvam Saaras)", "text": "Team.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:57:46", "timestamp": "2026-10-15T21:57:46.527588", "speaker": "Pendant (Sarvam Saaras)", "text": "uh, what is your name?", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215725_16000hz.wav"}
+{"time": "21:57:51", "timestamp": "2026-10-15T21:57:51.798525", "speaker": "Pendant (Sarvam Saaras)", "text": "What is your name?", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215725_16000hz.wav"}
+{"time": "21:58:00", "timestamp": "2026-10-15T21:58:00.337950", "speaker": "Pendant (Sarvam Saaras)", "text": "So what is our name?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:01", "timestamp": "2026-10-15T21:58:01.435286", "speaker": "Pendant (Sarvam Saaras)", "text": "So what is your name?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:02", "timestamp": "2026-10-15T21:58:02.357533", "speaker": "Pendant (Sarvam Saaras)", "text": "What do you do?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:03", "timestamp": "2026-10-15T21:58:03.385514", "speaker": "Pendant (Sarvam Saaras)", "text": "Do.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:04", "timestamp": "2026-10-15T21:58:04.350482", "speaker": "Pendant (Sarvam Saaras)", "text": "What is there?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:05", "timestamp": "2026-10-15T21:58:05.075886", "speaker": "Pendant (Sarvam Saaras)", "text": "So what is your name? What do you do? What is your", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215751_16000hz.wav"}
+{"time": "21:58:05", "timestamp": "2026-10-15T21:58:05.617277", "speaker": "Pendant (Sarvam Saaras)", "text": "What is your hobby?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:06", "timestamp": "2026-10-15T21:58:06.605257", "speaker": "Pendant (Sarvam Saaras)", "text": "The and what you like to do.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:07", "timestamp": "2026-10-15T21:58:07.593357", "speaker": "Pendant (Sarvam Saaras)", "text": "What you like to do.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:11", "timestamp": "2026-10-15T21:58:11.470805", "speaker": "Pendant (Sarvam Saaras)", "text": "So what is your name? What do you do? What is your hobby? And what you like to do?", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215751_16000hz.wav"}
+{"time": "21:58:11", "timestamp": "2026-10-15T21:58:11.517769", "speaker": "Pendant (Sarvam Saaras)", "text": "Sending.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:12", "timestamp": "2026-10-15T21:58:12.655690", "speaker": "Pendant (Sarvam Saaras)", "text": "Pending pendant.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:13", "timestamp": "2026-10-15T21:58:13.679738", "speaker": "Pendant (Sarvam Saaras)", "text": "And this to.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:14", "timestamp": "2026-10-15T21:58:14.967500", "speaker": "Pendant (Sarvam Saaras)", "text": "To science.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:15", "timestamp": "2026-10-15T21:58:15.930425", "speaker": "Pendant (Sarvam Saaras)", "text": "Yes.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:58:20", "timestamp": "2026-10-15T21:58:20.289092", "speaker": "Pendant (Sarvam Saaras)", "text": "So what is your name? What do you do? What is your hobby? And what you like to do? Sending pendant this to Cyrus.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215751_16000hz.wav"}
+{"time": "21:59:14", "timestamp": "2026-10-15T21:59:14.413896", "speaker": "Pendant (Sarvam Saaras)", "text": "So just improve.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:15", "timestamp": "2026-10-15T21:59:15.378695", "speaker": "Pendant (Sarvam Saaras)", "text": "Also just improve the UI, okay.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:15", "timestamp": "2026-10-15T21:59:15.429388", "speaker": "Pendant (Sarvam Saaras)", "text": "So just improve.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215848_16000hz.wav"}
+{"time": "21:59:16", "timestamp": "2026-10-15T21:59:16.336443", "speaker": "Pendant (Sarvam Saaras)", "text": "UI. Okay, so.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:17", "timestamp": "2026-10-15T21:59:17.313500", "speaker": "Pendant (Sarvam Saaras)", "text": "Anyway, in the.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:18", "timestamp": "2026-10-15T21:59:18.654605", "speaker": "Pendant (Sarvam Saaras)", "text": "Why in the first.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:19", "timestamp": "2026-10-15T21:59:19.599686", "speaker": "Pendant (Sarvam Saaras)", "text": "That block.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:21", "timestamp": "2026-10-15T21:59:21.735753", "speaker": "Pendant (Sarvam Saaras)", "text": "Working on so he.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:22", "timestamp": "2026-10-15T21:59:22.830505", "speaker": "Pendant (Sarvam Saaras)", "text": "Working on, so he will do it.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:23", "timestamp": "2026-10-15T21:59:23.878297", "speaker": "Pendant (Sarvam Saaras)", "text": "So you just need to.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:24", "timestamp": "2026-10-15T21:59:24.886962", "speaker": "Pendant (Sarvam Saaras)", "text": "So you just need to say streaming not as a.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:25", "timestamp": "2026-10-15T21:59:25.807269", "speaker": "Pendant (Sarvam Saaras)", "text": "Not as a block, each.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:26", "timestamp": "2026-10-15T21:59:26.336593", "speaker": "Pendant (Sarvam Saaras)", "text": "The UI, okay, so in UI in the first that block that's working on, so he will do it. So you just need to say streaming not as a block each.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215915_16000hz.wav"}
+{"time": "21:59:26", "timestamp": "2026-10-15T21:59:26.923059", "speaker": "Pendant (Sarvam Saaras)", "text": "Each block, right?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:27", "timestamp": "2026-10-15T21:59:27.887040", "speaker": "Pendant (Sarvam Saaras)", "text": "Okay, right, how it is saying right now.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:28", "timestamp": "2026-10-15T21:59:28.881012", "speaker": "Pendant (Sarvam Saaras)", "text": "Right now.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:30", "timestamp": "2026-10-15T21:59:30.282513", "speaker": "Pendant (Sarvam Saaras)", "text": "And the second thing.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:31", "timestamp": "2026-10-15T21:59:31.337509", "speaker": "Pendant (Sarvam Saaras)", "text": "Second thing that I see is.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:32", "timestamp": "2026-10-15T21:59:32.190480", "speaker": "Pendant (Sarvam Saaras)", "text": "What I see is.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:32", "timestamp": "2026-10-15T21:59:32.785923", "speaker": "Pendant (Sarvam Saaras)", "text": "The UI, okay, so in UI, in the first that block that's working on, so he will do it. So you just need to say streaming, not as a block, each block, right, how it is saying right now. And the second thing that I see is, okay.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215915_16000hz.wav"}
+{"time": "21:59:33", "timestamp": "2026-10-15T21:59:33.007772", "speaker": "Pendant (Sarvam Saaras)", "text": "Okay.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:33", "timestamp": "2026-10-15T21:59:33.911604", "speaker": "Pendant (Sarvam Saaras)", "text": "So first of all you do this.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:35", "timestamp": "2026-10-15T21:59:35.299000", "speaker": "Pendant (Sarvam Saaras)", "text": "First of all, you do this.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:36", "timestamp": "2026-10-15T21:59:36.516091", "speaker": "Pendant (Sarvam Saaras)", "text": "Just make the UI little.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:37", "timestamp": "2026-10-15T21:59:37.382209", "speaker": "Pendant (Sarvam Saaras)", "text": "Make the UI little. I think now you.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:38", "timestamp": "2026-10-15T21:59:38.051975", "speaker": "Pendant (Sarvam Saaras)", "text": "I think now.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:39", "timestamp": "2026-10-15T21:59:39.047000", "speaker": "Pendant (Sarvam Saaras)", "text": "Know the use case, right?", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:40", "timestamp": "2026-10-15T21:59:40.126006", "speaker": "Pendant (Sarvam Saaras)", "text": "Use case, right? So initially it will just show.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:41", "timestamp": "2026-10-15T21:59:41.046919", "speaker": "Pendant (Sarvam Saaras)", "text": "Initially it will just show you the.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:43", "timestamp": "2026-10-15T21:59:43.015372", "speaker": "Pendant (Sarvam Saaras)", "text": "These.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:44", "timestamp": "2026-10-15T21:59:44.097348", "speaker": "Pendant (Sarvam Saaras)", "text": "The streaming sort of input.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:44", "timestamp": "2026-10-15T21:59:44.377695", "speaker": "Pendant (Sarvam Saaras)", "text": "The UI, okay, so in UI, in the first that block that's working on, so he will do it. So you just need to say streaming not as a block, each block, right, how it is saying right now. And the second thing that I see is, okay, so first of all you do this, just make the UI little, I think now you know the use case, right, so initially it will just show you the uh these.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215915_16000hz.wav"}
+{"time": "21:59:45", "timestamp": "2026-10-15T21:59:45.020708", "speaker": "Pendant (Sarvam Saaras)", "text": "Sort of input just in a one.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:46", "timestamp": "2026-10-15T21:59:46.026130", "speaker": "Pendant (Sarvam Saaras)", "text": "You know, one paragraph, something.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:46", "timestamp": "2026-10-15T21:59:46.954136", "speaker": "Pendant (Sarvam Saaras)", "text": "Something sort of and then it.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:48", "timestamp": "2026-10-15T21:59:48.376564", "speaker": "Pendant (Sarvam Saaras)", "text": "And then it get disappeared.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:49", "timestamp": "2026-10-15T21:59:49.361569", "speaker": "Pendant (Sarvam Saaras)", "text": "Save here the previous things.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:50", "timestamp": "2026-10-15T21:59:50.369314", "speaker": "Pendant (Sarvam Saaras)", "text": "Things.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:51", "timestamp": "2026-10-15T21:59:51.070194", "speaker": "Pendant (Sarvam Saaras)", "text": "Streaming sort of input just in a one paragraph something sort of and then it get disappear the previous things, once it.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215943_16000hz.wav"}
+{"time": "21:59:51", "timestamp": "2026-10-15T21:59:51.313665", "speaker": "Pendant (Sarvam Saaras)", "text": "Once it exit that some.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:52", "timestamp": "2026-10-15T21:59:52.290607", "speaker": "Pendant (Sarvam Saaras)", "text": "That's some 4 5.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:53", "timestamp": "2026-10-15T21:59:53.242611", "speaker": "Pendant (Sarvam Saaras)", "text": "4500 word limit.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:54", "timestamp": "2026-10-15T21:59:54.010954", "speaker": "Pendant (Sarvam Saaras)", "text": "Word limit.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:54", "timestamp": "2026-10-15T21:59:54.990422", "speaker": "Pendant (Sarvam Saaras)", "text": "You can make something.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:56", "timestamp": "2026-10-15T21:59:56.025732", "speaker": "Pendant (Sarvam Saaras)", "text": "And make something like that.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:57", "timestamp": "2026-10-15T21:59:57.101884", "speaker": "Pendant (Sarvam Saaras)", "text": "That.", "language": "en-IN", "source": "sarvam"}
+{"time": "21:59:57", "timestamp": "2026-10-15T21:59:57.432773", "speaker": "Pendant (Sarvam Saaras)", "text": "Streaming sort of input, just in a one paragraph something sort of, and then it get disappear the previous things. Once it exit that some 4 500 word limit, you can make something like that.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215943_16000hz.wav"}
+{"time": "21:59:59", "timestamp": "2026-10-15T21:59:59.044580", "speaker": "Pendant (Sarvam Saaras)", "text": "Yeah.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:00", "timestamp": "2026-10-15T22:00:00.183007", "speaker": "Pendant (Sarvam Saaras)", "text": "Yeah, and then it should just.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:01", "timestamp": "2026-10-15T22:00:01.046256", "speaker": "Pendant (Sarvam Saaras)", "text": "And then it will just keep on adding.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:01", "timestamp": "2026-10-15T22:00:01.832455", "speaker": "Pendant (Sarvam Saaras)", "text": "On adding.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:02", "timestamp": "2026-10-15T22:00:02.863831", "speaker": "Pendant (Sarvam Saaras)", "text": "Right. So.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:03", "timestamp": "2026-10-15T22:00:03.775521", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:03", "timestamp": "2026-10-15T22:00:03.880351", "speaker": "Pendant (Sarvam Saaras)", "text": "Streaming sort of input, just in a one paragraph something sort of, and then it get disappear the previous things. Once it exit that some 4 500 word limit, you can make something like that. uh yeah, and then it should just keep on adding, right? So.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215943_16000hz.wav"}
+{"time": "22:00:10", "timestamp": "2026-10-15T22:00:10.344619", "speaker": "Pendant (Sarvam Saaras)", "text": "Streaming sort of input, just in a one paragraph something sort of, and then it get disappear the previous things. Once it exit that some 400 500 word limit, you can make something like that. uh yeah, and then it should just keep on adding, right? So.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215943_16000hz.wav"}
+{"time": "22:00:11", "timestamp": "2026-10-15T22:00:11.708997", "speaker": "Pendant (Sarvam Saaras)", "text": "Streaming sort of input, just in a one paragraph something sort of, and then it get disappear the previous things. Once it exit that some 400 500 word limit, you can make something like that. uh yeah, and then it should just keep on adding, right? So.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_215943_16000hz.wav"}
+{"time": "22:00:30", "timestamp": "2026-10-15T22:00:30.792130", "speaker": "Pendant (Sarvam Saaras)", "text": "So one thing that I.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:31", "timestamp": "2026-10-15T22:00:31.487289", "speaker": "Pendant (Sarvam Saaras)", "text": "One thing that I want.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:32", "timestamp": "2026-10-15T22:00:32.528688", "speaker": "Pendant (Sarvam Saaras)", "text": "Want you to debug.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:33", "timestamp": "2026-10-15T22:00:33.491201", "speaker": "Pendant (Sarvam Saaras)", "text": "Debug is that you know.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:34", "timestamp": "2026-10-15T22:00:34.510057", "speaker": "Pendant (Sarvam Saaras)", "text": "That you know something is.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:35", "timestamp": "2026-10-15T22:00:35.274965", "speaker": "Pendant (Sarvam Saaras)", "text": "So one thing that I want you to debug is that you know something as.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220011_16000hz.wav"}
+{"time": "22:00:35", "timestamp": "2026-10-15T22:00:35.550433", "speaker": "Pendant (Sarvam Saaras)", "text": "Something is wrong here.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:36", "timestamp": "2026-10-15T22:00:36.531387", "speaker": "Pendant (Sarvam Saaras)", "text": "What's wrong here?", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:38", "timestamp": "2026-10-15T22:00:38.711980", "speaker": "Pendant (Sarvam Saaras)", "text": "So one thing that I want you to debug is that you know something is wrong here.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220011_16000hz.wav"}
+{"time": "22:00:43", "timestamp": "2026-10-15T22:00:43.246341", "speaker": "Pendant (Sarvam Saaras)", "text": "So can you.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:47", "timestamp": "2026-10-15T22:00:47.649060", "speaker": "Pendant (Sarvam Saaras)", "text": "So can you.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220038_16000hz.wav"}
+{"time": "22:00:47", "timestamp": "2026-10-15T22:00:47.938828", "speaker": "Pendant (Sarvam Saaras)", "text": "Mm mm mm.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:00:59", "timestamp": "2026-10-15T22:00:59.964440", "speaker": "Pendant (Sarvam Saaras)", "text": "So can you.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220038_16000hz.wav"}
+{"time": "22:01:06", "timestamp": "2026-10-15T22:01:06.387971", "speaker": "Pendant (Sarvam Saaras)", "text": "So can you.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220038_16000hz.wav"}
+{"time": "22:01:06", "timestamp": "2026-10-15T22:01:06.893327", "speaker": "Pendant (Sarvam Saaras)", "text": "So can you.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220038_16000hz.wav"}
+{"time": "22:02:10", "timestamp": "2026-10-15T22:02:10.844955", "speaker": "Pendant (Sarvam Saaras)", "text": "uh, just check.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:12", "timestamp": "2026-10-15T22:02:12.548923", "speaker": "Pendant (Sarvam Saaras)", "text": "This logs.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:13", "timestamp": "2026-10-15T22:02:13.579649", "speaker": "Pendant (Sarvam Saaras)", "text": "Logs. I think something is wrong.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:14", "timestamp": "2026-10-15T22:02:14.900763", "speaker": "Pendant (Sarvam Saaras)", "text": "Something is wrong, you know.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:15", "timestamp": "2026-10-15T22:02:15.421990", "speaker": "Pendant (Sarvam Saaras)", "text": "uh, just check these logs. I think something is wrong, you know.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220200_16000hz.wav"}
+{"time": "22:02:15", "timestamp": "2026-10-15T22:02:15.639654", "speaker": "Pendant (Sarvam Saaras)", "text": "You know.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:16", "timestamp": "2026-10-15T22:02:16.791626", "speaker": "Pendant (Sarvam Saaras)", "text": "See sometimes things like.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:17", "timestamp": "2026-10-15T22:02:17.677305", "speaker": "Pendant (Sarvam Saaras)", "text": "Sometimes things are getting repeated.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:18", "timestamp": "2026-10-15T22:02:18.636803", "speaker": "Pendant (Sarvam Saaras)", "text": "Repeated.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:21", "timestamp": "2026-10-15T22:02:21.030801", "speaker": "Pendant (Sarvam Saaras)", "text": "And.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:24", "timestamp": "2026-10-15T22:02:24.010069", "speaker": "Pendant (Sarvam Saaras)", "text": "Yeah, I don't.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:25", "timestamp": "2026-10-15T22:02:25.013442", "speaker": "Pendant (Sarvam Saaras)", "text": "Yeah, I don't think processing is.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:26", "timestamp": "2026-10-15T22:02:26.553468", "speaker": "Pendant (Sarvam Saaras)", "text": "Processing is done.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:27", "timestamp": "2026-10-15T22:02:27.523795", "speaker": "Pendant (Sarvam Saaras)", "text": "And that was something is wrong.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:27", "timestamp": "2026-10-15T22:02:27.848557", "speaker": "Pendant (Sarvam Saaras)", "text": "uh, just check these logs. I think something is wrong, you know. I see sometimes things are getting repeated. And yeah, I don't think processing is done that well. Something is wrong.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220200_16000hz.wav"}
+{"time": "22:02:28", "timestamp": "2026-10-15T22:02:28.502951", "speaker": "Pendant (Sarvam Saaras)", "text": "Something is wrong, you know, like.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:29", "timestamp": "2026-10-15T22:02:29.497728", "speaker": "Pendant (Sarvam Saaras)", "text": "You know, like, so there is a.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:30", "timestamp": "2026-10-15T22:02:30.646987", "speaker": "Pendant (Sarvam Saaras)", "text": "So there is a delay which I know.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:30", "timestamp": "2026-10-15T22:02:30.824772", "speaker": "Pendant (Sarvam Saaras)", "text": "uh, just check these logs. I think something is wrong, you know. I see sometimes things are getting repeated. And yeah, I don't think processing is done that well. Something is wrong, you know, like so there is a.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220200_16000hz.wav"}
+{"time": "22:02:31", "timestamp": "2026-10-15T22:02:31.566276", "speaker": "Pendant (Sarvam Saaras)", "text": "Which I know which is coming from the.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:32", "timestamp": "2026-10-15T22:02:32.540515", "speaker": "Pendant (Sarvam Saaras)", "text": "Is coming from the app.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:33", "timestamp": "2026-10-15T22:02:33.509259", "speaker": "Pendant (Sarvam Saaras)", "text": "That's fine.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:34", "timestamp": "2026-10-15T22:02:34.511738", "speaker": "Pendant (Sarvam Saaras)", "text": "That's fine, but even same thing is.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:35", "timestamp": "2026-10-15T22:02:35.473953", "speaker": "Pendant (Sarvam Saaras)", "text": "Even same thing is sewing as twice.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:36", "timestamp": "2026-10-15T22:02:36.654109", "speaker": "Pendant (Sarvam Saaras)", "text": "Showing as twice.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:37", "timestamp": "2026-10-15T22:02:37.712994", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:38", "timestamp": "2026-10-15T22:02:38.737030", "speaker": "Pendant (Sarvam Saaras)", "text": "So let's try to.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:39", "timestamp": "2026-10-15T22:02:39.675502", "speaker": "Pendant (Sarvam Saaras)", "text": "Let's try to optimize this logic.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:40", "timestamp": "2026-10-15T22:02:40.219849", "speaker": "Pendant (Sarvam Saaras)", "text": "Delay which I know which is coming from the app. That's fine, but even same thing is showing as twice. So, let's try to optimize this logic.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220230_16000hz.wav"}
+{"time": "22:02:40", "timestamp": "2026-10-15T22:02:40.720633", "speaker": "Pendant (Sarvam Saaras)", "text": "Is this logic?", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:42", "timestamp": "2026-10-15T22:02:42.981147", "speaker": "Pendant (Sarvam Saaras)", "text": "And.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:44", "timestamp": "2026-10-15T22:02:44.226059", "speaker": "Pendant (Sarvam Saaras)", "text": "And let's so first.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:45", "timestamp": "2026-10-15T22:02:45.197984", "speaker": "Pendant (Sarvam Saaras)", "text": "So first of all try to figure out.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:45", "timestamp": "2026-10-15T22:02:45.947599", "speaker": "Pendant (Sarvam Saaras)", "text": "Try to figure out.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:46", "timestamp": "2026-10-15T22:02:46.918034", "speaker": "Pendant (Sarvam Saaras)", "text": "What's the problem?", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:48", "timestamp": "2026-10-15T22:02:48.024901", "speaker": "Pendant (Sarvam Saaras)", "text": "What's the problem why we are happening.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:48", "timestamp": "2026-10-15T22:02:48.999565", "speaker": "Pendant (Sarvam Saaras)", "text": "It's happening. Why is it happening?", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:49", "timestamp": "2026-10-15T22:02:49.708476", "speaker": "Pendant (Sarvam Saaras)", "text": "It is happening.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:51", "timestamp": "2026-10-15T22:02:51.703624", "speaker": "Pendant (Sarvam Saaras)", "text": "So even I'm talking.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:52", "timestamp": "2026-10-15T22:02:52.700321", "speaker": "Pendant (Sarvam Saaras)", "text": "delay which I know which is coming from the app. That's fine, but even same thing is showing as twice. So, let's try to optimize this logic. uh and let's so first of all try to figure out what's the problem why we are happening why it is happening. So even I'm talking.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220230_16000hz.wav"}
+{"time": "22:02:53", "timestamp": "2026-10-15T22:02:53.139395", "speaker": "Pendant (Sarvam Saaras)", "text": "So even I'm talking right now, so this.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:54", "timestamp": "2026-10-15T22:02:54.041928", "speaker": "Pendant (Sarvam Saaras)", "text": "Right now, so this audio is also.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:55", "timestamp": "2026-10-15T22:02:55.036012", "speaker": "Pendant (Sarvam Saaras)", "text": "Audio is also going to the.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:56", "timestamp": "2026-10-15T22:02:56.121537", "speaker": "Pendant (Sarvam Saaras)", "text": "To the device.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:57", "timestamp": "2026-10-15T22:02:57.417382", "speaker": "Pendant (Sarvam Saaras)", "text": "Device as well.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:59", "timestamp": "2026-10-15T22:02:59.141671", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:02:59", "timestamp": "2026-10-15T22:02:59.506837", "speaker": "Pendant (Sarvam Saaras)", "text": "Delay which I know which is coming from the app. That's fine, but even same thing is showing as twice. So, let's try to optimize this logic. And let's, so first of all try to figure out what's the problem why we are happening, why it is happening. So, even I'm talking right now, so this audio is also going to the device as well.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220230_16000hz.wav"}
+{"time": "22:03:00", "timestamp": "2026-10-15T22:03:00.099872", "speaker": "Pendant (Sarvam Saaras)", "text": "So yeah, we need to understand.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:01", "timestamp": "2026-10-15T22:03:01.225646", "speaker": "Pendant (Sarvam Saaras)", "text": "We need to understand, you know, why.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:02", "timestamp": "2026-10-15T22:03:02.593851", "speaker": "Pendant (Sarvam Saaras)", "text": "And you know why things are repeating.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:03", "timestamp": "2026-10-15T22:03:03.619270", "speaker": "Pendant (Sarvam Saaras)", "text": "Are repeating and there should.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:04", "timestamp": "2026-10-15T22:03:04.634577", "speaker": "Pendant (Sarvam Saaras)", "text": "There should be some problem.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:05", "timestamp": "2026-10-15T22:03:05.004275", "speaker": "Pendant (Sarvam Saaras)", "text": "So yeah, we need to understand, you know, why things are repeating and there should be some problem.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220258_16000hz.wav"}
+{"time": "22:03:05", "timestamp": "2026-10-15T22:03:05.609906", "speaker": "Pendant (Sarvam Saaras)", "text": "Some problem that if we solve.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:06", "timestamp": "2026-10-15T22:03:06.558262", "speaker": "Pendant (Sarvam Saaras)", "text": "That if we solve then.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:07", "timestamp": "2026-10-15T22:03:07.584978", "speaker": "Pendant (Sarvam Saaras)", "text": "Our accuracy.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:08", "timestamp": "2026-10-15T22:03:08.547236", "speaker": "Pendant (Sarvam Saaras)", "text": "Accuracy. Accuracy is high.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:09", "timestamp": "2026-10-15T22:03:09.784321", "speaker": "Pendant (Sarvam Saaras)", "text": "Accuracy is high, like the.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:10", "timestamp": "2026-10-15T22:03:10.486993", "speaker": "Pendant (Sarvam Saaras)", "text": "Like the.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:11", "timestamp": "2026-10-15T22:03:11.344037", "speaker": "Pendant (Sarvam Saaras)", "text": "So yeah, we need to understand, you know, why things are repeating and there should be some problem that if we solve then our accuracy, accuracy is high, like the.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220258_16000hz.wav"}
+{"time": "22:03:11", "timestamp": "2026-10-15T22:03:11.461488", "speaker": "Pendant (Sarvam Saaras)", "text": "Version whatever.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:12", "timestamp": "2026-10-15T22:03:12.474921", "speaker": "Pendant (Sarvam Saaras)", "text": "Whatever I'm speaking is.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:13", "timestamp": "2026-10-15T22:03:13.668903", "speaker": "Pendant (Sarvam Saaras)", "text": "Speaking is getting converted, correcting.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:14", "timestamp": "2026-10-15T22:03:14.417935", "speaker": "Pendant (Sarvam Saaras)", "text": "Correct English.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:15", "timestamp": "2026-10-15T22:03:15.457122", "speaker": "Pendant (Sarvam Saaras)", "text": "This.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:16", "timestamp": "2026-10-15T22:03:16.409331", "speaker": "Pendant (Sarvam Saaras)", "text": "But.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:17", "timestamp": "2026-10-15T22:03:17.720698", "speaker": "Pendant (Sarvam Saaras)", "text": "So yeah, we need to understand, you know, why things are repeating and there should be some problem that if we solve then our accuracy, accuracy is high, like the conversion, whatever I'm speaking is getting converted in correct English, but.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220258_16000hz.wav"}
+{"time": "22:03:17", "timestamp": "2026-10-15T22:03:17.885976", "speaker": "Pendant (Sarvam Saaras)", "text": "But of course, you know.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:18", "timestamp": "2026-10-15T22:03:18.724279", "speaker": "Pendant (Sarvam Saaras)", "text": "Because you know that.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:19", "timestamp": "2026-10-15T22:03:19.736774", "speaker": "Pendant (Sarvam Saaras)", "text": "Thing of what we.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:20", "timestamp": "2026-10-15T22:03:20.889491", "speaker": "Pendant (Sarvam Saaras)", "text": "thing of what we call as not.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:21", "timestamp": "2026-10-15T22:03:21.770998", "speaker": "Pendant (Sarvam Saaras)", "text": "As not repeating and not.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:22", "timestamp": "2026-10-15T22:03:22.691529", "speaker": "Pendant (Sarvam Saaras)", "text": "And not showing anything which.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:23", "timestamp": "2026-10-15T22:03:23.984675", "speaker": "Pendant (Sarvam Saaras)", "text": "Showing anything which is.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:24", "timestamp": "2026-10-15T22:03:24.240566", "speaker": "Pendant (Sarvam Saaras)", "text": "So yeah, we need to understand, you know, why things are repeating and there should be some problem that if we solve then our accuracy, accuracy is high, like the conversion, whatever I'm speaking is getting converted in correct English. But of course, you know, that thing of what we call as not repeating and not showing anything which is...", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220258_16000hz.wav"}
+{"time": "22:03:24", "timestamp": "2026-10-15T22:03:24.932617", "speaker": "Pendant (Sarvam Saaras)", "text": "Not a.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:25", "timestamp": "2026-10-15T22:03:25.910615", "speaker": "Pendant (Sarvam Saaras)", "text": "Not a complete thing.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:26", "timestamp": "2026-10-15T22:03:26.805873", "speaker": "Pendant (Sarvam Saaras)", "text": "Thing.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:27", "timestamp": "2026-10-15T22:03:27.968440", "speaker": "Pendant (Sarvam Saaras)", "text": "Right. Yeah.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:28", "timestamp": "2026-10-15T22:03:28.240966", "speaker": "Pendant (Sarvam Saaras)", "text": "So yeah, we need to understand, you know, why things are repeating and there should be some problem that if we solve then our accuracy, accuracy is high, like the conversion, whatever I'm speaking is getting converted in correct English. But of course, you know, that thing of what we call as not repeating and not showing anything which is not a complete thing.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220258_16000hz.wav"}
+{"time": "22:03:28", "timestamp": "2026-10-15T22:03:28.935890", "speaker": "Pendant (Sarvam Saaras)", "text": "Yeah.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:03:36", "timestamp": "2026-10-15T22:03:36.566025", "speaker": "Pendant (Sarvam Saaras)", "text": "Right. Yeah.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220327_16000hz.wav"}
+{"time": "22:03:42", "timestamp": "2026-10-15T22:03:42.871518", "speaker": "Pendant (Sarvam Saaras)", "text": "Right? Yeah.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220327_16000hz.wav"}
+{"time": "22:03:49", "timestamp": "2026-10-15T22:03:49.268888", "speaker": "Pendant (Sarvam Saaras)", "text": "Right? Yeah.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220327_16000hz.wav"}
+{"time": "22:03:55", "timestamp": "2026-10-15T22:03:55.304358", "speaker": "Pendant (Sarvam Saaras)", "text": "Right? Yeah.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220327_16000hz.wav"}
+{"time": "22:04:44", "timestamp": "2026-10-15T22:04:44.689263", "speaker": "Pendant (Sarvam Saaras)", "text": "I think.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:04:45", "timestamp": "2026-10-15T22:04:45.214198", "speaker": "Pendant (Sarvam Saaras)", "text": "I think.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220442_16000hz.wav"}
+{"time": "22:04:45", "timestamp": "2026-10-15T22:04:45.656651", "speaker": "Pendant (Sarvam Saaras)", "text": "We are.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:04:46", "timestamp": "2026-10-15T22:04:46.690244", "speaker": "Pendant (Sarvam Saaras)", "text": "Also sending.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:04:47", "timestamp": "2026-10-15T22:04:47.653666", "speaker": "Pendant (Sarvam Saaras)", "text": "So sending.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:04:49", "timestamp": "2026-10-15T22:04:49.666591", "speaker": "Pendant (Sarvam Saaras)", "text": "The.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:04:51", "timestamp": "2026-10-15T22:04:51.483476", "speaker": "Pendant (Sarvam Saaras)", "text": "I think we are also sending the.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220442_16000hz.wav"}
+{"time": "22:04:57", "timestamp": "2026-10-15T22:04:57.853501", "speaker": "Pendant (Sarvam Saaras)", "text": "I think we are also sending the.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220442_16000hz.wav"}
+{"time": "22:05:04", "timestamp": "2026-10-15T22:05:04.308350", "speaker": "Pendant (Sarvam Saaras)", "text": "I think we are also sending the.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220442_16000hz.wav"}
+{"time": "22:05:05", "timestamp": "2026-10-15T22:05:05.969801", "speaker": "Pendant (Sarvam Saaras)", "text": "I think we are also sending the.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220442_16000hz.wav"}
+{"time": "22:07:43", "timestamp": "2026-10-15T22:07:43.679864", "speaker": "Pendant (Sarvam Saaras)", "text": "Ah ha ha.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:07:46", "timestamp": "2026-10-15T22:07:46.992909", "speaker": "Pendant (Sarvam Saaras)", "text": "Ah ha ha.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220718_16000hz.wav"}
+{"time": "22:07:47", "timestamp": "2026-10-15T22:07:47.513040", "speaker": "Pendant (Sarvam Saaras)", "text": "No, no, no, no.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:07:47", "timestamp": "2026-10-15T22:07:47.558524", "speaker": "Pendant (Sarvam Saaras)", "text": "Ah ha ha.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220718_16000hz.wav"}
+{"time": "22:07:48", "timestamp": "2026-10-15T22:07:48.477586", "speaker": "Pendant (Sarvam Saaras)", "text": "La la la la la.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:07:53", "timestamp": "2026-10-15T22:07:53.291655", "speaker": "Pendant (Sarvam Saaras)", "text": "La la la la la.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220747_16000hz.wav"}
+{"time": "22:07:59", "timestamp": "2026-10-15T22:07:59.556414", "speaker": "Pendant (Sarvam Saaras)", "text": "So the thing.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:07:59", "timestamp": "2026-10-15T22:07:59.585820", "speaker": "Pendant (Sarvam Saaras)", "text": "So the thing.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220747_16000hz.wav"}
+{"time": "22:08:01", "timestamp": "2026-10-15T22:08:01.006161", "speaker": "Pendant (Sarvam Saaras)", "text": "So the thing right now that is.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:08:01", "timestamp": "2026-10-15T22:08:01.966610", "speaker": "Pendant (Sarvam Saaras)", "text": "Now that is happening is.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:08:02", "timestamp": "2026-10-15T22:08:02.971883", "speaker": "Pendant (Sarvam Saaras)", "text": "Is.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:08:11", "timestamp": "2026-10-15T22:08:11.078945", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:08:11", "timestamp": "2026-10-15T22:08:11.555512", "speaker": "Pendant (Sarvam Saaras)", "text": "Somebody who's generating.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:08:11", "timestamp": "2026-10-15T22:08:11.873996", "speaker": "Pendant (Sarvam Saaras)", "text": "So the thing right now that is happening is.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220747_16000hz.wav"}
+{"time": "22:08:12", "timestamp": "2026-10-15T22:08:12.886118", "speaker": "Pendant (Sarvam Saaras)", "text": "Let's turn writing.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:08:14", "timestamp": "2026-10-15T22:08:14.983183", "speaker": "Pendant (Sarvam Saaras)", "text": "So the thing right now that is happening is.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220747_16000hz.wav"}
+{"time": "22:09:04", "timestamp": "2026-10-15T22:09:04.501958", "speaker": "Pendant (Sarvam Saaras)", "text": "So.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:07", "timestamp": "2026-10-15T22:09:07.658834", "speaker": "Pendant (Sarvam Saaras)", "text": "Right now, what is happening?", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:08", "timestamp": "2026-10-15T22:09:08.691625", "speaker": "Pendant (Sarvam Saaras)", "text": "Right now, what is happening around the world?", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:09", "timestamp": "2026-10-15T22:09:09.676544", "speaker": "Pendant (Sarvam Saaras)", "text": "Around the world is.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:09", "timestamp": "2026-10-15T22:09:09.824397", "speaker": "Pendant (Sarvam Saaras)", "text": "So right now what is happening around the world.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220841_16000hz.wav"}
+{"time": "22:09:16", "timestamp": "2026-10-15T22:09:16.362955", "speaker": "Pendant (Sarvam Saaras)", "text": "So right.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:17", "timestamp": "2026-10-15T22:09:17.615825", "speaker": "Pendant (Sarvam Saaras)", "text": "So right now whatever is.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:18", "timestamp": "2026-10-15T22:09:18.919805", "speaker": "Pendant (Sarvam Saaras)", "text": "Whatever is happening around the world.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:19", "timestamp": "2026-10-15T22:09:19.601227", "speaker": "Pendant (Sarvam Saaras)", "text": "So right now, whatever is happening around the world.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220909_16000hz.wav"}
+{"time": "22:09:19", "timestamp": "2026-10-15T22:09:19.717539", "speaker": "Pendant (Sarvam Saaras)", "text": "around the world.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:20", "timestamp": "2026-10-15T22:09:20.694535", "speaker": "Pendant (Sarvam Saaras)", "text": "Is.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:21", "timestamp": "2026-10-15T22:09:21.821996", "speaker": "Pendant (Sarvam Saaras)", "text": "Very.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:22", "timestamp": "2026-10-15T22:09:22.744462", "speaker": "Pendant (Sarvam Saaras)", "text": "Very interesting.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:25", "timestamp": "2026-10-15T22:09:25.927818", "speaker": "Pendant (Sarvam Saaras)", "text": "So right now, whatever is happening around the world is very interesting.", "language": "en-IN", "source": "sarvam", "audio_file": "pendant_20261015_220909_16000hz.wav"}
+{"time": "22:09:26", "timestamp": "2026-10-15T22:09:26.091894", "speaker": "Pendant (Sarvam Saaras)", "text": "Right.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:27", "timestamp": "2026-10-15T22:09:27.064120", "speaker": "Pendant (Sarvam Saaras)", "text": "That is.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:29", "timestamp": "2026-10-15T22:09:29.043014", "speaker": "Pendant (Sarvam Saaras)", "text": "Whatever we are sending.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:30", "timestamp": "2026-10-15T22:09:30.043778", "speaker": "Pendant (Sarvam Saaras)", "text": "We are sending.", "language": "en-IN", "source": "sarvam"}
+{"time": "22:09:31", "timestamp": "2026-10-15T22:09:31.160425", "speaker": "Pendant (Sarvam Saaras)", "text": "The next.", "language": "en-IN", "source": "sarvam"}

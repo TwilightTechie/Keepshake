@@ -4,7 +4,7 @@ Part of the [requirements overview](../requirements.md). Covers pendant electron
 
 ## P0 dev kit (current, ordered 2026-07-22)
 
-XIAO nRF52840 Sense + 500/1100 mAh protected Li-Po + inline SPDT slide switch (battery soldered to pads, Omi-style). Wiring, pin map, and power tree: [hardware/p0-wiring.md](../hardware/p0-wiring.md). Known P0 compromises: offline buffer limited to onboard 2 MB QSPI (~40–80 min real-world with VAD), ADC-only battery estimate, firmware-driven (not hardwired) recording LED.
+XIAO nRF52840 Sense + 500/1100 mAh protected Li-Po + inline SPDT slide switch (battery soldered to pads, Omi-style). Wiring, pin map, and power tree: [hardware/p0-wiring.md](../hardware/p0-wiring.md). Known P0 compromises: onboard 2 MB QSPI is only about two minutes of continuous 8 kHz PCM16 capacity before overhead; the current firmware does not yet implement persistent audio buffering. At a future compressed bitrate of 16–32 kbps, theoretical capacity is about 8–17 minutes of audio before overhead. VAD can extend elapsed coverage depending on speech activity, but is not an all-day storage guarantee. Battery estimates and a hardwired recording indicator remain future work.
 
 ## Requirements
 

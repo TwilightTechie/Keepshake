@@ -12,7 +12,6 @@ from typing import Protocol
 
 import httpx
 
-from app.audio import ensure_stt_rate
 from app.config import get_settings
 
 
@@ -55,7 +54,7 @@ class SarvamStt:
         s = get_settings()
         if not s.sarvam_api_key:
             raise RuntimeError("KEEPSAKE_SARVAM_API_KEY is not set")
-        audio = ensure_stt_rate(audio, codec)  # 8 kHz costs real accuracy, see app/audio.py
+        # Saaras v4 supports native 8 kHz WAV; preserve the received audio bytes.
         filename = "utterance.wav" if codec in ("wav", "pcm16") else "utterance.opus"
         mime = "audio/wav" if codec in ("wav", "pcm16") else "audio/opus"
         async with httpx.AsyncClient(timeout=120) as client:
@@ -66,6 +65,7 @@ class SarvamStt:
                 # Hindi/English working; pinning a language would break it.
                 data={
                     "model": s.sarvam_stt_model,
+                    "mode": "transcribe",
                     "language_code": s.sarvam_language_code,
                 },
                 files={"file": (filename, audio, mime)},

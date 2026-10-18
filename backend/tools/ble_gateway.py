@@ -203,7 +203,7 @@ def pcm_to_wav(pcm: bytes) -> bytes:
 class Gateway:
     def __init__(self, ws_url: str, token: str, device_id: str,
                  seg: Segmenter, show_meter: bool,
-                 condition_audio: bool = True) -> None:
+                 condition_audio: bool = False) -> None:
         self.ws_url = ws_url
         self.token = token
         self.device_id = device_id
@@ -401,8 +401,12 @@ def main() -> None:
                    help="absolute floor so a dead-silent room still needs real sound")
     p.add_argument("--hangover", type=float, default=0.7,
                    help="seconds of silence that close an utterance (default 0.7)")
-    p.add_argument("--no-conditioning", action="store_true",
-                   help="upload raw mic audio (skip high-pass + normalisation)")
+    conditioning = p.add_mutually_exclusive_group()
+    conditioning.add_argument("--condition-audio", action="store_true",
+                              help="opt in to high-pass filtering and normalisation")
+    conditioning.add_argument("--no-conditioning", dest="condition_audio", action="store_false",
+                              help="upload raw mic audio (default; compatibility flag)")
+    p.set_defaults(condition_audio=False)
     p.add_argument("--min-utterance", type=float, default=0.6,
                    help="discard anything shorter (default 0.6 s)")
     p.add_argument("--max-utterance", type=float, default=25.0,
@@ -427,7 +431,7 @@ def main() -> None:
     )
     gw = Gateway(args.url, args.token, args.device, seg,
                  show_meter=not args.quiet,
-                 condition_audio=not args.no_conditioning)
+                 condition_audio=args.condition_audio)
     try:
         asyncio.run(gw.run())
     except KeyboardInterrupt:

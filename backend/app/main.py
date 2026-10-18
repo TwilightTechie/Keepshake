@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1 import router as v1_router
 from app.api.v1.ingest import router as ingest_router
+from app.api.v1.raw_chunks import router as raw_chunks_router
 from app.auth import require_token
 from app.db import get_session
 from app.pipeline.runner import pipeline_loop
@@ -52,4 +53,5 @@ async def healthz(session: AsyncSession = Depends(get_session)) -> dict[str, str
 # WS does its own token check (headers aren't uniform across WS clients);
 # batch POST inside carries an explicit require_token dependency.
 app.include_router(ingest_router, prefix="/v1")
+app.include_router(raw_chunks_router, prefix="/v1")
 app.include_router(v1_router, prefix="/v1", dependencies=[Depends(require_token)])

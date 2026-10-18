@@ -29,13 +29,24 @@ derives tasks within a few seconds.
 
 ```bash
 export KEEPSAKE_STT_PROVIDER=sarvam KEEPSAKE_LLM_PROVIDER=sarvam
-export KEEPSAKE_SARVAM_API_KEY=sk_...   # from dashboard.sarvam.ai
+export KEEPSAKE_SARVAM_API_KEY="$SARVAM_API_KEY"   # your existing exported key
 docker compose up -d
 .venv/bin/python tools/simulate_pendant.py --wav some-recording.wav
 ```
 
-> Note (2026-07-23): the key found in AadeshAI/Sarvam_Project `.env` files returns
-> `invalid_api_key_error` — it appears rotated/expired. Generate a fresh one.
+Saaras v4 is the default STT model, using `transcribe` mode and automatic language
+detection. Native 8 kHz WAV bytes pass through unchanged: no backend upsampling.
+The BLE gateway also preserves raw samples by default; `--condition-audio` opts
+into the legacy high-pass filter and gain adjustment.
+
+For a live pendant, run `.venv/bin/python tools/ble_gateway.py --device <unique-session-id>`
+after starting the backend. Speak, then pause to close an utterance. The gateway
+sends WAV utterances up to 25 seconds; transcripts appear under `/v1/conversations`.
+Use a new device/session ID for each bench run because gateway sequence numbers
+restart at 1 and ingest deduplicates by device ID plus sequence number.
+
+See [standalone bench instructions](../new%20testing/README.md) for a local SQLite
+option when Docker is unavailable.
 
 ## Develop
 

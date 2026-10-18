@@ -1,16 +1,7 @@
-"""Audio conditioning for STT.
+"""Legacy resampling utilities retained for bench comparisons.
 
-Saaras is trained on 16 kHz. Feeding it native 8 kHz degrades it well beyond the
-information loss alone — measured on the bench with identical content:
-
-    16 kHz            -> "not as a hot fix"     (correct)
-    8 kHz             -> "not as a heart fix"   (wrong)
-    8 kHz -> 16 kHz   -> "not as a hotfix"      (correct)
-
-Rows 2 and 3 carry exactly the same information; only the container rate differs.
-So we upsample before the STT call. This costs no bandwidth — the pendant still
-ships 8 kHz over BLE — and disappears on its own once Opus lets the pendant send
-16 kHz directly (P1, FW-2).
+The live Sarvam provider sends native WAV bytes unchanged. Saaras v4 supports
+8 kHz directly; upsampling did not improve our recorded-speech comparison.
 """
 
 from __future__ import annotations
