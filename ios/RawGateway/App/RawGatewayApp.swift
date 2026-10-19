@@ -49,6 +49,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 struct RawGatewayApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var themeManager = ThemeManager.shared
+    @AppStorage("keepsake_welcome_seen") private var welcomeSeen = false
+    @State private var showWelcome = false
     private let gateway = Gateway.shared
     var body: some Scene {
         WindowGroup {
@@ -58,7 +60,8 @@ struct RawGatewayApp: App {
                         settings: gateway.settings,
                         receiver: receiver,
                         liveSpeech: gateway.liveSpeech,
-                        logger: gateway.logger
+                        logger: gateway.logger,
+                        uploader: uploader
                     )
                     .tabItem {
                         Label("Today", systemImage: "sparkles")
@@ -80,6 +83,13 @@ struct RawGatewayApp: App {
                         Label("Device", systemImage: "wave.3.right.circle")
                     }
                 }
+                .onAppear { if !welcomeSeen { showWelcome = true } }
+                .sheet(isPresented: $showWelcome) {
+                    WelcomeView {
+                        welcomeSeen = true
+                        showWelcome = false
+                    }
+                }
                 .tint(AppColors.brandIndigo)
                 .preferredColorScheme(themeManager.currentTheme.colorScheme)
                 .environmentObject(themeManager)
@@ -90,6 +100,36 @@ struct RawGatewayApp: App {
                     Text(gateway.startupError ?? "Unknown storage error")
                 }.padding()
             }
+        }
+    }
+}
+
+private struct WelcomeView: View {
+    let onFinish: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 24) {
+                Image(systemName: "sparkles.rectangle.stack.fill")
+                    .font(.system(size: 48))
+                    .foregroundStyle(AppColors.brandIndigo)
+                Text("Your moments, remembered.")
+                    .font(AppTypography.appTitle)
+                Text("Keepsake saves what matters from your conversations and helps you find it later.")
+                    .font(AppTypography.body)
+                    .foregroundStyle(AppColors.textSecondary)
+                Label("Connect your pendant on the Device tab", systemImage: "wave.3.right.circle")
+                Label("Choose Live, checkpoints, or archive only", systemImage: "arrow.up.right.circle")
+                Label("Find memories and next steps on Today", systemImage: "sparkles")
+                Spacer()
+                Button("Explore Keepsake", action: onFinish)
+                    .buttonStyle(.borderedProminent)
+                    .frame(maxWidth: .infinity)
+                    .controlSize(.large)
+            }
+            .padding(24)
+            .background(AppColors.background)
+            .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Skip", action: onFinish) } }
         }
     }
 }
@@ -110,6 +150,7 @@ struct GatewayView: View {
     @State private var showCopiedAlert = false
     @State private var copiedAlertMessage = ""
     @State private var showPruneAlert = false
+    @State private var showAdvanced = false
 
     var body: some View {
         NavigationStack {
@@ -117,20 +158,29 @@ struct GatewayView: View {
                 VStack(spacing: 16) {
                     deviceStatusCard
                     captureControlCard
-                    LiveSpeechCard(service: liveSpeech, isRecording: receiver.running)
-                    serverCard
                     liveStreamCard
-                    packetStatsCard
                     uploadQueueCard
-                    diagnosticsCard
-                    notesCard
+                    DisclosureGroup("Settings & diagnostics", isExpanded: $showAdvanced) {
+                        VStack(spacing: 16) {
+                            serverCard
+                            packetStatsCard
+                            diagnosticsCard
+                            notesCard
+                        }
+                        .padding(.top, 12)
+                    }
+                    .font(.headline)
+                    .tint(AppColors.brandIndigo)
+                    .padding(16)
+                    .background(AppColors.cardBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
                 .padding(.horizontal)
                 .padding(.top, 8)
-                .padding(.bottom, 24)
+                .padding(.bottom, 100)
             }
             .background(AppColors.background)
-            .navigationTitle("Keepsake AI")
+            .navigationTitle("Device")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -191,23 +241,9 @@ struct GatewayView: View {
                 }
                 Spacer()
 
-                // Battery / Power Status Pill
-                VStack(alignment: .trailing, spacing: 4) {
-                    HStack(spacing: 4) {
-                        Image(systemName: receiver.running ? "battery.100.bolt" : "battery.0")
-                            .foregroundStyle(receiver.running ? .green : .secondary)
-                        Text(receiver.running ? "Powered" : "Standby")
-                            .font(.caption2)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.secondary)
-                    }
-                    Text(receiver.running ? "16 kHz Native" : "Offline")
-                        .font(.caption2)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 2)
-                        .background(Color(.tertiarySystemGroupedBackground))
-                        .clipShape(Capsule())
-                }
+                Text(receiver.status.contains("Receiving") ? "Capturing" : receiver.running ? "Connecting" : "Standby")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(connectionColor)
             }
             .padding()
 
@@ -378,24 +414,31 @@ struct GatewayView: View {
         VStack(alignment: .leading, spacing: 10) {
             Label("Delivery Mode", systemImage: "arrow.up.right.circle")
                 .font(.headline)
-            Picker("Delivery Mode", selection: deliveryModeSelection) {
-                Text("Live").tag(DeliveryMode.live)
-                Text("30s Checkpoints").tag(DeliveryMode.checkpoint)
-                Text("Archive Only").tag(DeliveryMode.archiveOnly)
-            }
-            .pickerStyle(.segmented)
-            if settings.deliveryMode == .live {
-                Text("Sends audio to Dream AI about every 2 seconds. Raw checkpoint files can also be archived when automatic uploads are enabled.")
-                    .font(.caption).foregroundStyle(.secondary)
-            } else if settings.deliveryMode == .checkpoint {
-                Text("Saves each 30-second raw checkpoint, then uploads it once for Dream AI transcription. Unconfirmed files remain on the phone and retry automatically.")
-                    .font(.caption).foregroundStyle(.secondary)
-            } else {
-                Text("Saves raw checkpoint files without live transcription. Automatic uploads can archive them on your configured server.")
-                    .font(.caption).foregroundStyle(.secondary)
+            ForEach(DeliveryMode.allCases) { mode in
+                Button {
+                    deliveryModeSelection.wrappedValue = mode
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: settings.deliveryMode == mode ? "largecircle.fill.circle" : "circle")
+                            .foregroundStyle(AppColors.brandIndigo)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(mode == .live ? "Live" : mode == .checkpoint ? "30-second checkpoints" : "Archive only")
+                                .font(AppTypography.cardTitle)
+                            Text(mode == .live ? "Send audio as you speak" : mode == .checkpoint ? "Save, then send each 30-second file" : "Keep raw files without transcription")
+                                .font(AppTypography.caption)
+                                .foregroundStyle(AppColors.textSecondary)
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(10)
+                    .background(settings.deliveryMode == mode ? AppColors.indigoPillBackground : AppColors.secondaryCardBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+                .buttonStyle(.plain)
             }
             if receiver.running {
-                Text("Changing mode closes the current file. The next packet starts a new checkpoint.")
+                Text("Changing mode safely finishes the current file first.")
                     .font(.caption2).foregroundStyle(.secondary)
             }
         }
@@ -471,7 +514,7 @@ struct GatewayView: View {
                 Spacer()
             }
 
-            Text("\(uploader.checkpointPendingCount) for transcription · \(uploader.archivePendingCount) archive only")
+            Text("\(uploader.checkpointPendingCount) awaiting transcription · \(uploader.archivePendingCount) archive files")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -485,6 +528,12 @@ struct GatewayView: View {
             Text(uploader.status)
                 .font(.subheadline)
                 .foregroundStyle(uploader.status.contains("error") || uploader.status.contains("Error") ? .red : .secondary)
+
+            if uploader.status.localizedCaseInsensitiveContains("configure") {
+                Button("Set up server") { showAdvanced = true }
+                    .font(AppTypography.cardTitle)
+                    .foregroundStyle(AppColors.brandIndigo)
+            }
 
             if uploader.lastUploaded != "Never" {
                 HStack(spacing: 4) {
@@ -538,16 +587,14 @@ struct GatewayView: View {
                     if uploader.archivePendingCount > 0 {
                         Button("Delete \(uploader.archivePendingCount) Archive Files (\(String(format: "%.1f", receiver.storageMB)) MB)", role: .destructive) {
                             uploader.pruneArchiveFiles()
-                            receiver.storageMB = 0
                         }
                     }
                     Button("Delete All \(uploader.pendingCount) Queued Files", role: .destructive) {
                         uploader.pruneAllFiles()
-                        receiver.storageMB = 0
                     }
                     Button("Cancel", role: .cancel) {}
                 } message: {
-                    Text("This frees disk space by deleting local audio files from your device. Live capture and active transcription will not be affected.")
+                    Text("Unconfirmed recordings will be permanently removed and cannot be transcribed or uploaded later.")
                 }
             }
 

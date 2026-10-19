@@ -204,7 +204,7 @@ struct TodayDecisionsBlockView: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
-                        Text("The Verdict")
+                        Text("Decisions")
                             .font(AppTypography.sectionTitle)
                             .foregroundStyle(AppColors.textPrimary)
 
@@ -219,7 +219,7 @@ struct TodayDecisionsBlockView: View {
                         }
                     }
 
-                    Text("Decisions & Strategic Calls Made Today")
+                    Text("What you chose today")
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColors.textSecondary)
                 }
@@ -244,7 +244,7 @@ struct TodayDecisionsBlockView: View {
                 }
             }
 
-            // Decisions List Preview (up to 3 items)
+            // Keep the home preview short; the full decision list lives in the sheet.
             if viewModel.decisions.isEmpty && !viewModel.isLoading {
                 VStack(spacing: 8) {
                     Image(systemName: "checkmark.seal")
@@ -261,21 +261,32 @@ struct TodayDecisionsBlockView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
             } else {
-                let previewItems = Array(viewModel.decisions.prefix(3))
+                let previewItems = Array(viewModel.decisions.prefix(2))
                 VStack(spacing: 10) {
                     ForEach(previewItems) { item in
-                        DecisionCard(
-                            item: item,
-                            isCompleted: viewModel.isCompleted(id: item.id),
-                            onToggle: {
-                                viewModel.toggleDecisionCompleted(id: item.id)
+                        Button { showFullScreen = true } label: {
+                            HStack(spacing: 10) {
+                                Image(systemName: "checkmark.seal")
+                                    .foregroundStyle(AppColors.verdictEmerald)
+                                Text(item.decision)
+                                    .font(AppTypography.secondaryBody)
+                                    .foregroundStyle(AppColors.textPrimary)
+                                    .lineLimit(2)
+                                Spacer(minLength: 0)
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textSecondary)
                             }
-                        )
+                            .padding(12)
+                            .background(AppColors.secondaryCardBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
 
                 // "See All" button
-                if viewModel.decisions.count > 3 {
+                if viewModel.decisions.count > 2 {
                     Button {
                         showFullScreen = true
                     } label: {

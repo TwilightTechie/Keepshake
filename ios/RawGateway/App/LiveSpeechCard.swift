@@ -5,14 +5,16 @@ import SwiftUI
 struct LiveSpeechCard: View {
     @ObservedObject var service: LiveSpeechService
     var isRecording: Bool
+    var compact: Bool
 
     @State private var autoScroll = true
     @State private var showFullScreen = false
     @State private var copiedAlert = false
 
-    init(service: LiveSpeechService, isRecording: Bool = false) {
+    init(service: LiveSpeechService, isRecording: Bool = false, compact: Bool = false) {
         self.service = service
         self.isRecording = isRecording
+        self.compact = compact
     }
 
     var body: some View {
@@ -21,66 +23,72 @@ struct LiveSpeechCard: View {
             HStack(alignment: .center, spacing: 10) {
                 ZStack {
                     Circle()
-                        .fill(service.isConnected ? AppColors.emeraldPillBackground : AppColors.cardBorder)
+                        .fill(isRecording && service.isConnected ? AppColors.emeraldPillBackground : AppColors.cardBorder)
                         .frame(width: 32, height: 32)
                     Image(systemName: "waveform")
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(service.isConnected ? AppColors.verdictEmerald : AppColors.textTertiary)
+                        .foregroundStyle(isRecording && service.isConnected ? AppColors.verdictEmerald : AppColors.textTertiary)
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
-                        Text("Live Speech Stream")
+                        Text(compact ? "Latest speech" : "Live Speech Stream")
                             .font(AppTypography.sectionTitle)
                             .foregroundStyle(AppColors.textPrimary)
 
-                        if service.isConnected {
+                        if isRecording && service.isConnected {
                             Circle()
                                 .fill(AppColors.verdictEmerald)
                                 .frame(width: 6, height: 6)
                         }
                     }
 
-                    Text(service.connectionStatus)
+                    Text(isRecording ? (service.isConnected ? "Listening now" : "Waiting for speech service") : "Capture is off")
                         .font(AppTypography.caption)
-                        .foregroundStyle(service.isConnected ? AppColors.verdictEmerald : AppColors.textSecondary)
+                        .foregroundStyle(isRecording && service.isConnected ? AppColors.verdictEmerald : AppColors.textSecondary)
                 }
 
                 Spacer()
 
                 // Waveform indicator
-                WaveformVisualizerView(
-                    isActive: service.isReceivingAudio || isRecording,
-                    barCount: 5,
-                    barWidth: 3,
-                    maxBarHeight: 18,
-                    activeColor: AppColors.verdictEmerald
-                )
+                if !compact {
+                    WaveformVisualizerView(
+                        isActive: service.isReceivingAudio || isRecording,
+                        barCount: 5,
+                        barWidth: 3,
+                        maxBarHeight: 18,
+                        activeColor: AppColors.verdictEmerald
+                    )
+                }
 
                 // Controls
                 HStack(spacing: 8) {
-                    Button {
-                        autoScroll.toggle()
-                    } label: {
-                        Image(systemName: autoScroll ? "arrow.down.circle.fill" : "arrow.down.circle")
-                            .font(.system(size: 16))
-                            .foregroundStyle(autoScroll ? AppColors.brandIndigo : AppColors.textTertiary)
+                    if !compact {
+                        Button {
+                            autoScroll.toggle()
+                        } label: {
+                            Image(systemName: autoScroll ? "arrow.down.circle.fill" : "arrow.down.circle")
+                                .font(.system(size: 16))
+                                .foregroundStyle(autoScroll ? AppColors.brandIndigo : AppColors.textTertiary)
+                        }
+                        .accessibilityLabel("Toggle auto-scroll")
                     }
-                    .accessibilityLabel("Toggle auto-scroll")
 
                     Button {
                         showFullScreen = true
                     } label: {
-                        Image(systemName: "arrow.up.left.and.arrow.down.right")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(AppColors.textSecondary)
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.up.left.and.arrow.down.right")
+                            if compact { Text("Open") }
+                        }
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColors.brandIndigo)
                     }
                     .accessibilityLabel("Full screen speech")
                 }
             }
 
-            Divider()
-                .overlay(AppColors.divider)
+            if !compact { Divider().overlay(AppColors.divider) }
 
             // Transcript Scroll Feed
             if service.transcripts.isEmpty {
@@ -91,8 +99,8 @@ struct LiveSpeechCard: View {
                         .padding(.top, 12)
 
                     Text(isRecording
-                         ? "Listening... Speak into your pendant to transcribe live."
-                         : "Pendant connected. Speak anytime to transcribe live.")
+                         ? "Listening for your next memory."
+                         : "Start capture on Device to save a new memory.")
                         .font(AppTypography.secondaryBody)
                         .foregroundStyle(AppColors.textSecondary)
                         .multilineTextAlignment(.center)
@@ -100,23 +108,31 @@ struct LiveSpeechCard: View {
                         .padding(.bottom, 12)
                 }
                 .frame(maxWidth: .infinity)
-                .frame(height: 160)
+                .frame(height: compact ? 72 : 160)
             } else {
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(spacing: 8) {
-                            ForEach(service.transcripts) { entry in
-                                TranscriptRowView(entry: entry)
-                                    .id(entry.id)
+                if compact {
+                    Text(service.transcripts.last?.text ?? "")
+                        .font(AppTypography.body)
+                        .foregroundStyle(AppColors.textPrimary)
+                        .lineLimit(2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            LazyVStack(spacing: 8) {
+                                ForEach(service.transcripts) { entry in
+                                    TranscriptRowView(entry: entry)
+                                        .id(entry.id)
+                                }
                             }
+                            .padding(.vertical, 4)
                         }
-                        .padding(.vertical, 4)
-                    }
-                    .frame(height: 220)
-                    .onChange(of: service.transcripts.count) { _ in
-                        if autoScroll, let last = service.transcripts.last {
-                            withAnimation(.easeOut(duration: 0.25)) {
-                                proxy.scrollTo(last.id, anchor: .bottom)
+                        .frame(height: 220)
+                        .onChange(of: service.transcripts.count) { _ in
+                            if autoScroll, let last = service.transcripts.last {
+                                withAnimation(.easeOut(duration: 0.25)) {
+                                    proxy.scrollTo(last.id, anchor: .bottom)
+                                }
                             }
                         }
                     }

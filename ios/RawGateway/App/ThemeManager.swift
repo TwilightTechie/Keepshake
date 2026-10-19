@@ -122,7 +122,7 @@ public enum AppColors {
         Color(uiColor: UIColor { trait in
             trait.userInterfaceStyle == .dark
                 ? UIColor(red: 0.45, green: 0.48, blue: 0.56, alpha: 1.0)
-                : UIColor(red: 0.60, green: 0.64, blue: 0.72, alpha: 1.0)
+                : UIColor(red: 0.43, green: 0.47, blue: 0.55, alpha: 1.0)
         })
     }
 

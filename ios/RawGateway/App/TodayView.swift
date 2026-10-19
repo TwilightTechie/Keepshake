@@ -7,6 +7,7 @@ struct TodayView: View {
     @ObservedObject var receiver: PendantReceiver
     @ObservedObject var liveSpeech: LiveSpeechService
     @ObservedObject var logger: DiagnosticLogger
+    @ObservedObject var uploader: Uploader
 
     @StateObject private var insightsVM: InsightsViewModel
     @StateObject private var decisionsVM: DecisionsViewModel
@@ -14,18 +15,24 @@ struct TodayView: View {
     @Environment(\.scenePhase) private var phase
 
     @State private var completedTaskIDs: Set<String> = []
+    @State private var showAllTasks = false
+    @State private var showBriefingDetails = false
+    @State private var actionSearch = ""
+    @State private var selectedMemory: InsightItem?
     private let tasksKey = "today_completed_task_ids"
 
     init(
         settings: Settings,
         receiver: PendantReceiver,
         liveSpeech: LiveSpeechService,
-        logger: DiagnosticLogger
+        logger: DiagnosticLogger,
+        uploader: Uploader
     ) {
         self.settings = settings
         self.receiver = receiver
         self.liveSpeech = liveSpeech
         self.logger = logger
+        self.uploader = uploader
         _insightsVM = StateObject(wrappedValue: InsightsViewModel(settings: settings))
         _decisionsVM = StateObject(wrappedValue: DecisionsViewModel(settings: settings))
     }
@@ -35,38 +42,21 @@ struct TodayView: View {
             ScrollView {
                 VStack(spacing: 18) {
                     greetingHeader
-
-                    // 1. Live Speech Stream Dock
-                    LiveSpeechCard(service: liveSpeech, isRecording: receiver.running)
-
-                    // 2. The Verdict - Decisions Made Today
-                    TodayDecisionsBlockView(viewModel: decisionsVM)
-
-                    // 3. Day Briefing (Personalized Summary)
+                    captureStatusCard
                     dayBriefingSection
-
-                    // 4. Action Items & Commitments Checklist
                     actionItemsSection
+                    TodayDecisionsBlockView(viewModel: decisionsVM)
+                    LiveSpeechCard(service: liveSpeech, isRecording: receiver.running, compact: true)
+                    recentMemoriesSection
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
-                .padding(.bottom, 32)
+                .padding(.bottom, 100)
             }
             .background(AppColors.background)
             .navigationTitle("Today")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(AppColors.brandIndigo)
-                        Text("Keepsake AI")
-                            .font(AppTypography.sectionTitle)
-                            .foregroundStyle(AppColors.textPrimary)
-                    }
-                }
-
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 10) {
                         // Theme appearance menu
@@ -111,29 +101,6 @@ struct TodayView: View {
                         }
                         .disabled(insightsVM.isLoading || insightsVM.isGenerating)
 
-                        // Summarize button
-                        Button {
-                            Task { await insightsVM.generateOnDemand(minutes: 10) }
-                        } label: {
-                            if insightsVM.isGenerating {
-                                ProgressView()
-                                    .controlSize(.small)
-                            } else {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "bolt.fill")
-                                        .font(.system(size: 11))
-                                    Text("Summarize")
-                                        .font(AppTypography.caption)
-                                        .fontWeight(.semibold)
-                                }
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
-                                .background(AppColors.brandIndigo)
-                                .foregroundStyle(Color.white)
-                                .clipShape(Capsule())
-                            }
-                        }
-                        .disabled(insightsVM.isGenerating)
                     }
                 }
             }
@@ -149,6 +116,46 @@ struct TodayView: View {
             .onChange(of: phase) { newPhase in
                 if newPhase == .active {
                     refreshAll()
+                }
+            }
+            .sheet(isPresented: $showAllTasks) {
+                NavigationStack {
+                    List {
+                        ForEach(filteredActions, id: \.self) { task in
+                            Button { toggleTask(task) } label: {
+                                Label(task, systemImage: completedTaskIDs.contains(task) ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(completedTaskIDs.contains(task) ? AppColors.textSecondary : AppColors.textPrimary)
+                            }
+                        }
+                    }
+                    .searchable(text: $actionSearch, prompt: "Find an action")
+                    .navigationTitle("Action items")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Done") { showAllTasks = false } } }
+                }
+            }
+            .sheet(item: $selectedMemory) { item in
+                NavigationStack {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            if !item.displayHeadline.isEmpty {
+                                Text(item.displayHeadline)
+                                    .font(AppTypography.sectionTitle)
+                                    .foregroundStyle(AppColors.brandIndigo)
+                            }
+                            Text(item.displaySummary)
+                                .font(AppTypography.body)
+                            ForEach(item.displayKeyPoints, id: \.self) { point in
+                                Label(point, systemImage: "circle.fill")
+                                    .font(AppTypography.secondaryBody)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                    }
+                    .navigationTitle(item.displayTitle)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Done") { selectedMemory = nil } } }
                 }
             }
         }
@@ -179,24 +186,6 @@ struct TodayView: View {
 
                 Spacer()
 
-                // Hardware Status Pill
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(receiver.running ? AppColors.verdictEmerald : AppColors.textTertiary)
-                        .frame(width: 7, height: 7)
-
-                    Text(hardwareStatusText)
-                        .font(AppTypography.monoTag)
-                        .foregroundStyle(receiver.running ? AppColors.textPrimary : AppColors.textTertiary)
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(receiver.running ? AppColors.emeraldPillBackground : AppColors.secondaryCardBackground)
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule()
-                        .stroke(receiver.running ? AppColors.verdictEmerald.opacity(0.3) : AppColors.cardBorder, lineWidth: 0.5)
-                )
             }
         }
         .padding(.horizontal, 2)
@@ -205,11 +194,11 @@ struct TodayView: View {
     private var timeGreeting: String {
         let hour = Calendar.current.component(.hour, from: Date())
         if hour < 12 {
-            return "Good morning, Anup 👋"
+            return "Good morning 👋"
         } else if hour < 17 {
-            return "Good afternoon, Anup 👋"
+            return "Good afternoon 👋"
         } else {
-            return "Good evening, Anup 👋"
+            return "Good evening 👋"
         }
     }
 
@@ -219,15 +208,25 @@ struct TodayView: View {
         return formatter.string(from: Date())
     }
 
-    private var hardwareStatusText: String {
-        let name = receiver.deviceName.isEmpty ? "Keepsake-P0" : receiver.deviceName
-        if receiver.running {
-            return "\(name) · 16 kHz Native"
-        } else if receiver.status.lowercased().contains("connect") {
-            return "\(name) · Connecting"
-        } else {
-            return "\(name) · Standby"
+    private var captureStatusCard: some View {
+        HStack(spacing: 12) {
+            Image(systemName: receiver.status.contains("Receiving") ? "waveform.circle.fill" : "waveform.circle")
+                .font(.title2)
+                .foregroundStyle(receiver.status.contains("Receiving") ? AppColors.verdictEmerald : AppColors.brandIndigo)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(receiver.status.contains("Receiving") ? "Capturing audio" : receiver.running ? "Connecting to pendant" : "Pendant on standby")
+                    .font(AppTypography.cardTitle)
+                Text(uploader.pendingCount == 0
+                     ? "No saved files waiting"
+                     : settings.uploadsEnabled
+                       ? "\(uploader.pendingCount) saved \(uploader.pendingCount == 1 ? "file" : "files") waiting to upload"
+                       : "\(uploader.pendingCount) saved \(uploader.pendingCount == 1 ? "file" : "files") · uploads paused")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
+            Spacer(minLength: 0)
         }
+        .appCard(padding: 14)
     }
 
     // MARK: - Day Briefing Section
@@ -245,10 +244,10 @@ struct TodayView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Day Briefing")
+                    Text("Latest memory")
                         .font(AppTypography.sectionTitle)
                         .foregroundStyle(AppColors.textPrimary)
-                    Text("Executive Synthesis & Key Conversations")
+                    Text("A quick look at your most recent conversation")
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColors.textSecondary)
                 }
@@ -256,7 +255,7 @@ struct TodayView: View {
                 Spacer()
 
                 if let first = insightsVM.insights.first, !first.displayTime.isEmpty {
-                    Text(first.displayTime)
+                    Text(String(first.displayTime.prefix(5)))
                         .font(AppTypography.monoTag)
                         .foregroundStyle(AppColors.textTertiary)
                 }
@@ -303,6 +302,7 @@ struct TodayView: View {
                             .font(AppTypography.sectionTitle)
                             .foregroundStyle(AppColors.brandIndigo)
                             .lineSpacing(3)
+                            .lineLimit(showBriefingDetails ? nil : 2)
                             .padding(12)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(AppColors.indigoPillBackground)
@@ -315,10 +315,11 @@ struct TodayView: View {
                             .font(AppTypography.body)
                             .foregroundStyle(AppColors.textPrimary)
                             .lineSpacing(3)
+                            .lineLimit(showBriefingDetails ? nil : 3)
                     }
 
                     // Key Points bullets
-                    if !latest.displayKeyPoints.isEmpty {
+                    if showBriefingDetails && !latest.displayKeyPoints.isEmpty {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Key Highlights")
                                 .font(AppTypography.cardTitle)
@@ -340,6 +341,13 @@ struct TodayView: View {
                         .background(AppColors.secondaryCardBackground)
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
+                    if !latest.displaySummary.isEmpty || !latest.displayKeyPoints.isEmpty {
+                        Button(showBriefingDetails ? "Show less" : "Read full memory") {
+                            withAnimation { showBriefingDetails.toggle() }
+                        }
+                        .font(AppTypography.cardTitle)
+                        .foregroundStyle(AppColors.brandIndigo)
+                    }
                 }
             } else {
                 VStack(spacing: 10) {
@@ -356,6 +364,16 @@ struct TodayView: View {
                 }
                 .padding(.vertical, 20)
                 .frame(maxWidth: .infinity)
+            }
+            if !insightsVM.isGenerating {
+                Button {
+                    Task { await insightsVM.generateOnDemand(minutes: 10) }
+                } label: {
+                    Label("Summarize the last 10 minutes", systemImage: "sparkles")
+                        .font(AppTypography.caption)
+                }
+                .foregroundStyle(AppColors.brandIndigo)
+                .padding(.top, 2)
             }
         }
         .padding(16)
@@ -399,7 +417,7 @@ struct TodayView: View {
                         }
                     }
 
-                    Text("Tasks & Next Steps from Conversations")
+                    Text("Your next steps from conversations")
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColors.textSecondary)
                 }
@@ -424,7 +442,13 @@ struct TodayView: View {
                 .frame(maxWidth: .infinity)
             } else {
                 VStack(spacing: 8) {
-                    ForEach(allActions, id: \.self) { task in
+                    let nextActions = Array(allActions.filter { !completedTaskIDs.contains($0) }.prefix(3))
+                    if nextActions.isEmpty {
+                        Text("You’re caught up for now.")
+                            .font(AppTypography.secondaryBody)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
+                    ForEach(nextActions, id: \.self) { task in
                         let isDone = completedTaskIDs.contains(task)
                         Button {
                             toggleTask(task)
@@ -450,6 +474,13 @@ struct TodayView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                    if allActions.count > 3 || allActions.contains(where: { completedTaskIDs.contains($0) }) {
+                        Button("See all \(allActions.count) actions") { showAllTasks = true }
+                            .font(AppTypography.cardTitle)
+                            .foregroundStyle(AppColors.brandIndigo)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.top, 4)
+                    }
                 }
             }
         }
@@ -473,6 +504,44 @@ struct TodayView: View {
             }
         }
         return actions
+    }
+
+    private var filteredActions: [String] {
+        let actions = allAggregatedActionItems()
+        guard !actionSearch.isEmpty else { return actions }
+        return actions.filter { $0.localizedCaseInsensitiveContains(actionSearch) }
+    }
+
+    private var recentMemoriesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Recent memories")
+                .font(AppTypography.sectionTitle)
+            if insightsVM.insights.count < 2 {
+                Text("More memories will appear as conversations are saved.")
+                    .font(AppTypography.secondaryBody)
+                    .foregroundStyle(AppColors.textSecondary)
+            } else {
+                ForEach(Array(insightsVM.insights.dropFirst().prefix(2))) { item in
+                    Button { selectedMemory = item } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(item.displayTitle)
+                            .font(AppTypography.cardTitle)
+                            .lineLimit(1)
+                        Text(item.displayHeadline.isEmpty ? item.displaySummary : item.displayHeadline)
+                            .font(AppTypography.secondaryBody)
+                            .foregroundStyle(AppColors.textSecondary)
+                            .lineLimit(2)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(12)
+                    .background(AppColors.secondaryCardBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .appCard()
     }
 
     private func toggleTask(_ task: String) {

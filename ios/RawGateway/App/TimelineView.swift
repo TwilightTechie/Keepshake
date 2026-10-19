@@ -7,6 +7,8 @@ struct TimelineView: View {
     @Environment(\.scenePhase) private var phase
     @State private var expandedSessionIDs: Set<String> = []
     @State private var copiedSessionID: String? = nil
+    @State private var searchText = ""
+    @State private var dateFilter = "All"
 
     init(settings: Settings) {
         _viewModel = StateObject(wrappedValue: InsightsViewModel(settings: settings))
@@ -21,9 +23,19 @@ struct TimelineView: View {
 
                     if viewModel.insights.isEmpty && !viewModel.isLoading {
                         emptyTimelineCard
+                    } else if filteredInsights.isEmpty {
+                        VStack(spacing: 8) {
+                            Image(systemName: "magnifyingglass").font(.title2)
+                            Text("No matching memories").font(AppTypography.cardTitle)
+                            Text("Try another search or date.").font(AppTypography.caption)
+                        }
+                        .foregroundStyle(AppColors.textSecondary)
+                        .frame(maxWidth: .infinity)
+                        .padding(32)
+                        .appCard()
                     } else {
                         LazyVStack(spacing: 14) {
-                            ForEach(viewModel.insights) { item in
+                            ForEach(filteredInsights) { item in
                                 sessionCard(item)
                             }
                         }
@@ -31,11 +43,12 @@ struct TimelineView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
-                .padding(.bottom, 32)
+                .padding(.bottom, 100)
             }
             .background(AppColors.background)
             .navigationTitle("Timeline")
             .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $searchText, prompt: "Search memories")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     HStack(spacing: 6) {
@@ -84,29 +97,49 @@ struct TimelineView: View {
     // MARK: - Timeline Header
 
     private var timelineHeader: some View {
-        HStack(alignment: .center) {
+        HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Conversations & Sessions")
+                Text("Your memories")
                     .font(AppTypography.sectionTitle)
                     .foregroundStyle(AppColors.textPrimary)
-                Text("\(viewModel.insights.count) sessions recorded")
+                Text("\(filteredInsights.count) of \(viewModel.insights.count) recent summaries")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
             }
 
             Spacer()
-
-            if let latest = viewModel.insights.first, !latest.displayDate.isEmpty {
-                Text(latest.displayDate)
-                    .font(AppTypography.monoTag)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(AppColors.secondaryCardBackground)
-                    .foregroundStyle(AppColors.textSecondary)
+            Menu {
+                ForEach(["All", "Today", "Yesterday"], id: \.self) { option in
+                    Button(option) { dateFilter = option }
+                }
+            } label: {
+                Label(dateFilter, systemImage: "calendar")
+                    .font(AppTypography.caption)
+                    .padding(8)
+                    .background(AppColors.cardBackground)
                     .clipShape(Capsule())
             }
         }
         .padding(.horizontal, 2)
+    }
+
+    private var filteredInsights: [InsightItem] {
+        let targetDate: String? = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            switch dateFilter {
+            case "Today": return formatter.string(from: Date())
+            case "Yesterday": return formatter.string(from: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date())
+            default: return nil
+            }
+        }()
+        return viewModel.insights.filter { item in
+            let matchesDate = targetDate == nil || item.displayDate == targetDate
+            let matchesSearch = searchText.isEmpty || ([item.displayTitle, item.displayHeadline, item.displaySummary]
+                + item.displayKeyPoints + item.displayDecisions + item.displayActionItems)
+                .joined(separator: " ").localizedCaseInsensitiveContains(searchText)
+            return matchesDate && matchesSearch
+        }
     }
 
     // MARK: - Session Card
@@ -128,11 +161,11 @@ struct TimelineView: View {
                             .font(.system(size: 10))
                             .foregroundStyle(AppColors.textTertiary)
 
-                        Text("\(item.displayTime)")
+                        Text("\(friendlyDate(item.displayDate)) · \(String(item.displayTime.prefix(5)))")
                             .font(AppTypography.monoTag)
                             .foregroundStyle(AppColors.textTertiary)
 
-                        if let words = item.word_count, words > 0 {
+                        if isExpanded, let words = item.word_count, words > 0 {
                             Text("· \(words) words")
                                 .font(AppTypography.monoTag)
                                 .foregroundStyle(AppColors.textTertiary)
@@ -157,7 +190,7 @@ struct TimelineView: View {
             }
 
             // Headline Banner (Personalized second-person briefing)
-            if !item.displayHeadline.isEmpty {
+            if isExpanded && !item.displayHeadline.isEmpty {
                 HStack(alignment: .top, spacing: 8) {
                     Image(systemName: "quote.opening")
                         .font(.system(size: 11))
@@ -183,7 +216,7 @@ struct TimelineView: View {
                     .font(AppTypography.body)
                     .foregroundStyle(AppColors.textPrimary)
                     .lineSpacing(2)
-                    .lineLimit(isExpanded ? nil : 3)
+                    .lineLimit(isExpanded ? nil : 2)
             }
 
             // Collapsible Details: Key Highlights & Decisions
@@ -244,7 +277,7 @@ struct TimelineView: View {
                 toggleExpanded(item.id)
             } label: {
                 HStack(spacing: 4) {
-                    Text(isExpanded ? "Show Less" : "Show Full Session")
+                    Text(isExpanded ? "Show less" : "Read memory")
                         .font(AppTypography.caption)
                         .fontWeight(.medium)
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
@@ -262,6 +295,17 @@ struct TimelineView: View {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .stroke(AppColors.cardBorder, lineWidth: 1)
         )
+    }
+
+    private func friendlyDate(_ value: String) -> String {
+        let parser = DateFormatter()
+        parser.dateFormat = "yyyy-MM-dd"
+        guard let date = parser.date(from: value) else { return value }
+        if Calendar.current.isDateInToday(date) { return "Today" }
+        if Calendar.current.isDateInYesterday(date) { return "Yesterday" }
+        let display = DateFormatter()
+        display.dateStyle = .medium
+        return display.string(from: date)
     }
 
     private func toggleExpanded(_ id: String) {
@@ -310,10 +354,10 @@ struct TimelineView: View {
             Image(systemName: "clock.badge.questionmark")
                 .font(.system(size: 36))
                 .foregroundStyle(AppColors.textTertiary)
-            Text("No Sessions Recorded Yet")
+            Text("No memories yet")
                 .font(AppTypography.cardTitle)
                 .foregroundStyle(AppColors.textSecondary)
-            Text("As you have conversations throughout the day, Keepsake clusters them into structured memory sessions here.")
+            Text("Your saved conversation summaries will appear here.")
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColors.textTertiary)
                 .multilineTextAlignment(.center)
