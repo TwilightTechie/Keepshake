@@ -72,6 +72,11 @@ struct RawGatewayApp: App {
                         Label("Timeline", systemImage: "clock.arrow.circlepath")
                     }
 
+                    CreateView(settings: gateway.settings)
+                    .tabItem {
+                        Label("Create", systemImage: "square.and.pencil")
+                    }
+
                     GatewayView(
                         settings: gateway.settings,
                         receiver: receiver,
@@ -142,6 +147,7 @@ struct GatewayView: View {
     @ObservedObject var uploader: Uploader
     @ObservedObject var logger: DiagnosticLogger
     @ObservedObject var liveSpeech: LiveSpeechService
+    @StateObject private var vadDiagnostics = ServerVADDiagnostics()
     @EnvironmentObject private var themeManager: ThemeManager
     @Environment(\.scenePhase) private var phase
     @State private var showLogs = false
@@ -151,6 +157,7 @@ struct GatewayView: View {
     @State private var copiedAlertMessage = ""
     @State private var showPruneAlert = false
     @State private var showAdvanced = false
+    @State private var shareableReport: ShareableReport? = nil
 
     var body: some View {
         NavigationStack {
@@ -162,8 +169,10 @@ struct GatewayView: View {
                     uploadQueueCard
                     DisclosureGroup("Settings & diagnostics", isExpanded: $showAdvanced) {
                         VStack(spacing: 16) {
+                            notificationsCard
                             serverCard
                             packetStatsCard
+                            vadDiagnosticsCard
                             diagnosticsCard
                             notesCard
                         }
@@ -198,17 +207,34 @@ struct GatewayView: View {
                 }
             }
             .sheet(isPresented: $showLogs) {
-                LogsView(logger: logger, receiver: receiver, uploader: uploader, settings: settings)
+                LogsView(logger: logger, receiver: receiver, uploader: uploader,
+                         settings: settings, vadDiagnostics: vadDiagnostics)
             }
             .sheet(isPresented: $showCheckpoint) {
                 CheckpointView(uploader: uploader)
             }
+            .sheet(item: $shareableReport) { report in
+                ShareSheet(activityItems: [report.fileURL])
+            }
             .alert(copiedAlertMessage, isPresented: $showCopiedAlert) {
                 Button("OK", role: .cancel) {}
             }
+            .onAppear {
+                NotificationManager.shared.requestPermissions()
+            }
             .onChange(of: phase) { newPhase in
-                if newPhase == .active { uploader.pump(); logger.refreshFileSize() }
+                if newPhase == .active {
+                    uploader.pump()
+                    logger.refreshFileSize()
+                    if showAdvanced { Task { await vadDiagnostics.refresh(settings: settings) } }
+                }
                 if newPhase != .active { settings.saveToken(); settings.saveWebhookToken() }
+            }
+            .task(id: showAdvanced) {
+                while showAdvanced && !Task.isCancelled {
+                    await vadDiagnostics.refresh(settings: settings)
+                    try? await Task.sleep(nanoseconds: 15_000_000_000)
+                }
             }
         }
     }
@@ -222,7 +248,7 @@ struct GatewayView: View {
                     Circle()
                         .fill(connectionColor.opacity(0.15))
                         .frame(width: 48, height: 48)
-                    Image(systemName: receiver.running ? "wave.3.right.circle.fill" : "wave.3.right.circle")
+                    Image(systemName: receiver.status.contains("Receiving") ? "wave.3.right.circle.fill" : (receiver.isDeviceConnected ? "wave.3.right.circle.fill" : "wave.3.right.circle"))
                         .font(.title2)
                         .foregroundStyle(connectionColor)
                 }
@@ -241,37 +267,82 @@ struct GatewayView: View {
                 }
                 Spacer()
 
-                Text(receiver.status.contains("Receiving") ? "Capturing" : receiver.running ? "Connecting" : "Standby")
+                Text(receiver.status.contains("Receiving") ? "Capturing" : (receiver.isDeviceConnected ? "Standby" : "Disconnected"))
                     .font(AppTypography.caption)
                     .foregroundStyle(connectionColor)
             }
             .padding()
 
-            if !receiver.firmwareDiagnostics.hasPrefix("Not read") {
-                Divider().padding(.horizontal)
-                HStack(spacing: 6) {
-                    Image(systemName: "cpu").font(.caption).foregroundStyle(.secondary)
-                    Text(receiver.firmwareDiagnostics)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                    Spacer()
+            Divider().padding(.horizontal)
+            HStack(spacing: 8) {
+                Image(systemName: batterySymbol)
+                    .foregroundStyle((receiver.displayBatteryPercent ?? 100) <= 20 ? AppColors.errorRose : AppColors.verdictEmerald)
+                Text("Pendant battery")
+                    .font(AppTypography.secondaryBody)
+                Spacer()
+                VStack(alignment: .trailing, spacing: 3) {
+                    if let percent = receiver.displayBatteryPercent, let mv = receiver.displayBatteryMillivolts {
+                        HStack(spacing: 6) {
+                            Text("≈\(percent)%")
+                                .font(AppTypography.cardTitle)
+                            Text(String(format: "%.2f V", Double(mv) / 1000))
+                                .font(AppTypography.caption)
+                                .foregroundStyle(AppColors.textSecondary)
+                        }
+                        if let isCharging = receiver.displayIsCharging {
+                            HStack(spacing: 4) {
+                                Label(isCharging ? "Charging" : "Not charging / full", systemImage: isCharging ? "bolt.fill" : "bolt.slash")
+                                    .font(AppTypography.caption)
+                                    .foregroundStyle(isCharging ? AppColors.verdictEmerald : AppColors.textSecondary)
+                                if !receiver.isDeviceConnected {
+                                    Text("· Last synced")
+                                        .font(.caption2)
+                                        .foregroundStyle(AppColors.textTertiary)
+                                }
+                            }
+                        } else if !receiver.isDeviceConnected {
+                            Text("Last known state")
+                                        .font(.caption2)
+                                .foregroundStyle(AppColors.textTertiary)
+                        } else {
+                            Text("Reading battery...")
+                                .font(AppTypography.caption)
+                                .foregroundStyle(AppColors.textSecondary)
+                        }
+                    } else {
+                        Text(receiver.isDeviceConnected ? "Reading battery..." : "Not connected")
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
                 }
-                .padding(.horizontal).padding(.vertical, 8)
             }
+            .padding(.horizontal)
+            .padding(.vertical, 12)
+
         }
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     private var connectionColor: Color {
-        if !receiver.running { return .secondary }
         if receiver.status.contains("Receiving") { return .green }
-        if receiver.status.contains("reconnecting") || receiver.status.contains("Reconnecting") { return .orange }
-        return .blue
+        if receiver.isDeviceConnected { return .blue }
+        if receiver.status.contains("reconnecting") || receiver.status.contains("Reconnecting") || receiver.status.contains("Connecting") { return .orange }
+        return .secondary
+    }
+
+    private var batterySymbol: String {
+        guard let percent = receiver.displayBatteryPercent else { return "battery.0" }
+        if percent <= 10 { return "battery.0" }
+        if percent <= 30 { return "battery.25" }
+        if percent <= 60 { return "battery.50" }
+        if percent <= 85 { return "battery.75" }
+        return "battery.100"
     }
 
     private var connectionStatusText: String {
-        if !receiver.running { return "Disconnected" }
+        if receiver.status.contains("Receiving") { return "Capturing audio" }
+        if receiver.isDeviceConnected { return "Connected (Standby)" }
         return receiver.status
     }
 
@@ -285,7 +356,7 @@ struct GatewayView: View {
             } label: {
                 HStack {
                     Image(systemName: receiver.running ? "stop.circle.fill" : "play.circle.fill")
-                    Text(receiver.running ? "Stop Capture" : "Connect & Start Capture")
+                    Text(receiver.running ? "Stop Audio Capture" : "Start Audio Capture")
                         .fontWeight(.semibold)
                 }
                 .frame(maxWidth: .infinity)
@@ -294,18 +365,46 @@ struct GatewayView: View {
             .buttonStyle(.borderedProminent)
             .tint(receiver.running ? .red : .green)
 
-            if !receiver.running {
-                Button {
-                    receiver.forget()
-                } label: {
-                    HStack {
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                        Text("Forget Device & Scan Again")
+            HStack(spacing: 16) {
+                if !receiver.isDeviceConnected {
+                    Button {
+                        receiver.reconnect()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.clockwise")
+                            Text("Reconnect")
+                        }
+                        .font(.subheadline)
                     }
-                    .font(.subheadline)
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(AppColors.brandIndigo)
+                } else if !receiver.running {
+                    Button {
+                        receiver.disconnect()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "antenna.radiowaves.left.and.right.slash")
+                            Text("Disconnect")
+                        }
+                        .font(.subheadline)
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(.secondary)
                 }
-                .buttonStyle(.borderless)
-                .foregroundStyle(.secondary)
+
+                if !receiver.running {
+                    Button {
+                        receiver.forget()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.triangle.2.circlepath")
+                            Text("Forget Device")
+                        }
+                        .font(.subheadline)
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(.secondary)
+                }
             }
         }
         .padding()
@@ -398,6 +497,25 @@ struct GatewayView: View {
 
             Text("The simple auth token is passed via HTTP header and URL parameter. Default server secret is stored in Keychain.")
                 .font(.caption2).foregroundStyle(.tertiary)
+
+            Divider()
+            Text("Create API Token")
+                .font(.caption).foregroundStyle(.secondary)
+            SecureField("Separate server token for X drafts and publishing", text: $settings.postsToken)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .padding(10)
+                .background(Color(.tertiarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .onSubmit { settings.savePostsToken() }
+            Button("Save Create Token") { settings.savePostsToken() }
+                .font(.caption)
+                .buttonStyle(.bordered)
+            if !settings.postsTokenError.isEmpty {
+                Text(settings.postsTokenError)
+                    .font(.caption)
+                    .foregroundStyle(AppColors.errorRose)
+            }
         }
         .padding()
         .background(Color(.secondarySystemGroupedBackground))
@@ -612,8 +730,83 @@ struct GatewayView: View {
 
     // MARK: - Diagnostics & Logs Card
 
+    private var vadDiagnosticsCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Label("Server Speech Detection", systemImage: "waveform.badge.mic")
+                    .font(.headline)
+                Spacer()
+                Button("Refresh") { Task { await vadDiagnostics.refresh(settings: settings) } }
+                    .font(.caption)
+            }
+            Text(vadDiagnostics.status)
+                .font(.caption)
+                .foregroundStyle(vadDiagnostics.snapshot?.ready == true ? Color.green : Color.secondary)
+            if let fetched = vadDiagnostics.lastUpdated {
+                Text("Last fetched \(fetched.formatted(date: .abbreviated, time: .shortened))")
+                    .font(.caption2).foregroundStyle(.tertiary)
+            }
+            if let snapshot = vadDiagnostics.snapshot, let counts = snapshot.counters {
+                Text("Silero VAD · since \(snapshot.startedAt ?? "server start")")
+                    .font(.caption2).foregroundStyle(.secondary)
+                HStack {
+                    StatCell(label: "Evaluated", value: "\(counts.evaluated)",
+                             icon: "waveform", color: .blue)
+                    StatCell(label: "Passed", value: "\(counts.passed)",
+                             icon: "checkmark.circle", color: .green)
+                    StatCell(label: "Dropped", value: "\(counts.droppedSilence + counts.droppedNoSpeech)",
+                             icon: "speaker.slash", color: .orange)
+                }
+                Text("Silence \(counts.droppedSilence) · No speech \(counts.droppedNoSpeech) · " +
+                     "Noise reduced \(counts.noiseReduced) · Errors \(counts.errors)")
+                    .font(.caption2).foregroundStyle(.secondary)
+                if let gateSettings = snapshot.settings {
+                    Text("Threshold \(String(format: "%.2f", gateSettings.speechProbabilityThreshold)) · " +
+                         "Minimum speech \(gateSettings.minimumSpeechMs) ms · " +
+                         "Silence RMS \(gateSettings.silencePeakRMS)")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
+                ForEach(["live", "checkpoint"], id: \.self) { path in
+                    if let pathCounts = snapshot.byPath?[path] {
+                        Text("\(path.capitalized): \(pathCounts.passed) passed, " +
+                             "\(pathCounts.droppedSilence + pathCounts.droppedNoSpeech) dropped")
+                            .font(.caption2).foregroundStyle(.secondary)
+                    }
+                }
+                if let latest = snapshot.recent.first {
+                    Text("Latest: \(latest.path) \(latest.decision) (\(latest.reason)), " +
+                         "\(latest.speechMs) ms speech of \(latest.durationMs) ms, " +
+                         "peak \(String(format: "%.2f", latest.peakProbability))")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
+            }
+            Text("Counts reset when the server restarts. The original audio checkpoints remain archived.")
+                .font(.caption2).foregroundStyle(.tertiary)
+        }
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
     private var diagnosticsCard: some View {
         VStack(alignment: .leading, spacing: 10) {
+            DisclosureGroup("Bluetooth diagnostics") {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(receiver.firmwareDiagnostics)
+                    Text(receiver.linkDiagnostics)
+                    Text(receiver.transportDiagnostics)
+                    Text(receiver.previousTransportDiagnostics)
+                    Text(receiver.resetTrace)
+                }
+                .font(.caption2)
+                .foregroundStyle(AppColors.textSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 8)
+            }
+            .font(.subheadline.weight(.semibold))
+
+            Divider()
+
             HStack {
                 Label("Local Diagnostic Logs", systemImage: "doc.text.fill")
                     .font(.headline)
@@ -636,26 +829,38 @@ struct GatewayView: View {
 
             HStack(spacing: 10) {
                 Button {
-                    let report = logger.generateReport(
+                    if let fileURL = logger.generateReportFile(
                         receiverStatus: receiver.status,
                         deviceName: receiver.deviceName,
                         streamDesc: receiver.streamDescription,
+                        bootID: receiver.bootID,
+                        rssi: receiver.lastRSSI,
+                        batteryMillivolts: receiver.displayBatteryMillivolts,
+                        firmwareDiagnostics: receiver.firmwareDiagnostics,
+                        linkDiagnostics: receiver.linkDiagnostics,
+                        resetTrace: receiver.resetTrace,
+                        transportDiagnostics: receiver.transportDiagnostics,
+                        previousTransportDiagnostics: receiver.previousTransportDiagnostics,
                         stats: receiver.stats,
                         storageMB: receiver.storageMB,
                         pendingChunks: uploader.pendingCount,
-                        uploaderStatus: uploader.status
-                    )
-                    UIPasteboard.general.string = report
-                    copiedAlertMessage = "Diagnostic snapshot generated and copied to clipboard."
-                    showCopiedAlert = true
+                        uploaderStatus: uploader.status,
+                        vadDiagnostics: vadDiagnostics.reportText
+                    ) {
+                        shareableReport = ShareableReport(fileURL: fileURL, previewTitle: "Diagnostic Report")
+                    } else {
+                        copiedAlertMessage = "Could not generate report file."
+                        showCopiedAlert = true
+                    }
                 } label: {
                     HStack(spacing: 4) {
-                        Image(systemName: "sparkles")
-                        Text("Generate Report")
+                        Image(systemName: "square.and.arrow.up")
+                        Text("Share Report")
                     }
                     .font(.subheadline)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.borderedProminent)
+                .tint(AppColors.brandIndigo)
 
                 Button {
                     showLogs = true
@@ -690,6 +895,36 @@ struct GatewayView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
+    // MARK: - Notifications Card
+
+    private var notificationsCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Notifications", systemImage: "bell.badge")
+                .font(.subheadline).fontWeight(.semibold)
+
+            Toggle("Enable Notifications", isOn: $settings.notificationsEnabled)
+                .tint(AppColors.brandIndigo)
+                .onChange(of: settings.notificationsEnabled) { enabled in
+                    if enabled { NotificationManager.shared.requestPermissions() }
+                }
+
+            if settings.notificationsEnabled {
+                VStack(spacing: 8) {
+                    Toggle("Decision Alerts", isOn: $settings.decisionNotifications)
+                        .font(.caption)
+                    Toggle("Battery & Charging Alerts", isOn: $settings.batteryNotifications)
+                        .font(.caption)
+                    Toggle("Connection Drop / Reconnect", isOn: $settings.connectionNotifications)
+                        .font(.caption)
+                }
+                .padding(.leading, 8)
+            }
+        }
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
     // MARK: - Notes Card
 
     private var notesCard: some View {
@@ -697,7 +932,7 @@ struct GatewayView: View {
             Label("System Notes", systemImage: "info.circle")
                 .font(.subheadline).fontWeight(.semibold)
             Group {
-                Text("• Raw 16 kHz mono PCM16 — no noise filters or downsampling")
+                Text("• Raw capture stays 16 kHz mono PCM16; server filters only the copy sent to Saaras")
                 Text("• Keep the app open; closing or swiping away stops capture")
                 Text("• Reconnect recovery is automated with watchdog protection")
                 Text("• Live transcripts are accessible at https://aadeshai.xyz/dream-ai/")
@@ -761,9 +996,11 @@ struct LogsView: View {
     let receiver: PendantReceiver
     let uploader: Uploader
     let settings: Settings
+    @ObservedObject var vadDiagnostics: ServerVADDiagnostics
     @Environment(\.dismiss) private var dismiss
     @State private var filter = ""
     @State private var showCopiedBanner = false
+    @State private var shareableReport: ShareableReport? = nil
 
     var body: some View {
         NavigationStack {
@@ -796,6 +1033,9 @@ struct LogsView: View {
             .searchable(text: $filter, prompt: "Filter logs by category or message")
             .navigationTitle("Diagnostic Logs")
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(item: $shareableReport) { report in
+                ShareSheet(activityItems: [report.fileURL])
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Done") { dismiss() }
@@ -803,17 +1043,28 @@ struct LogsView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 12) {
                         Button {
-                            logger.generateReport(
+                            if let fileURL = logger.generateReportFile(
                                 receiverStatus: receiver.status,
                                 deviceName: receiver.deviceName,
                                 streamDesc: receiver.streamDescription,
+                                bootID: receiver.bootID,
+                                rssi: receiver.lastRSSI,
+                                batteryMillivolts: receiver.displayBatteryMillivolts,
+                                firmwareDiagnostics: receiver.firmwareDiagnostics,
+                                linkDiagnostics: receiver.linkDiagnostics,
+                                resetTrace: receiver.resetTrace,
+                                transportDiagnostics: receiver.transportDiagnostics,
+                                previousTransportDiagnostics: receiver.previousTransportDiagnostics,
                                 stats: receiver.stats,
                                 storageMB: receiver.storageMB,
                                 pendingChunks: uploader.pendingCount,
-                                uploaderStatus: uploader.status
-                            )
+                                uploaderStatus: uploader.status,
+                                vadDiagnostics: vadDiagnostics.reportText
+                            ) {
+                                shareableReport = ShareableReport(fileURL: fileURL, previewTitle: "Diagnostic Report")
+                            }
                         } label: {
-                            Image(systemName: "sparkles")
+                            Image(systemName: "square.and.arrow.up")
                         }
 
                         Button {

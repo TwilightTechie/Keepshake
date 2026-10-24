@@ -27,6 +27,48 @@ are rounded down to an even number of bytes so a packet never splits a PCM16 sam
 There is no padding or sample transformation. Native audio is **32 KB/second**,
 about 960 KB per 30 seconds before packet/JSON/Base64 overhead.
 
+## October 23 transport correction
+
+The v4.1.0 Zephyr PDM driver returned the **most recently allocated** slab buffer
+instead of the DMA buffer that had completed. This could return/free memory while
+PDM was still writing to it. The build now applies upstream commit
+[8260e1ff5cc4](https://github.com/zephyrproject-rtos/zephyr/commit/8260e1ff5cc4f25ef9f54a8717917016015df707)
+from `patches/zephyr-pdm-ownership.patch` to a generated source file in the build
+directory and substitutes it for the original audio driver. The west checkout is
+unchanged. CMake checks the original source hash and stops for review on a Zephyr
+upgrade, so this correction cannot silently disappear. The build requires `patch`.
+
+Capture copies PCM into a fixed ten-block pool with interrupts enabled and enqueues
+only a pointer. The eight-entry queue no longer copies 3,200 bytes while holding its
+kernel spinlock. The TX worker owns and releases each dequeued block; disconnect
+cleanup frees queued blocks instead of purging away their pointers.
+
+The dedicated blocking sender has been replaced with a short system-workqueue
+pump, **at most four notifications per invocation**. In this pinned Zephyr version,
+notification allocation from that queue uses `K_NO_WAIT`; an ordinary thread uses
+`K_FOREVER`. Backpressure retries yield for 2 ms; otherwise the next batch waits
+1 ms. Audio older than 250 ms at send time is dropped with sequence gaps and explicit
+counters. This is a bounded live queue, not durable offline storage. Recovery uses
+TX **completion callbacks**, not merely successful submission. These callbacks are
+host-stack completion signals, not app-level receipt acknowledgements.
+
+`KTP1` current/previous-boot counters and `KTR3` breadcrumbs are shown in the app
+and exported reports. The previous snapshot is available only after a retained-RAM
+watchdog/software reset; a power loss or firmware update may invalidate it.
+The 16 kHz PCM packet contract and the app's 30-second checkpointing are unchanged.
+
+Run the focused host regression tests from the repository root:
+
+```sh
+python3 firmware/tests/run_host_tests.py
+```
+
+The harness compiles the actual driver event handler before/after the patch and
+reproduces the old ownership failure. It also exercises the actual TX pump with
+fake BLE backpressure, expiry, disconnect cleanup and delayed completion callbacks.
+These checks and successful builds do not replace the next physical pendant run.
+See [investigation and Omi comparison](../docs/2026-10-23-ble-audio-fix.md).
+
 ## Power and recovery
 
 - Microphone PDM capture and its power rail are **off until a phone subscribes**.
@@ -41,16 +83,22 @@ about 960 KB per 30 seconds before packet/JSON/Base64 overhead.
   the primary advertisement for background scans. Idle is never System OFF,
   because that would require a physical wake event.
 - Advertising resumes when connection resources are recycled. A one-second
-  supervisor retries failed starts and resets only after 30 seconds of persistent
+  supervisor on its own preemptible workqueue retries failed starts and resets after 30 seconds of persistent
   advertising failure. No normal periodic reset or reset-on-disconnect.
-- Three hardware watchdog channels independently cover the capture loop, sender,
-  and system work queue. Failure to feed any channel resets the SoC after 12 seconds.
-  Watchdog remains active during normal CPU idle sleep.
+- One hardware watchdog channel is fed by the capture loop. If that loop stops
+  progressing for 30 seconds, the SoC resets. A retained breadcrumb records the
+  last capture, sender, and supervisor stages and is available after a watchdog
+  or software recovery reboot through the optional `KTR3` BLE characteristic. The trace is diagnostic;
+  it does not alter capture, packet framing, or watchdog recovery.
 - Microphone reads have 500 ms timeouts. Three failures trigger a stop/drain/restart;
   three unsuccessful recovery rounds reset the device. Ten seconds of healthy
   capture clears the recovery streak. The STOP path allows asynchronous DMA release.
 - If capture is progressing but notifications have made no progress for five
-  seconds, disconnect to let the phone reconnect. The app separately reconnects
+  seconds, request a disconnect to let the phone reconnect. Independently, the
+  capture/idle loop resets if subscribed TX has stalled for 15 seconds or its
+  private supervisor has not completed for 20 seconds. This bounds recovery when
+  a blocking Bluetooth/ADC call cannot finish. The shared system workqueue remains
+  available for Bluetooth TX completion and disconnect cleanup. The app separately reconnects
   after an eight-second observed notification stall while it is executing.
 - Connection references are protected against disconnect races. Generation tags
   prevent queued audio from an old connection/subscription leaking into a new one.

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fafaf7">
+  <meta name="description" content="Keepshake is an open-source personal AI assistant you wear: a screenless band and a private memory layer for your day.">
+  <title>Keepshake — Be here. Remember more.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Keepshake home"><span class="brand-mark" aria-hidden="true">✳</span>keepshake<span class="brand-period">.</span></a>
+    <nav class="site-nav" aria-label="Main navigation"><a href="#band">The band</a><a href="#memory">Memory layer</a><a href="#ios">iOS app</a></nav>
+    <a class="nav-cta" href="https://github.com/TwilightTechie/Keepshake" target="_blank" rel="noopener noreferrer">BUILD WITH US <span aria-hidden="true">↗</span></a>
+    <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="live-dot"></span> OPEN-SOURCE PERSONAL AI ASSISTANT <span class="eyebrow-tail">/ CONCEPT 01</span></div>
+        <h1 id="hero-title">Be here.<br><em>Remember more.</em></h1>
+        <p class="hero-lead">A screenless band for the moments worth keeping. Keepshake is being built to turn everyday conversations into your own useful, searchable memory.</p>
+        <div class="hero-actions"><a class="button button-dark" href="#band">Meet the band <span aria-hidden="true">↘</span></a><a class="link-arrow" href="#memory">See the memory layer <span aria-hidden="true">↗</span></a></div>
+        <div class="hero-proof"><span class="proof-icon" aria-hidden="true">◎</span><span>Made for real life, not another screen.<br>Private by design. Open by intent.</span></div>
+      </div>
+      <div class="hero-visual" tabindex="0" aria-label="Keepshake wristband concept. Hover, focus, or tap to see its parts."><span class="corner-label">WEAR YOUR MEMORY / NOT YOUR NOTIFICATIONS</span><div class="hero-orbit hero-orbit-a"></div><div class="hero-orbit hero-orbit-b"></div><div class="hero-device-pair" aria-hidden="true"><img class="hero-device-outside" src="assets/keepshake-device.svg" alt="" width="900" height="560"><img class="hero-device-inside" src="assets/keepshake-device-exploded.svg" alt="" width="900" height="560"></div><div class="floating-chip chip-one">NO SCREEN <span>↗</span></div><div class="floating-chip chip-two">ALL CONTEXT <span>✳</span></div><div class="hero-callout hero-callout-a"><span>01 / SHELL</span><strong>Screen-free top</strong></div><div class="hero-callout hero-callout-b"><span>02 / CORE</span><strong>BLE prototype board</strong></div><div class="hero-callout hero-callout-c"><span>03 / POWER</span><strong>Protected Li-Po</strong></div><button type="button" class="hero-dissect-button" aria-pressed="false">Hover to dissect <span aria-hidden="true">✳</span></button><span class="hero-visual-bottom">DESIGN STUDY · HARDWARE IN PROGRESS</span></div>
+    </section>
+
+    <div class="ticker" aria-hidden="true"><div class="ticker-track"><span>LESS SCROLLING</span><b>✳</b><span>MORE LIVING</span><b>✳</b><span>YOUR CONTEXT, YOURS</span><b>✳</b><span>LESS SCROLLING</span><b>✳</b><span>MORE LIVING</span><b>✳</b><span>YOUR CONTEXT, YOURS</span><b>✳</b></div></div>
+
+    <section class="band-section" id="band" aria-labelledby="band-title">
+      <div class="section-intro"><div><p class="kicker">01 / THE HARDWARE</p><h2 id="band-title">A tiny device.<br><em>A lot going on.</em></h2></div><p class="intro-aside">Inspired by the ease of a Whoop-style band. Built to help you remember, with a physical way to take it offline.</p></div>
+      <div class="dissect-stage" tabindex="0" aria-label="Interactive device illustration. Hover, focus, or use the button to see inside the band.">
+        <div class="stage-grid" aria-hidden="true"></div>
+        <div class="stage-heading"><span>FIG 01 / KEEPSHAKE ANATOMY</span><span class="stage-state" aria-live="polite">OUTSIDE VIEW</span></div>
+        <div class="device-pair" aria-hidden="true"><img class="device-assembled" src="assets/keepshake-device.svg" alt="" width="900" height="560"><img class="device-exploded" src="assets/keepshake-device-exploded.svg" alt="" width="900" height="560"></div>
+        <div class="stage-callouts" aria-hidden="true">
+          <div class="callout callout-one"><span>01</span><strong>Top shell</strong><small>Protective, screen-free enclosure</small></div>
+          <div class="callout callout-two"><span>02</span><strong>BLE brain</strong><small>XIAO nRF52840 Sense · P0 prototype</small></div>
+          <div class="callout callout-three"><span>03</span><strong>Power cell</strong><small>Protected Li-Po · 500 / 1100 mAh P0 options</small></div>
+          <div class="callout callout-four"><span>04</span><strong>Woven strap</strong><small>Adjustable nylon band concept</small></div>
+        </div>
+        <div class="stage-footer"><span class="stage-hint">HOVER TO DISSECT <span aria-hidden="true">↗</span></span><button type="button" class="dissect-toggle" aria-pressed="false">See inside <span aria-hidden="true">＋</span></button><span class="stage-footnote">CONCEPT RENDER / NOT FINAL HARDWARE</span></div>
+      </div>
+      <div class="part-grid" aria-label="Band component details">
+        <article><span class="part-index">01 / CAPTURE</span><h3>PDM microphone</h3><p>A tiny acoustic opening is planned on the top shell. Voice activity detection is intended to capture speech rather than every second of your day.</p></article>
+        <article><span class="part-index">02 / CONTROL</span><h3>Physical switch</h3><p>The reference design places a slide switch on the side. The product plan calls for a true hardware off path and a visible recording indicator.</p></article>
+        <article><span class="part-index">03 / CONNECT</span><h3>BLE + USB-C</h3><p>The nRF52840 prototype sends audio to the phone over Bluetooth Low Energy; USB-C keeps charging straightforward.</p></article>
+        <article><span class="part-index">04 / CARRY</span><h3>Battery + strap</h3><p>P0 is exploring protected 500 and 1100 mAh Li-Po options under the module. Fit, battery life, and enclosure details still need prototype testing.</p></article>
+      </div>
+      <p class="concept-note">Visual design study based on the supplied enclosure infographic and current project requirements. The band form, component layout, and final specifications may change.</p>
+    </section>
+
+    <section class="memory-section" id="memory" aria-labelledby="memory-title">
+      <div class="memory-heading"><p class="kicker">02 / THE SOFTWARE LAYER</p><h2 id="memory-title">Your personal<br><em>memory context.</em></h2><p>The useful part of a conversation is rarely the transcript. It's the decision, the promise, the reason, and what happened next.</p></div>
+      <div class="memory-demo" aria-label="Illustrative example of conversation becoming memory">
+        <div class="demo-top"><span>FROM THE MOMENT</span><span>TO WHAT MATTERS</span></div>
+        <div class="demo-source"><span class="demo-time">09:18 AM / TEAM STANDUP</span><p>“If we hotfix the sync bug, we skip QA. I'd rather hold it.”</p><span class="demo-person">LEO · CONVERSATION EXCERPT</span></div>
+        <div class="demo-flow" aria-hidden="true"><span></span><i>✳</i><span></span></div>
+        <div class="demo-memory"><div class="demo-memory-head"><span class="memory-tag">DECISION</span><span>↗ EVIDENCE LINKED</span></div><h3>Ship the sync fix in 1.4.2, not as a hotfix.</h3><p><strong>Why:</strong> The hotfix would bypass QA.</p><div class="demo-memory-bottom"><span>CONFIRMED · 09:21 AM</span><span>VIEW SOURCE ↗</span></div></div>
+        <p class="demo-disclaimer">Illustrative flow using sample content from the current app prototype.</p>
+      </div>
+      <div class="memory-features"><article><span>↗</span><h3>Decisions with a “why”</h3><p>Understand what was settled and the reasoning behind it.</p></article><article><span>✓</span><h3>Promises, surfaced</h3><p>Turn commitments from conversation into things you can act on.</p></article><article><span>◎</span><h3>Ask with receipts</h3><p>Search your own context and trace answers back to their source.</p></article></div>
+    </section>
+
+    <section class="ios-section" id="ios" aria-labelledby="ios-title">
+      <div class="ios-copy"><p class="kicker">03 / THE iOS APP</p><h2 id="ios-title">The day,<br><em>finally in focus.</em></h2><p>The companion app is where your conversations become a clear picture: a daily recap, a memory log, tasks, and answers grounded in what was actually said.</p><div class="ios-switch" role="group" aria-label="App preview screen"><button type="button" data-screen="today" class="is-active" aria-pressed="true">Today</button><button type="button" data-screen="memory" aria-pressed="false">Memory</button><button type="button" data-screen="ask" aria-pressed="false">Ask</button></div><p class="ios-caption">Interactive concept preview based on the project's current app flows.</p></div>
+      <div class="phone-stage"><div class="phone-aura"></div><div class="phone-float phone-float-a">PRIVATE BY DESIGN <span>✳</span></div><div class="phone-float phone-float-b">YOUR DAY, DECODED <span>↗</span></div><div class="phone" aria-label="Keepshake iOS app concept preview"><div class="phone-camera"></div><div class="phone-content">
+        <div class="app-screen is-active" data-app-screen="today"><div class="app-status">9:41 <span>●●● ▰</span></div><div class="app-topline"><span>WEDNESDAY</span><span class="app-avatar">k.</span></div><h3>Good morning,<br>you.</h3><p class="app-sub">Your day is coming together.</p><div class="app-listening"><span class="app-listening-dot"></span> Band connected <span>78%</span></div><div class="app-summary"><span>TODAY AT A GLANCE</span><p>One big decision, two things to follow up on, and a question still open.</p></div><div class="app-statrow"><div><strong>05</strong><span>convos</span></div><div><strong>03</strong><span>memories</span></div><div><strong>02</strong><span>to-dos</span></div></div><div class="app-list-title">UP NEXT <span>SEE ALL ↗</span></div><div class="app-task"><i></i><span>Send Sam the release notes</span></div><div class="app-task"><i></i><span>Pick up Nora's refill</span></div></div>
+        <div class="app-screen" data-app-screen="memory"><div class="app-status">9:41 <span>●●● ▰</span></div><div class="app-topline"><span>YOUR CONTEXT</span><span class="app-avatar">k.</span></div><h3>Memory<span class="lime-dot">.</span></h3><p class="app-sub">The things worth keeping.</p><div class="app-chips"><span>All</span><span>Decisions</span><span>Promises</span></div><div class="app-memory-card"><span class="app-type">● DECISION · 09:21</span><strong>Ship the sync fix in 1.4.2</strong><small>Because the hotfix would skip QA.</small><em>VIEW EVIDENCE ↗</em></div><div class="app-memory-card secondary"><span class="app-type">● COMMITMENT · 07:44</span><strong>Pick up Nora's allergy refill</strong><small>Before 6 PM · from morning chat</small></div><div class="app-memory-card secondary"><span class="app-type">● OPEN QUESTION</span><strong>What cadence for retros?</strong></div></div>
+        <div class="app-screen" data-app-screen="ask"><div class="app-status">9:41 <span>●●● ▰</span></div><div class="app-topline"><span>PERSONAL ASSISTANT</span><span class="app-avatar">k.</span></div><h3>Ask away<span class="lime-dot">.</span></h3><p class="app-sub">Your context, ready when you need it.</p><div class="app-question">What did we decide about the sync fix?</div><div class="app-answer"><span>✳ KEEPSHAKE</span><p>You decided to ship it in 1.4.2 rather than hotfix it, because a hotfix would skip QA.</p><small>↗ Standup · 09:18–09:21</small></div><div class="app-input">Ask your memory… <span>↗</span></div></div>
+      </div><div class="app-tabbar"><span class="tab-active">◈<small>Today</small></span><span>▤<small>Convos</small></span><span>✓<small>Tasks</small></span><span>✳<small>Memory</small></span><span>◎<small>Ask</small></span></div><div class="home-indicator"></div></div></div>
+    </section>
+
+    <section class="closing" id="open"><div class="closing-mark" aria-hidden="true">✳</div><p class="kicker">OPEN-SOURCE / IN PROGRESS</p><h2>Better memory.<br><em>On your terms.</em></h2><p>Keepshake is taking shape in public—hardware, firmware, backend, and apps. Explore the work, challenge an idea, or help make a more useful personal assistant.</p><a class="button button-dark" href="https://github.com/TwilightTechie/Keepshake" target="_blank" rel="noopener noreferrer">Explore the project <span aria-hidden="true">↗</span></a><span class="closing-note">EARLY CONCEPT · NO PRODUCT AVAILABILITY OR LAUNCH DATE ANNOUNCED</span></section>
+  </main>
+  <footer><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">✳</span>keepshake<span class="brand-period">.</span></a><span>MADE TO HELP YOU BE THERE.</span><div><a href="https://github.com/TwilightTechie/Keepshake" target="_blank" rel="noopener noreferrer">GITHUB ↗</a><a href="#top">BACK TO TOP ↑</a></div></footer>
+</body>
+</html>

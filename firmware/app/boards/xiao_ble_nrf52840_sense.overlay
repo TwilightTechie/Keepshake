@@ -3,5 +3,22 @@
 /* Unused IMU must not be powered by the board's boot-on fixed regulator. */
 &{/lsm6ds3tr-c-en} { status = "disabled"; };
 &i2c0 { status = "disabled"; };
-&adc { status = "disabled"; };
+/ {
+    zephyr,user {
+        io-channels = <&adc 7>;
+    };
+};
+&adc {
+    status = "okay";
+    #address-cells = <1>;
+    #size-cells = <0>;
+    channel@7 {
+        reg = <7>;
+        zephyr,gain = "ADC_GAIN_1_6";
+        zephyr,reference = "ADC_REF_INTERNAL";
+        zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 40)>;
+        zephyr,input-positive = <NRF_SAADC_AIN7>;
+        zephyr,resolution = <12>;
+    };
+};
 /* The board already configures reg1 for DC/DC. No raw register override needed. */

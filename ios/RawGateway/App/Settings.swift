@@ -16,13 +16,20 @@ final class Settings: ObservableObject {
     @Published var deliveryMode: DeliveryMode { didSet { defaults.set(deliveryMode.rawValue, forKey: "deliveryMode") } }
     @Published var dreamAIWebhook: String { didSet { defaults.set(dreamAIWebhook, forKey: "dreamAIWebhook") } }
     @Published var uploadsEnabled: Bool { didSet { defaults.set(uploadsEnabled, forKey: "uploadsEnabled") } }
+    @Published var notificationsEnabled: Bool { didSet { defaults.set(notificationsEnabled, forKey: "notificationsEnabled") } }
+    @Published var decisionNotifications: Bool { didSet { defaults.set(decisionNotifications, forKey: "decisionNotifications") } }
+    @Published var batteryNotifications: Bool { didSet { defaults.set(batteryNotifications, forKey: "batteryNotifications") } }
+    @Published var connectionNotifications: Bool { didSet { defaults.set(connectionNotifications, forKey: "connectionNotifications") } }
     @Published var token: String
     @Published var tokenError = ""
     @Published var webhookToken: String
     @Published var webhookTokenError = ""
+    @Published var postsToken: String
+    @Published var postsTokenError = ""
     private let defaults = UserDefaults.standard
     private let service = "KeepsakeRawGateway.server-token"
     private let webhookService = "KeepsakeRawGateway.webhook-token"
+    private let postsService = "KeepsakeRawGateway.posts-token"
 
     init() {
         if let saved = UserDefaults.standard.string(forKey: "deliveryMode"), let mode = DeliveryMode(rawValue: saved) {
@@ -34,6 +41,10 @@ final class Settings: ObservableObject {
         }
         dreamAIWebhook = UserDefaults.standard.string(forKey: "dreamAIWebhook") ?? "https://aadeshai.xyz/omi/webhook/audio?sample_rate=16000&uid=iphone_user"
         uploadsEnabled = UserDefaults.standard.bool(forKey: "uploadsEnabled")
+        notificationsEnabled = UserDefaults.standard.object(forKey: "notificationsEnabled") as? Bool ?? true
+        decisionNotifications = UserDefaults.standard.object(forKey: "decisionNotifications") as? Bool ?? true
+        batteryNotifications = UserDefaults.standard.object(forKey: "batteryNotifications") as? Bool ?? true
+        connectionNotifications = UserDefaults.standard.object(forKey: "connectionNotifications") as? Bool ?? true
         endpoint = UserDefaults.standard.string(forKey: "endpoint") ?? ""
         checkpoint = UserDefaults.standard.object(forKey: "checkpoint") as? Int ?? 30
         wifiOnly = UserDefaults.standard.bool(forKey: "wifiOnly")
@@ -41,6 +52,7 @@ final class Settings: ObservableObject {
         // Load upload bearer token from Keychain
         token = Self.loadKeychain(service: "KeepsakeRawGateway.server-token", account: "upload") ?? ""
         tokenError = ""
+        postsToken = Self.loadKeychain(service: "KeepsakeRawGateway.posts-token", account: "create") ?? ""
 
         // Load webhook auth token from Keychain (or use default simple secret)
         if let saved = Self.loadKeychain(service: "KeepsakeRawGateway.webhook-token", account: "webhook"), !saved.isEmpty {
@@ -74,6 +86,18 @@ final class Settings: ObservableObject {
             status = SecItemAdd(query.merging(attrs) { _, new in new } as CFDictionary, nil)
         }
         webhookTokenError = status == errSecSuccess ? "" : "Could not save webhook token (Keychain \(status))."
+    }
+
+    func savePostsToken() {
+        let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: postsService, kSecAttrAccount as String: "create"]
+        let attrs: [String: Any] = [kSecValueData as String: Data(postsToken.utf8),
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly]
+        var status = SecItemUpdate(query as CFDictionary, attrs as CFDictionary)
+        if status == errSecItemNotFound {
+            status = SecItemAdd(query.merging(attrs) { _, new in new } as CFDictionary, nil)
+        }
+        postsTokenError = status == errSecSuccess ? "" : "Could not save Create token (Keychain \(status))."
     }
 
     /// Build the webhook URL with auth token appended as a query param.

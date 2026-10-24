@@ -208,13 +208,22 @@ struct TodayView: View {
         return formatter.string(from: Date())
     }
 
+    private var batterySymbol: String {
+        guard let percent = receiver.displayBatteryPercent else { return "battery.0" }
+        if percent <= 10 { return "battery.0" }
+        if percent <= 30 { return "battery.25" }
+        if percent <= 60 { return "battery.50" }
+        if percent <= 85 { return "battery.75" }
+        return "battery.100"
+    }
+
     private var captureStatusCard: some View {
         HStack(spacing: 12) {
-            Image(systemName: receiver.status.contains("Receiving") ? "waveform.circle.fill" : "waveform.circle")
+            Image(systemName: receiver.status.contains("Receiving") ? "waveform.circle.fill" : (receiver.isDeviceConnected ? "wave.3.right.circle.fill" : "wave.3.right.circle"))
                 .font(.title2)
-                .foregroundStyle(receiver.status.contains("Receiving") ? AppColors.verdictEmerald : AppColors.brandIndigo)
+                .foregroundStyle(receiver.status.contains("Receiving") ? AppColors.verdictEmerald : (receiver.isDeviceConnected ? AppColors.brandIndigo : AppColors.textTertiary))
             VStack(alignment: .leading, spacing: 3) {
-                Text(receiver.status.contains("Receiving") ? "Capturing audio" : receiver.running ? "Connecting to pendant" : "Pendant on standby")
+                Text(receiver.status.contains("Receiving") ? "Capturing audio" : (receiver.isDeviceConnected ? "Pendant connected (standby)" : "Pendant disconnected"))
                     .font(AppTypography.cardTitle)
                 Text(uploader.pendingCount == 0
                      ? "No saved files waiting"
@@ -225,6 +234,31 @@ struct TodayView: View {
                     .foregroundStyle(AppColors.textSecondary)
             }
             Spacer(minLength: 0)
+
+            // Battery & Charging badge
+            if let percent = receiver.displayBatteryPercent {
+                HStack(spacing: 5) {
+                    if receiver.displayIsCharging == true {
+                        Image(systemName: "bolt.fill")
+                            .font(.caption)
+                            .foregroundStyle(AppColors.verdictEmerald)
+                    } else {
+                        Image(systemName: batterySymbol)
+                            .font(.caption)
+                            .foregroundStyle(percent <= 20 ? AppColors.errorRose : AppColors.verdictEmerald)
+                    }
+                    Text("\(percent)%")
+                        .font(AppTypography.caption)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(receiver.displayIsCharging == true ? AppColors.verdictEmerald : AppColors.textPrimary)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(
+                    (receiver.displayIsCharging == true ? AppColors.verdictEmerald : AppColors.brandIndigo).opacity(0.12)
+                )
+                .clipShape(Capsule())
+            }
         }
         .appCard(padding: 14)
     }

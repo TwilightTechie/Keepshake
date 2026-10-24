@@ -18,6 +18,7 @@ import binascii
 import datetime
 import fcntl
 import hashlib
+import hmac
 import io
 import json
 import math
@@ -35,7 +36,18 @@ import httpx
 from fastapi import FastAPI, Request, Query, Response, status, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, FileResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 import uvicorn
+from social_posts import PostWorkspace
+
+try:
+    from server_audio_gate import AudioGate, GateResult
+    audio_gate = AudioGate()
+    audio_gate_error = None
+except Exception as exc:
+    audio_gate = None
+    audio_gate_error = str(exc)
+    print(f"[VAD UNAVAILABLE] {audio_gate_error}")
 
 # Load environment
 ENV_PATH = os.path.join(os.path.dirname(__file__), ".env")
@@ -51,6 +63,7 @@ OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3:8b")
 DECISION_ROUTER_URL = os.environ.get("DECISION_ROUTER_URL", "http://127.0.0.1:11435")
 SUMMARY_INTERVAL_MIN = int(os.environ.get("SUMMARY_INTERVAL_MIN", "5"))
 WEBHOOK_AUTH_TOKEN = os.environ.get("WEBHOOK_AUTH_TOKEN", "keepsake-secret-2026")
+POSTS_API_TOKEN = os.environ.get("POSTS_API_TOKEN", "")
 
 app = FastAPI(title="Dream AI Pendant Console", version="2.2.0")
 
@@ -72,6 +85,27 @@ DECISIONS_LOG = os.path.join(OUTPUT_DIR, "decisions.jsonl")
 CHECKPOINT_DIR = os.path.join(OUTPUT_DIR, "checkpoints")
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 MAX_CHECKPOINT_BYTES = 32 * 1024 * 1024
+post_workspace = PostWorkspace(os.path.join(OUTPUT_DIR, "post_drafts.json"), OLLAMA_BASE_URL, OLLAMA_MODEL)
+
+
+async def gate_pcm_for_sarvam(pcm: bytes, sample_rate: int, path: str,
+                              segment_id: str = "") -> Optional[bytes]:
+    """Evaluate audio only at the STT boundary; checkpoint storage stays untouched."""
+    if audio_gate is None:
+        raise RuntimeError(f"Silero VAD unavailable: {audio_gate_error}")
+    try:
+        result = await asyncio.to_thread(audio_gate.process, pcm, sample_rate)
+    except Exception as exc:
+        result = GateResult("error", "vad_error", b"", 0,
+                            round(len(pcm) / (2 * sample_rate) * 1000) if sample_rate else 0)
+        audio_gate.record(path, result, segment_id)
+        print(f"[VAD ERROR] {path} {segment_id}: {exc}")
+        raise
+    audio_gate.record(path, result, segment_id)
+    print(f"[VAD {result.decision.upper()}] {path} {segment_id} "
+          f"reason={result.reason} duration_ms={result.duration_ms} "
+          f"speech_ms={result.speech_ms} noise_reduced={result.noise_reduced}")
+    return result.pcm if result.decision == "pass" else None
 
 
 def get_effective_sarvam_lang() -> str:
@@ -139,11 +173,11 @@ class SmartTranscriptionBuffer:
     Accumulates PCM audio from Omi app and triggers Sarvam STT with target latency 4-8s.
 
     Key Features:
-    1. Speech Energy Detection: Calculates RMS to distinguish speech from ambient room hum.
+    1. Speech Energy Detection: RMS helps decide live phrase boundaries.
     2. Dynamic Pause Trigger: When speech pauses for >= 0.9s and buffer has >= 2.5s, transcribes immediately.
     3. Max Latency Bound: Forces transcription if buffer reaches MAX_SEGMENT_SEC (4.5s) to guarantee fast updates.
     4. Stream Idle Trigger: If device pauses audio streaming for >= 1.5s and buffer has >= 1.0s, transcribes immediately.
-    5. Silence Filtering: Segments containing NO speech (pure silence/room noise) are discarded without calling Sarvam STT.
+    5. Silence Filtering: Server-side Silero VAD decides whether a segment reaches Sarvam STT.
     6. Strict Deduplication: Deduplicates against recent transcripts to prevent duplicate words or repeat logs.
     """
 
@@ -267,7 +301,6 @@ class SmartTranscriptionBuffer:
                 return None
 
             pcm_to_process = bytes(self.accumulated_pcm)
-            had_speech = self.has_active_speech
             dur = len(pcm_to_process) / (self.sample_rate * 2)
 
             # Reset state for next incoming audio chunk
@@ -275,9 +308,14 @@ class SmartTranscriptionBuffer:
             self.has_active_speech = False
             self.last_speech_time = None
 
-            # Skip calling STT if segment has no speech energy and buffer is short (< 3.8s)
-            # Longer segments are passed to Sarvam which natively handles silence rejection
-            if dur < self.MIN_SEGMENT_SEC or (not had_speech and dur < 3.8):
+            if dur < self.MIN_SEGMENT_SEC:
+                return None
+
+            try:
+                gated_pcm = await gate_pcm_for_sarvam(pcm_to_process, self.sample_rate, "live")
+            except Exception:
+                return None
+            if gated_pcm is None:
                 return None
 
             # Wrap in-memory PCM as WAV
@@ -286,11 +324,11 @@ class SmartTranscriptionBuffer:
                 wf.setnchannels(1)
                 wf.setsampwidth(2)
                 wf.setframerate(self.sample_rate)
-                wf.writeframes(pcm_to_process)
+                wf.writeframes(gated_pcm)
             wav_bytes = buf.getvalue()
 
             t0 = time.time()
-            transcript = await self._call_sarvam(wav_bytes, dur)
+            transcript = await self._call_sarvam(wav_bytes, len(gated_pcm) / (self.sample_rate * 2))
             elapsed = round(time.time() - t0, 2)
 
             if transcript and not self._is_duplicate(transcript):
@@ -1088,10 +1126,9 @@ async def _process_checkpoint(path: str):
             continue
         duration = len(segment) / 32000
         if duration >= 1.0:
-            slices = (segment[i:i + 3200] for i in range(0, len(segment), 3200))
-            has_speech = any(tx_buffer._compute_rms(part) >= tx_buffer.SPEECH_RMS_THRESHOLD for part in slices)
-            if has_speech:
-                transcript, language = await _transcribe_checkpoint_segment(segment)
+            gated_pcm = await gate_pcm_for_sarvam(segment, 16000, "checkpoint", segment_id)
+            if gated_pcm is not None:
+                transcript, language = await _transcribe_checkpoint_segment(gated_pcm)
                 if transcript:
                     entry = {
                         "time": datetime.datetime.now().strftime("%H:%M:%S"),
@@ -1237,6 +1274,14 @@ async def receive_memory(
 # Dream AI APIs
 # ---------------------------------------------------------------------------
 
+@app.get("/dream-ai/api/vad/diagnostics")
+async def get_vad_diagnostics(request: Request):
+    check_webhook_auth(request)
+    if audio_gate is None:
+        return {"model": "Silero VAD v6 ONNX", "ready": False,
+                "error": audio_gate_error, "counters": None, "recent": []}
+    return audio_gate.snapshot()
+
 @app.get("/dream-ai/api/stats")
 async def get_stats():
     now = time.time()
@@ -1306,6 +1351,95 @@ async def get_clean_transcripts_endpoint(minutes: int = Query(5)):
 @app.get("/omi/api/summaries")
 async def list_summaries(limit: int = 30):
     return get_summaries(limit=limit)
+
+
+class GeneratePostsRequest(BaseModel):
+    local_date: str
+    instruction: str = Field(default="", max_length=1000)
+
+
+class RevisePostRequest(BaseModel):
+    instruction: str = Field(min_length=1, max_length=1000)
+
+
+class PostTextRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=280)
+
+
+def check_post_auth(request: Request):
+    if not POSTS_API_TOKEN:
+        raise HTTPException(status_code=503, detail="Set POSTS_API_TOKEN on the server to enable Create")
+    header = request.headers.get("authorization", "")
+    provided = header[7:].strip() if header.lower().startswith("bearer ") else ""
+    if not hmac.compare_digest(provided, POSTS_API_TOKEN):
+        raise HTTPException(status_code=401, detail="Invalid Create API token")
+
+
+@app.get("/omi/api/posts")
+async def list_post_drafts(request: Request, local_date: Optional[str] = Query(None)):
+    check_post_auth(request)
+    if local_date:
+        try:
+            datetime.date.fromisoformat(local_date)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail="Invalid local date") from exc
+    return {
+        "drafts": await post_workspace.list_drafts(),
+        "x_configured": post_workspace.x_configured(),
+        "has_today_context": any(item.get("date") == local_date for item in get_summaries(limit=30)),
+    }
+
+
+@app.post("/omi/api/posts/generate")
+async def generate_post_drafts(request: Request, body: GeneratePostsRequest):
+    check_post_auth(request)
+    try:
+        datetime.date.fromisoformat(body.local_date)
+        drafts = await post_workspace.generate(get_summaries(limit=30), body.local_date,
+                                               body.instruction.strip())
+        return {"drafts": drafts}
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except (httpx.HTTPError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=502, detail="Local model could not generate drafts") from exc
+
+
+@app.post("/omi/api/posts/{draft_id}/revise")
+async def revise_post_draft(request: Request, draft_id: str, body: RevisePostRequest):
+    check_post_auth(request)
+    try:
+        return await post_workspace.revise(draft_id, body.instruction.strip())
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except (httpx.HTTPError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=502, detail="Local model could not revise this draft") from exc
+
+
+@app.put("/omi/api/posts/{draft_id}")
+async def edit_post_draft(request: Request, draft_id: str, body: PostTextRequest):
+    check_post_auth(request)
+    try:
+        return await post_workspace.save_edit(draft_id, body.text)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.post("/omi/api/posts/{draft_id}/publish")
+async def publish_post_draft(request: Request, draft_id: str, body: PostTextRequest):
+    check_post_auth(request)
+    try:
+        return await post_workspace.publish(draft_id, body.text)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        code = 503 if not post_workspace.x_configured() else 502
+        raise HTTPException(status_code=code, detail=str(exc)) from exc
 
 
 @app.get("/dream-ai/api/decisions/today")

@@ -24,6 +24,8 @@ final class DecisionsViewModel: ObservableObject {
     private let settings: Settings
     private let completedKey = "completed_decision_ids"
     private var session = URLSession(configuration: .default)
+    private var hasLoadedInitialDecisions = false
+    private var pollTimer: Timer?
 
     init(settings: Settings) {
         self.settings = settings
@@ -31,6 +33,20 @@ final class DecisionsViewModel: ObservableObject {
         loadCachedDecisions()
         Task {
             await fetchDecisions()
+        }
+        startPeriodicPoll()
+    }
+
+    deinit {
+        pollTimer?.invalidate()
+    }
+
+    private func startPeriodicPoll() {
+        pollTimer?.invalidate()
+        pollTimer = Timer.scheduledTimer(withTimeInterval: 45, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                await self?.fetchDecisions()
+            }
         }
     }
 
@@ -69,6 +85,8 @@ final class DecisionsViewModel: ObservableObject {
               let cached = envelope.decisions,
               !cached.isEmpty else { return }
         self.decisions = cached
+        self.hasLoadedInitialDecisions = true
+        NotificationManager.shared.seedExistingDecisions(cached.map { $0.id })
     }
 
     private func saveToCache(_ envelope: DecisionsResponse) {
@@ -120,6 +138,21 @@ final class DecisionsViewModel: ObservableObject {
             self.lastRefreshed = Date()
             self.saveToCache(envelope)
             self.isLoading = false
+
+            // Notify user of newly discovered decisions
+            if !self.hasLoadedInitialDecisions {
+                self.hasLoadedInitialDecisions = true
+                NotificationManager.shared.seedExistingDecisions(items.map { $0.id })
+            } else {
+                for item in items {
+                    NotificationManager.shared.notifyDecision(
+                        id: item.id,
+                        text: item.decision,
+                        category: item.category,
+                        settings: self.settings
+                    )
+                }
+            }
         } catch {
             self.isLoading = false
             if decisions.isEmpty {

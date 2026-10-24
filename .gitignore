@@ -7,5 +7,8 @@ docs/new_req/
 
 # Build outputs (firmware/app/backend, populated as those trees land)
 build/
+website/dist/
+.wrangler/
 *.uf2
 *.hex
+new testing/.env

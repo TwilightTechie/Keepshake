@@ -1,4 +1,134 @@
 import Foundation
+import Combine
+
+struct VADSnapshot: Decodable {
+    struct GateSettings: Decodable {
+        let speechProbabilityThreshold: Double
+        let minimumSpeechMs: Int
+        let silencePeakRMS: Int
+        let noiseReduction: String
+        enum CodingKeys: String, CodingKey {
+            case speechProbabilityThreshold = "speech_probability_threshold"
+            case minimumSpeechMs = "minimum_speech_ms"
+            case silencePeakRMS = "silence_peak_100ms_rms_pcm16"
+            case noiseReduction = "noise_reduction"
+        }
+    }
+    struct Counts: Decodable {
+        let evaluated: Int
+        let passed: Int
+        let droppedSilence: Int
+        let droppedNoSpeech: Int
+        let errors: Int
+        let noiseReduced: Int
+        enum CodingKeys: String, CodingKey {
+            case evaluated, passed, errors
+            case droppedSilence = "dropped_silence"
+            case droppedNoSpeech = "dropped_no_speech"
+            case noiseReduced = "noise_reduced"
+        }
+    }
+    struct Event: Decodable {
+        let timestamp: String
+        let path: String
+        let decision: String
+        let reason: String
+        let durationMs: Int
+        let speechMs: Int
+        let noiseReduced: Bool
+        let peakProbability: Double
+        enum CodingKeys: String, CodingKey {
+            case timestamp, path, decision, reason
+            case durationMs = "duration_ms"
+            case speechMs = "speech_ms"
+            case noiseReduced = "noise_reduced"
+            case peakProbability = "peak_probability"
+        }
+    }
+    let model: String
+    let ready: Bool
+    let startedAt: String?
+    let error: String?
+    let counters: Counts?
+    let byPath: [String: Counts]?
+    let settings: GateSettings?
+    let recent: [Event]
+    enum CodingKeys: String, CodingKey {
+        case model, ready, error, counters, recent, settings
+        case startedAt = "started_at"
+        case byPath = "by_path"
+    }
+}
+
+@MainActor
+final class ServerVADDiagnostics: ObservableObject {
+    @Published private(set) var snapshot: VADSnapshot?
+    @Published private(set) var status = "Not fetched"
+    @Published private(set) var lastUpdated: Date?
+
+    func refresh(settings: Settings) async {
+        guard let webhook = URLComponents(string: settings.dreamAIWebhook),
+              webhook.scheme?.lowercased() == "https", webhook.host != nil,
+              var endpoint = URLComponents(string: settings.dreamAIWebhook) else {
+            status = "Configure an HTTPS Dream AI server"
+            return
+        }
+        endpoint.path = "/dream-ai/api/vad/diagnostics"
+        endpoint.query = nil
+        endpoint.fragment = nil
+        guard let url = endpoint.url else {
+            status = "Invalid server URL"
+            return
+        }
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 12
+        if !settings.webhookToken.isEmpty {
+            request.setValue("Bearer \(settings.webhookToken)", forHTTPHeaderField: "Authorization")
+        }
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+                status = code == 401 ? "Server rejected the webhook token" : "Server returned HTTP \(code)"
+                return
+            }
+            let value = try JSONDecoder().decode(VADSnapshot.self, from: data)
+            snapshot = value
+            lastUpdated = Date()
+            status = value.ready ? "Running" : "Unavailable: \(value.error ?? "unknown error")"
+        } catch {
+            status = "Could not fetch VAD: \(error.localizedDescription)"
+        }
+    }
+
+    var reportText: String {
+        guard let snapshot else { return "VAD: \(status)" }
+        var lines = ["VAD: \(status)", "VAD Model: \(snapshot.model)",
+                     "VAD Server Started: \(snapshot.startedAt ?? "unknown")"]
+        if let counters = snapshot.counters {
+            lines.append("VAD Total: \(counters.evaluated) evaluated, \(counters.passed) passed, " +
+                         "\(counters.droppedSilence) silence drops, \(counters.droppedNoSpeech) no-speech drops, " +
+                         "\(counters.errors) errors, \(counters.noiseReduced) noise reduced")
+        }
+        if let settings = snapshot.settings {
+            lines.append("VAD Thresholds: probability \(settings.speechProbabilityThreshold), " +
+                         "minimum speech \(settings.minimumSpeechMs)ms, silence RMS \(settings.silencePeakRMS), " +
+                         "noise reduction \(settings.noiseReduction)")
+        }
+        for path in ["live", "checkpoint"] {
+            if let counts = snapshot.byPath?[path] {
+                lines.append("VAD \(path): \(counts.passed) passed / \(counts.evaluated) evaluated; " +
+                             "\(counts.droppedSilence + counts.droppedNoSpeech) dropped")
+            }
+        }
+        for event in snapshot.recent.prefix(10) {
+            lines.append("VAD Event: \(event.timestamp) \(event.path) \(event.decision) " +
+                         "\(event.reason) speech=\(event.speechMs)ms/\(event.durationMs)ms " +
+                         "peak=\(event.peakProbability) noise=\(event.noiseReduced)")
+        }
+        return lines.joined(separator: "\n")
+    }
+}
 
 /// Thread-safe, file-based diagnostic logger.
 /// Writes timestamped JSONL entries to Application Support / Diagnostics.
@@ -97,13 +227,27 @@ final class DiagnosticLogger: ObservableObject {
 
     /// Generates a diagnostic system snapshot, logs it, and returns a formatted report.
     @discardableResult
-    func generateReport(receiverStatus: String, deviceName: String, streamDesc: String, stats: PacketStats, storageMB: Double, pendingChunks: Int, uploaderStatus: String) -> String {
+    func generateReport(receiverStatus: String, deviceName: String, streamDesc: String,
+                        bootID: UInt32?, rssi: Int?, batteryMillivolts: Int?,
+                        firmwareDiagnostics: String, linkDiagnostics: String, resetTrace: String,
+        transportDiagnostics: String, previousTransportDiagnostics: String,
+                        stats: PacketStats, storageMB: Double, pendingChunks: Int,
+                        uploaderStatus: String, vadDiagnostics: String = "VAD: Not fetched") -> String {
         let header = """
         === KEEPSAKE DIAGNOSTIC REPORT ===
         Generated: \(Self.timestamp(Date()))
+        Diagnostics Version: BLE transport 3
         Device: \(deviceName)
         Connection: \(receiverStatus)
         Audio Format: \(streamDesc)
+        Firmware Boot ID: \(bootID.map { String(format: "0x%08x", $0) } ?? "unknown")
+        RSSI: \(rssi.map { "\($0) dBm" } ?? "unknown")
+        Battery Voltage: \(batteryMillivolts.map { "\($0) mV" } ?? "unknown")
+        Firmware Counters: \(firmwareDiagnostics)
+        Link Events: \(linkDiagnostics)
+        Reset Trace: \(resetTrace)
+        Transport: \(transportDiagnostics)
+        Previous Transport: \(previousTransportDiagnostics)
         Packets Received: \(stats.packets)
         Bytes Received: \(stats.bytes)
         Sequence Gaps: \(stats.gaps)
@@ -111,10 +255,42 @@ final class DiagnosticLogger: ObservableObject {
         Local Storage: \(String(format: "%.2f MB", storageMB))
         Upload Queue: \(pendingChunks) chunks
         Uploader State: \(uploaderStatus)
+        \(vadDiagnostics)
         ==================================
         """
         info("User triggered diagnostic report: \(stats.packets) pkts, \(stats.gaps) gaps, \(pendingChunks) pending", category: "report")
         return header + "\n\n" + exportAllFiles()
+    }
+
+    /// Generates a diagnostic report and saves it to a timestamped file for direct sharing.
+    func generateReportFile(
+        receiverStatus: String, deviceName: String, streamDesc: String,
+        bootID: UInt32?, rssi: Int?, batteryMillivolts: Int?,
+        firmwareDiagnostics: String, linkDiagnostics: String, resetTrace: String,
+        transportDiagnostics: String, previousTransportDiagnostics: String,
+        stats: PacketStats, storageMB: Double, pendingChunks: Int,
+        uploaderStatus: String, vadDiagnostics: String = "VAD: Not fetched"
+    ) -> URL? {
+        let report = generateReport(
+            receiverStatus: receiverStatus, deviceName: deviceName, streamDesc: streamDesc,
+            bootID: bootID, rssi: rssi, batteryMillivolts: batteryMillivolts,
+            firmwareDiagnostics: firmwareDiagnostics, linkDiagnostics: linkDiagnostics,
+            resetTrace: resetTrace,
+            transportDiagnostics: transportDiagnostics, previousTransportDiagnostics: previousTransportDiagnostics,
+            stats: stats, storageMB: storageMB, pendingChunks: pendingChunks,
+            uploaderStatus: uploaderStatus, vadDiagnostics: vadDiagnostics
+        )
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd-HHmmss"
+        let filename = "keepsake-diag-report-\(formatter.string(from: Date())).txt"
+        let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+        do {
+            try report.write(to: fileURL, atomically: true, encoding: .utf8)
+            return fileURL
+        } catch {
+            self.error("Failed to write report file: \(error.localizedDescription)", category: "report")
+            return nil
+        }
     }
 
     func refreshFileSize() {

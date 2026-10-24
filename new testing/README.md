@@ -1,5 +1,20 @@
 # Standalone pendant test
 
+## Dream AI server speech gate
+
+`omi_server.py` now uses the bundled Silero VAD ONNX model on the server before
+calling Saaras. Install `requirements.txt` in the server's Python environment and
+restart the server. The model stays in `models/silero_vad.onnx`; it is never loaded
+by the iOS app or firmware.
+
+The server drops segments with no detected speech, trims leading/trailing nonspeech,
+and applies mild spectral noise reduction when a nonspeech noise profile is available.
+The original live packet handling and 30-second checkpoint upload, durable acknowledgment,
+segment IDs, and archive are unchanged. The authenticated
+`GET /dream-ai/api/vad/diagnostics` endpoint returns process-lifetime counts and
+recent decisions without audio or transcript content. It uses the same bearer token
+as the audio webhook. Counters reset on server restart.
+
 ## Speak and see transcripts in your terminal
 
 ```sh

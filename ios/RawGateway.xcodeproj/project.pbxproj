@@ -18,11 +18,15 @@
 		3AF1B9D2A7C84E1F90D9999D /* RawGateway/App/DecisionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D9999E /* RawGateway/App/DecisionsView.swift */; };
 		3AF1B9D2A7C84E1F90D999A1 /* RawGateway/App/TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D999A2 /* RawGateway/App/TodayView.swift */; };
 		3AF1B9D2A7C84E1F90D999A3 /* RawGateway/App/TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D999A4 /* RawGateway/App/TimelineView.swift */; };
+		AB2C00000000000000000001 /* RawGateway/App/CreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2C00000000000000000002 /* RawGateway/App/CreateView.swift */; };
 		3AF1B9D2A7C84E1F90D12345 /* RawGateway/App/DiagnosticLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D12346 /* RawGateway/App/DiagnosticLogger.swift */; };
 		5CCEF7A65FF8A439AADFB507 /* RawGateway/App/PendantReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97EB5DEDD769C1334E6E8F59 /* RawGateway/App/PendantReceiver.swift */; };
 		5CD2935A856128D091CE3193 /* RawGateway/Core/ChunkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD76CBAC6BF4D290C69151EE /* RawGateway/Core/ChunkStore.swift */; };
 		6ACC8CC321BDE0142DB64391 /* RawGateway/App/Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770F77B7091F37EB9018BD6B /* RawGateway/App/Settings.swift */; };
 		720690FFF7F87BA34829C61C /* RawGateway/App/Uploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6584C079E9F5F460AC5CD8 /* RawGateway/App/Uploader.swift */; };
+		3AF1B9D2A7C84E1F90D999B1 /* RawGateway/App/NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D999B2 /* RawGateway/App/NotificationManager.swift */; };
+		3AF1B9D2A7C84E1F90D999B3 /* RawGateway/App/ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF1B9D2A7C84E1F90D999B4 /* RawGateway/App/ShareSheet.swift */; };
+		AB1C00000000000000000011 /* TransportDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1C00000000000000000012; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +40,7 @@
 		3AF1B9D2A7C84E1F90D9999E /* RawGateway/App/DecisionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/DecisionsView.swift; sourceTree = "<group>"; };
 		3AF1B9D2A7C84E1F90D999A2 /* RawGateway/App/TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/TodayView.swift; sourceTree = "<group>"; };
 		3AF1B9D2A7C84E1F90D999A4 /* RawGateway/App/TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/TimelineView.swift; sourceTree = "<group>"; };
+		AB2C00000000000000000002 /* RawGateway/App/CreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/CreateView.swift; sourceTree = "<group>"; };
 		3AF1B9D2A7C84E1F90D12346 /* RawGateway/App/DiagnosticLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/DiagnosticLogger.swift; sourceTree = "<group>"; };
 		4CBDDE2CB2CA1EC41CB7ED2D /* RawGateway/App/RawGatewayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/RawGatewayApp.swift; sourceTree = "<group>"; };
 		770F77B7091F37EB9018BD6B /* RawGateway/App/Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/Settings.swift; sourceTree = "<group>"; };
@@ -43,6 +48,9 @@
 		A8792157CB4F27FB949C035F /* RawGateway.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = RawGateway.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD76CBAC6BF4D290C69151EE /* RawGateway/Core/ChunkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/Core/ChunkStore.swift; sourceTree = "<group>"; };
 		ED6584C079E9F5F460AC5CD8 /* RawGateway/App/Uploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/Uploader.swift; sourceTree = "<group>"; };
+		3AF1B9D2A7C84E1F90D999B2 /* RawGateway/App/NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/NotificationManager.swift; sourceTree = "<group>"; };
+		3AF1B9D2A7C84E1F90D999B4 /* RawGateway/App/ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/App/ShareSheet.swift; sourceTree = "<group>"; };
+		AB1C00000000000000000012 /* TransportDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawGateway/Core/TransportDiagnostics.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,12 +85,16 @@
 				3AF1B9D2A7C84E1F90D9999E /* RawGateway/App/DecisionsView.swift */,
 				3AF1B9D2A7C84E1F90D999A2 /* RawGateway/App/TodayView.swift */,
 				3AF1B9D2A7C84E1F90D999A4 /* RawGateway/App/TimelineView.swift */,
+				AB2C00000000000000000002 /* RawGateway/App/CreateView.swift */,
 				3AF1B9D2A7C84E1F90D12346 /* RawGateway/App/DiagnosticLogger.swift */,
 				97EB5DEDD769C1334E6E8F59 /* RawGateway/App/PendantReceiver.swift */,
 				4CBDDE2CB2CA1EC41CB7ED2D /* RawGateway/App/RawGatewayApp.swift */,
 				770F77B7091F37EB9018BD6B /* RawGateway/App/Settings.swift */,
 				ED6584C079E9F5F460AC5CD8 /* RawGateway/App/Uploader.swift */,
+				3AF1B9D2A7C84E1F90D999B2 /* RawGateway/App/NotificationManager.swift */,
+				3AF1B9D2A7C84E1F90D999B4 /* RawGateway/App/ShareSheet.swift */,
 				AD76CBAC6BF4D290C69151EE /* RawGateway/Core/ChunkStore.swift */,
+                AB1C00000000000000000012 /* TransportDiagnostics.swift */,
 				0A3E27B8CA818264D75C8D81 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -158,12 +170,16 @@
 				3AF1B9D2A7C84E1F90D9999D /* RawGateway/App/DecisionsView.swift in Sources */,
 				3AF1B9D2A7C84E1F90D999A1 /* RawGateway/App/TodayView.swift in Sources */,
 				3AF1B9D2A7C84E1F90D999A3 /* RawGateway/App/TimelineView.swift in Sources */,
+				AB2C00000000000000000001 /* RawGateway/App/CreateView.swift in Sources */,
 				3AF1B9D2A7C84E1F90D12345 /* RawGateway/App/DiagnosticLogger.swift in Sources */,
 				5CCEF7A65FF8A439AADFB507 /* RawGateway/App/PendantReceiver.swift in Sources */,
 				2EFB67BD3E316768B9BE5098 /* RawGateway/App/RawGatewayApp.swift in Sources */,
 				6ACC8CC321BDE0142DB64391 /* RawGateway/App/Settings.swift in Sources */,
 				720690FFF7F87BA34829C61C /* RawGateway/App/Uploader.swift in Sources */,
+				3AF1B9D2A7C84E1F90D999B1 /* RawGateway/App/NotificationManager.swift in Sources */,
+				3AF1B9D2A7C84E1F90D999B3 /* RawGateway/App/ShareSheet.swift in Sources */,
 				5CD2935A856128D091CE3193 /* RawGateway/Core/ChunkStore.swift in Sources */,
+                AB1C00000000000000000011 /* TransportDiagnostics.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

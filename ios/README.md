@@ -19,6 +19,12 @@ At a 247-byte MTU there are 14 notifications per block (about 140/second), each
 with a five-byte sequence/flags header. The phone saves all bytes unchanged.
 The new firmware reserves sequences before queueing, making queue drops visible.
 Firmware diagnostic counters and reset cause appear on the app's device card.
+The current diagnostic firmware also exposes the previous Bluetooth HCI disconnect
+reason, whether its own TX-stall recovery requested that disconnect, connection
+duration, and the latest battery sample. The app logs these alongside iPhone error,
+RSSI, boot ID, and per-connection packet totals, and includes them in Generate Report.
+Compare reports from battery versus USB power and open air versus a pocket; a
+voltage sample cannot by itself prove or rule out a brief power dip.
 The physical radio/cadence and battery behavior still require device validation.
 
 ## Open and install with Xcode
@@ -188,3 +194,16 @@ Physical acceptance checks (still required):
 
 The core tests cannot establish iPhone radio reliability, background survival,
 provisioning/signing, or compatibility with your deployed server.
+
+## Transport diagnostics (October 23)
+
+Reports identify this app as **BLE transport 3**. The device card shows optional
+`KTP1` live and previous-boot counters, and `KTR3` reset breadcrumbs. Current
+counters are sampled every ten seconds while the app runs, logged, and included
+in disconnect summaries and exported reports; previous counters are read once
+per connection. Read failures are logged without tearing down audio. Older firmware
+without these characteristics remains supported. Host TX completions are not
+acknowledgements that the app stored the audio.
+
+Install this app with Xcode Run after flashing the new UF2; no backend deployment
+is needed for these Bluetooth/microphone fixes. Checkpoint format/timing is unchanged.
