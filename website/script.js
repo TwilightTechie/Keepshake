@@ -24,7 +24,7 @@ function updateHero() {
   heroButton.setAttribute('aria-pressed', String(heroPinned));
   const label = heroPinned ? 'Reassemble' : heroHover ? 'Keep this view' : matchMedia('(hover: none)').matches ? 'Tap to dissect' : 'Hover to dissect';
   heroButton.innerHTML = `${label} <span aria-hidden="true">✳</span>`;
-  heroVisual.setAttribute('aria-label', open ? 'Exploded concept of the Keepshake band: protective shell, BLE prototype board, protected battery, and strap' : 'Keepshake wristband concept. Hover, focus, or tap to see its parts.');
+  heroVisual.setAttribute('aria-label', open ? 'Exploded illustration of the Keepshake band: printed shell, BLE and microphone board, battery compartment, and woven strap' : 'Keepshake wristband illustration. Hover, focus, or tap to see its parts.');
 }
 heroVisual.addEventListener('pointerenter', (event) => {
   if (!heroSuppressHover && (event.pointerType === 'mouse' || event.pointerType === 'pen')) { heroHover = true; updateHero(); }
@@ -59,11 +59,11 @@ let suppressHover = false;
 function updateDissection() {
   const open = hovering || pinned || keyboardFocus;
   stage.classList.toggle('is-dissected', open);
-  stageState.textContent = open ? 'INSIDE VIEW / EXPLODED CONCEPT' : 'OUTSIDE VIEW';
+  stageState.textContent = open ? 'INSIDE VIEW / ILLUSTRATED' : 'OUTSIDE VIEW';
   stageHint.innerHTML = pinned ? 'CLICK TO REASSEMBLE <span aria-hidden="true">↗</span>' : open ? 'MOVE AWAY TO REASSEMBLE <span aria-hidden="true">↗</span>' : 'HOVER TO DISSECT <span aria-hidden="true">↗</span>';
   dissectButton.setAttribute('aria-pressed', String(pinned));
   dissectButton.innerHTML = pinned ? 'Reassemble <span aria-hidden="true">−</span>' : hovering ? 'Keep this view <span aria-hidden="true">＋</span>' : 'See inside <span aria-hidden="true">＋</span>';
-  stage.setAttribute('aria-label', open ? 'Exploded concept showing shell, nRF52840 prototype board, protected battery, and woven strap' : 'Assembled Keepshake wristband concept. Hover, focus, or use the button to see inside.');
+  stage.setAttribute('aria-label', open ? 'Exploded illustration showing enclosure, nRF52840 board, battery compartment, and woven strap' : 'Assembled Keepshake wristband illustration. Hover, focus, or use the button to see inside.');
 }
 stage.addEventListener('pointerenter', (event) => {
   if (!suppressHover && (event.pointerType === 'mouse' || event.pointerType === 'pen')) { hovering = true; updateDissection(); }
@@ -114,7 +114,7 @@ screenButtons.forEach((button) => button.addEventListener('click', () => {
 }));
 showScreen('today');
 if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  const sections = document.querySelectorAll('.band-section, .memory-section, .ios-section, .closing');
+  const sections = document.querySelectorAll('.prototype-section, .band-section, .memory-section, .ios-section, .closing');
   const reveal = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) { entry.target.classList.add('is-visible'); reveal.unobserve(entry.target); }

@@ -1,9 +1,12 @@
-# Keepsake
+# Keepshake
 
-Keepsake is an open-source pendant and iPhone companion for capturing raw audio
-notifications and sending them to a server for storage and processing. The phone
-does not run speech recognition, denoising, resampling, or compression on the raw
-capture path.
+Keepshake is an open-source, screenless wristband and iPhone companion. A first
+3D-printed wearable prototype is now assembled and being worn. Its firmware sends
+raw audio over Bluetooth Low Energy to a native iPhone app, which archives the
+incoming data and uploads it with retries. The personal memory and assistant
+experience is the next product layer; the current raw capture path does not yet
+deliver the full memory interface shown in the [site preview](https://keepshake-band.pages.dev/).
+Some firmware and app identifiers still use the earlier Keepsake name.
 
 ## Repository layout
 
@@ -14,6 +17,7 @@ capture path.
 | [`backend/`](backend/README.md) | Optional self-hosted FastAPI backend and raw chunk ingestion API |
 | [`server/`](server/README.md) | Current webhook, live speech and Keepsake Create service |
 | [`docs/`](docs/) | BLE protocol and hardware/project notes |
+| [`hardware/cad/`](hardware/cad/README.md) | V1 enclosure STEP exports: top lid and two tub variants |
 | [`website/`](website/README.md) | Static project website |
 | [`legacy/`](legacy/) | Retired prototypes and experiments kept for reference |
 

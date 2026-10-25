@@ -10,6 +10,9 @@ const files = [
   'script.js',
   'assets/keepshake-device.svg',
   'assets/keepshake-device-exploded.svg',
+  'assets/prototype/on-wrist.jpg',
+  'assets/prototype/in-hand.jpg',
+  'assets/prototype/top-view.jpg',
 ];
 
 await rm(output, { recursive: true, force: true });
