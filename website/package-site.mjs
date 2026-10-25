@@ -6,6 +6,7 @@ const root = dirname(fileURLToPath(import.meta.url));
 const output = join(root, 'dist');
 const files = [
   'index.html',
+  'favicon.svg',
   'styles.css',
   'script.js',
   'assets/keepshake-device.svg',
