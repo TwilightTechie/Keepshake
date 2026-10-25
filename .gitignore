@@ -1,14 +1,45 @@
-# Local tool state
+# Local editor and OS state
 .claude/
 .DS_Store
 
-# Third-party reference material, not for distribution
-docs/new_req/
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+*.pem
+*.p12
+*.key
 
-# Build outputs (firmware/app/backend, populated as those trees land)
+# Sensitive/generated user data
+recordings/
+**/recordings/
+recordings_omi/
+**/recordings_omi/
+*.db
+*.sqlite
+*.sqlite3
+*.wav
+*.pcm
+*.jsonl
+
+# Build and tool outputs
 build/
+**/.build/
+**/DerivedData/
+**/.venv/
+**/venv/
+**/__pycache__/
+**/.pytest_cache/
+**/node_modules/
+**/.expo/
 website/dist/
 .wrangler/
 *.uf2
 *.hex
-new testing/.env
+
+# Third-party reference material, not for distribution
+docs/new_req/
+server/recordings_omi/

@@ -62,7 +62,7 @@ OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3:8b")
 DECISION_ROUTER_URL = os.environ.get("DECISION_ROUTER_URL", "http://127.0.0.1:11435")
 SUMMARY_INTERVAL_MIN = int(os.environ.get("SUMMARY_INTERVAL_MIN", "5"))
-WEBHOOK_AUTH_TOKEN = os.environ.get("WEBHOOK_AUTH_TOKEN", "keepsake-secret-2026")
+WEBHOOK_AUTH_TOKEN = os.environ.get("WEBHOOK_AUTH_TOKEN", "")
 POSTS_API_TOKEN = os.environ.get("POSTS_API_TOKEN", "")
 
 app = FastAPI(title="Dream AI Pendant Console", version="2.2.0")

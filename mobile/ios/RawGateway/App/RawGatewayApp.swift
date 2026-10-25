@@ -485,9 +485,9 @@ struct GatewayView: View {
 
                 Button("Reset Defaults") {
                     settings.dreamAIWebhook = "https://aadeshai.xyz/omi/webhook/audio?sample_rate=16000&uid=iphone_user"
-                    settings.webhookToken = "keepsake-secret-2026"
+                    settings.webhookToken = ""
                     settings.saveWebhookToken()
-                    copiedAlertMessage = "Restored default Dream AI endpoint and secret token."
+                    copiedAlertMessage = "Restored default endpoint. Enter your server token to connect."
                     showCopiedAlert = true
                 }
                 .font(.caption)
@@ -495,7 +495,7 @@ struct GatewayView: View {
                 .disabled(receiver.running)
             }
 
-            Text("The simple auth token is passed via HTTP header and URL parameter. Default server secret is stored in Keychain.")
+            Text("Your server token is sent in the Authorization header and stored in Keychain.")
                 .font(.caption2).foregroundStyle(.tertiary)
 
             Divider()

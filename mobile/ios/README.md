@@ -33,7 +33,7 @@ This Mac currently has Command Line Tools, but no full Xcode app/iOS SDK.
 
 1. Install **Xcode** from the Mac App Store. Open it, finish first-launch components,
    and install iOS platform support if prompted.
-2. Open `ios/RawGateway.xcodeproj` (no CocoaPods, npm, or third-party packages needed).
+2. Open `mobile/ios/RawGateway.xcodeproj` (no CocoaPods, npm, or third-party packages needed).
 3. In Xcode Settings → Accounts, sign in with your free Apple Account.
 4. Select the **RawGateway** target → Signing & Capabilities. Keep automatic signing
    on, select your **Personal Team**, and change the bundle identifier to a unique
@@ -61,7 +61,8 @@ Apple references:
 
 ## Upload contract and server deployment
 
-The matching backend implementation is included in this repo. It is **not deployed**
+The matching raw chunk backend is included in this repo under `backend/`. The separate
+current speech/webhook service is under `server/`. Neither is **deployed**
 to DigitalOcean by creating the app. An arbitrary webhook returning `200 OK` is
 not sufficient: it must honor the durable acknowledgment contract below.
 
@@ -163,19 +164,19 @@ Authenticated inspection endpoints:
 With Command Line Tools only:
 
 ```sh
-ios/validate.sh
+mobile/ios/validate.sh
 backend/.venv/bin/pytest backend/tests -q
 ```
 
 `validate.sh` exercises actual Swift core code for exact byte preservation,
 30-second boundaries, odd-sized payloads, duplicates, sequence rollover, crash
 recovery, stable chunk IDs/checksums, acknowledgment checks, and retry persistence.
-With Xcode selected, the equivalent XCTest suite runs via `swift test --package-path ios`.
+With Xcode selected, the equivalent XCTest suite runs via `swift test --package-path mobile/ios`.
 
 After installing Xcode, build the complete app:
 
 ```sh
-xcodebuild -project ios/RawGateway.xcodeproj -scheme RawGateway \
+xcodebuild -project mobile/ios/RawGateway.xcodeproj -scheme RawGateway \
   -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO build
 ```
 

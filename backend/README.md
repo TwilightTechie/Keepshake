@@ -45,8 +45,7 @@ sends WAV utterances up to 25 seconds; transcripts appear under `/v1/conversatio
 Use a new device/session ID for each bench run because gateway sequence numbers
 restart at 1 and ingest deduplicates by device ID plus sequence number.
 
-See [standalone bench instructions](../new%20testing/README.md) for a local SQLite
-option when Docker is unavailable.
+The retired BLE bench scripts are archived under [`../legacy/experiments/`](../legacy/experiments/).
 
 ## Develop
 

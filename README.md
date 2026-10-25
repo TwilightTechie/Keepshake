@@ -1,43 +1,81 @@
-# Keepshake
+# Keepsake
 
-An open-source AI pendant — hardware, firmware, and software — that captures your day (voice-activity-gated, with a hard mute), transcribes it in near real time, and distills it into a personal memory log: not just transcripts, but the decisions you made, the commitments you gave, and *why* — queryable in plain language.
+Keepsake is an open-source pendant and iPhone companion for capturing raw audio
+notifications and sending them to a server for storage and processing. The phone
+does not run speech recognition, denoising, resampling, or compression on the raw
+capture path.
 
-**Status:** requirements & early hardware phase. P0 bench prototype parts ordered; no firmware/app code yet.
+## Repository layout
 
-## Why another AI pendant?
+| Directory | Contents |
+| --- | --- |
+| [`firmware/`](firmware/README.md) | Zephyr firmware for the Seeed XIAO nRF52840 Sense |
+| [`mobile/ios/`](mobile/ios/README.md) | Native Swift iPhone app, BLE capture, chunk archive, retrying uploads |
+| [`backend/`](backend/README.md) | Optional self-hosted FastAPI backend and raw chunk ingestion API |
+| [`server/`](server/README.md) | Current webhook, live speech and Keepsake Create service |
+| [`docs/`](docs/) | BLE protocol and hardware/project notes |
+| [`website/`](website/README.md) | Static project website |
+| [`legacy/`](legacy/) | Retired prototypes and experiments kept for reference |
 
-- **Fully open.** Hardware (schematics, PCB, enclosure), firmware, backend, and apps. No vendor lock-in — the category's biggest player was acquired and shut off new sales overnight; that must not be able to happen to your memory device.
-- **Private by architecture.** Self-hostable end to end. Default audio policy is transcribe-and-discard; raw audio retention is opt-in. Hard mute is a physical guarantee, not a software promise.
-- **A memory layer, not a voice recorder.** Beyond the table stakes (conversation summaries, action items, daily recap, chat), Keepshake maintains an append-only decision log — attributed, evidence-linked, supersedable — so "what did I decide about X, and why?" has an answer.
-- **Indic-first speech.** Sarvam Saaras streaming STT as the default provider (best-in-class Indian-language and code-mixed accuracy), with a pluggable provider interface (Deepgram, self-hosted Whisper).
+The firmware and iPhone app form the current pendant capture path. `backend/`
+and `server/` are separate server implementations with different endpoints; choose
+the one that matches the upload mode configured in the app. Neither server is
+required to build or install the iPhone app.
 
-## Architecture
+## Quick start
 
+1. Follow [`firmware/README.md`](firmware/README.md) to install Zephyr dependencies,
+   build and flash the pendant.
+2. Open `mobile/ios/RawGateway.xcodeproj` in Xcode and follow
+   [`mobile/ios/README.md`](mobile/ios/README.md) to sign and install on an iPhone.
+3. Configure an HTTPS server URL and its bearer token in the app. See the server
+   README for the matching upload contract and deployment configuration.
+
+## Audio and delivery behavior
+
+The current firmware captures 16 kHz mono PCM16 and sends framed BLE notifications.
+The app preserves every received notification and stores checkpoint files locally.
+Delivery mode controls live upload, checkpoint upload, or archive-only capture.
+Uploads use stable chunk IDs, checksums, durable acknowledgments, and retry after
+network failure. The local queue is retained until the configured server confirms
+storage. Firmware BLE packets are transient: radio loss can create sequence gaps;
+the phone cannot recover samples it never received.
+
+## Security and privacy
+
+- Do not commit `.env` files, API keys, bearer tokens, private keys, recordings,
+  transcripts, or database files. Use each service's environment variables or the
+  app's Keychain-backed settings.
+- The app requires HTTPS for uploads and keeps incomplete or unacknowledged chunks
+  on-device for retry.
+- Audio and derived data are sensitive. Review server retention, access control,
+  backups, and deletion policies before exposing a server publicly.
+- Historical sample recordings and transcripts were removed from the current
+  source tree. Git history may still contain previously committed data; see the
+  repository history note below.
+
+## Validation
+
+From the repository root:
+
+```sh
+python3 firmware/tests/run_host_tests.py
 ```
-┌──────────┐  BLE (Opus, versioned  ┌─────────────┐  WebSocket/HTTPS   ┌───────────────────────────┐
-│ Pendant  │  GATT protocol)        │ Mobile app  │                    │ Backend (self-hostable)   │
-│ nRF MCU  ├───────────────────────►│ (gateway +  ├───────────────────►│ STT → transcripts →       │
-│ PDM mic  │  ◄── DFU, config       │  UX)        │                    │ memory extraction → API   │
-└──────────┘                        └─────────────┘                    └───────────────────────────┘
-     └── offline: write-through journal on flash; delta sync on reconnect
-```
 
-## Documentation
+The firmware README documents hardware validation. The iOS app includes a Swift
+package validation script and Xcode project; a physical iPhone is required to
+validate BLE capture and background upload behavior.
 
-- [Requirements overview](docs/requirements.md) — vision, market landscape, system architecture, decision log
-- [Hardware requirements](docs/requirements/hardware.md) · [P0 wiring guide](docs/hardware/p0-wiring.md)
-- [Firmware requirements](docs/requirements/firmware.md)
-- [App & platform requirements](docs/requirements/app.md)
+## Repository history
 
-## Roadmap
-
-| Phase | Scope |
-|---|---|
-| **P0** | Bench prototype: XIAO nRF52840 Sense → BLE → Sarvam streaming STT → live transcript |
-| **P1** | Vertical slice: mobile gateway app, self-hostable backend, memory log v1, offline journal sync, OTA DFU |
-| **P2** | Custom pendant PCB + enclosure, soldered NAND storage, power optimization to spec |
-| **P3** | Intelligence layer: richer synthesis, integrations, agent workflows |
+This repository has existing public Git history. Removing a file from the current
+tree does not erase earlier commits. If you find a real credential in old history,
+revoke it first, then coordinate history rewriting before using `git filter-repo`
+and force-pushing; this can disrupt existing clones. No active API keys or private
+keys were found in the repository history during the current scan.
 
 ## License
 
-To be finalized (tracked as decision D5): Apache-2.0 for software and CERN-OHL-S for hardware are the working recommendation.
+See individual components for their licenses. Firmware and software licensing
+should be finalized before redistribution; this repository currently contains
+third-party model assets with their own license notices.

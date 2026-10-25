@@ -54,12 +54,11 @@ final class Settings: ObservableObject {
         tokenError = ""
         postsToken = Self.loadKeychain(service: "KeepsakeRawGateway.posts-token", account: "create") ?? ""
 
-        // Load webhook auth token from Keychain (or use default simple secret)
+        // Load the webhook auth token from Keychain; users configure their own server credential.
         if let saved = Self.loadKeychain(service: "KeepsakeRawGateway.webhook-token", account: "webhook"), !saved.isEmpty {
             webhookToken = saved
         } else {
-            webhookToken = "keepsake-secret-2026"
-            saveWebhookToken()
+            webhookToken = ""
         }
         webhookTokenError = ""
     }

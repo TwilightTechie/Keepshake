@@ -2,7 +2,7 @@
 
 Completed on this Mac:
 
-- `ios/validate.sh`: PASS. Exercises the actual Swift core: exact packet bytes,
+- `mobile/ios/validate.sh`: PASS. Exercises the actual Swift core: exact packet bytes,
   30-second rollover, odd payload sizes, duplicate/short notifications, sequence
   rollover/gaps, recovery after a torn write, stable IDs/checksums across restart,
   strict acknowledgment matching, and persisted retry backoff.
@@ -23,7 +23,7 @@ Not yet validated:
 
 - Full Xcode/iOS build and signing. Xcode is absent; selected developer directory
   is `/Library/Developer/CommandLineTools`.
-- XCTest runner (`swift test --package-path ios`): unavailable here because this
+- XCTest runner (`swift test --package-path mobile/ios`): unavailable here because this
   toolchain installation lacks the XCTest module. The executable validation above
   runs without XCTest; the XCTest suite remains ready for full Xcode.
 - iPhone pairing, actual notification cadence/MTU, locked-screen capture, background

@@ -1,7 +1,7 @@
 # Keepsake raw firmware
 
 Our own Zephyr firmware for **Seeed XIAO nRF52840 Sense**, paired with the native
-Swift app in `../ios`. No Omi firmware, codec, cloud integration, or runtime code is
+Swift app in `../mobile/ios`. No Omi firmware, codec, cloud integration, or runtime code is
 included. Review/update: October 17, 2026.
 
 ## Audio path

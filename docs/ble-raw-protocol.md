@@ -162,4 +162,4 @@ Packet format identifier `keepsake-p0` still denotes the same five-byte audio
 framing; sample rate belongs to the per-chunk metadata, not that identifier.
 Each app connection has a UUID session, each checkpoint a unique chunk UUID.
 Server deduplication uses chunk UUID + SHA-256, not resettable firmware sequences.
-Full upload contract: [iOS README](../ios/README.md).
+Full upload contract: [iOS README](../mobile/ios/README.md).

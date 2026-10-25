@@ -14,7 +14,8 @@ from bleak import BleakClient, BleakScanner
 SERVICE_UUID = "6b656570-7361-6b65-0001-000000000001"
 AUDIO_CHAR_UUID = "6b656570-7361-6b65-0001-000000000002"
 INFO_CHAR_UUID = "6b656570-7361-6b65-0001-000000000003"
-DEFAULT_WEBHOOK = "https://aadeshai.xyz/omi/webhook/audio?sample_rate=16000&uid=keepsake_user&token=keepsake-secret-2026"
+DEFAULT_WEBHOOK = "https://YOUR_HOST/omi/webhook/audio?sample_rate=16000&uid=keepsake_user"
+WEBHOOK_TOKEN = __import__("os").environ.get("WEBHOOK_AUTH_TOKEN", "")
 
 
 async def run(webhook_url: str):
@@ -61,7 +62,10 @@ async def run(webhook_url: str):
                             resp = await http_client.post(
                                 webhook_url,
                                 content=data,
-                                headers={"Content-Type": "application/octet-stream"},
+                                headers={
+                                    "Content-Type": "application/octet-stream",
+                                    **({"Authorization": f"Bearer {WEBHOOK_TOKEN}"} if WEBHOOK_TOKEN else {}),
+                                },
                             )
                             if resp.status_code == 200:
                                 total_bytes_sent += len(data)
